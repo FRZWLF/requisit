@@ -327,6 +327,11 @@ export function requisitionsRepo(db: DatabaseSync, scope: OrgScope, clock: Clock
    * The list plus every line, in two statements instead of one per row. The `IN` list is
    * built from placeholders only — an id never reaches SQL by interpolation — and
    * `org_id = ?` still comes first (D-004).
+   *
+   * That `org_id` is **defence in depth, not the boundary**: the ids come from `list`, which
+   * is already scoped, and `requisitions.id` is a globally unique primary key, so removing it
+   * leaks nothing and no test can flip it. It stays because the invariant it relies on lives
+   * in another statement, and the next reader should not have to re-derive that.
    */
   function listWithLines(filter: ListFilter = {}): RequisitionWithLines[] {
     const found = list(filter);
