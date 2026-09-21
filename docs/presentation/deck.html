@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conversation to Main</title>
+<meta name="description" content="The rumble framework shown on Requisit, a B2B requisition service built from an empty repo: rumble, task-out, pipeline, review, docs, cost. A slide deck.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<script src="data/decisions.js"></script>
+<script src="data/trail.js"></script>
+<script src="data/cost.js"></script>
+<style>
+  :root {
+    --ground:#FBF9F7; --ground-2:#F4F0ED; --ink:#1F1A1C; --text:#3E3639; --muted:#6F6669; --mist:#ECE6E3; --hair:#DED6D2;
+    --wine:#6B1D2C; --wine-deep:#4A1220; --wine-soft:#F3E4E7; --teal:#1E5A58; --teal-deep:#123E3D; --teal-soft:#E1EDEC; --gold:#B8862B; --red:#C24A2E; --green:#2F7A4A;
+    --display:"Fraunces","Iowan Old Style",Georgia,serif; --body:"Figtree","Avenir Next","Segoe UI",system-ui,sans-serif; --mono:"IBM Plex Mono",Menlo,Consolas,monospace;
+    --ease:cubic-bezier(.22,.61,.36,1); --pad:clamp(28px,4.5vw,84px); color-scheme:light;
+  }
+  * { box-sizing:border-box }
+  html,body { height:100% }
+  body { margin:0; overflow:hidden; background:var(--ground); color:var(--ink); font-family:var(--body); font-size:clamp(14px,1.1vw,18px); line-height:1.5; -webkit-font-smoothing:antialiased }
+  code { font-family:var(--mono); font-size:.86em; background:var(--ground-2); padding:.08em .38em; border-radius:4px }
+  h1,h2,h3 { font-family:var(--display); font-weight:500; letter-spacing:-.01em; text-wrap:balance; margin:0 }
+  h2 { font-size:clamp(1.8rem,3.4vw,3.2rem); line-height:1.04; font-variation-settings:"opsz" 100,"SOFT" 30 }
+  h3 { font-size:clamp(1.05rem,1.4vw,1.4rem); line-height:1.25 }
+  p { margin:0 }
+  .lede { font-size:clamp(.95rem,1.2vw,1.2rem); max-width:66ch; color:var(--text) }
+  .eyebrow { font-family:var(--mono); font-size:clamp(.66rem,.78vw,.8rem); letter-spacing:.12em; text-transform:uppercase; color:var(--wine); font-weight:500 }
+  .eyebrow .n { color:var(--muted); margin-right:.6em }
+  .deck { position:fixed; inset:0 }
+  .slide { position:absolute; inset:0; padding:var(--pad); display:grid; align-content:center; gap:clamp(16px,2.4vh,32px); opacity:0; visibility:hidden; will-change:transform,opacity }
+  .slide.is-current { opacity:1; visibility:visible }
+  .slide .head { display:grid; gap:clamp(8px,1.2vh,14px); max-width:960px }
+  [data-step] { opacity:0; transform:translateY(18px); transition:opacity .55s var(--ease),transform .55s var(--ease) }
+  [data-step].on { opacity:1; transform:none }
+  .hud { position:fixed; left:0; right:0; bottom:0; height:3px; background:var(--mist); z-index:20 }
+  .hud i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--teal),var(--wine)); transition:width .5s var(--ease) }
+  .counter-hud { position:fixed; right:clamp(18px,2.4vw,36px); bottom:16px; font-family:var(--mono); font-size:.72rem; color:var(--muted); z-index:20; letter-spacing:.06em }
+  .brand { position:fixed; left:clamp(18px,2.4vw,36px); bottom:16px; font-family:var(--mono); font-size:.7rem; color:var(--muted); z-index:20; letter-spacing:.1em; text-transform:uppercase; display:flex; gap:14px; align-items:center }
+  .brand i { width:22px; height:1px; background:var(--wine); display:inline-block }
+  .arrows { position:fixed; right:clamp(18px,2.4vw,36px); top:50%; transform:translateY(-50%); display:grid; gap:8px; z-index:20 }
+  .arrows button { width:38px; height:38px; border-radius:50%; border:1px solid var(--hair); background:#fff; color:var(--ink); cursor:pointer; display:grid; place-items:center; font-size:15px; transition:background .25s,transform .25s }
+  .arrows button:hover { background:var(--wine-soft); border-color:var(--wine); transform:scale(1.06) }
+  .hint { position:fixed; left:50%; bottom:16px; transform:translateX(-50%); font-family:var(--mono); font-size:.7rem; color:var(--muted); z-index:20; transition:opacity .6s }
+  .hint.gone { opacity:0 }
+  kbd { font-family:var(--mono); border:1px solid var(--hair); border-bottom-width:2px; border-radius:5px; padding:0 5px; background:#fff }
+
+  /* title */
+  .title-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(28px,4vw,72px); align-items:center }
+  .title-grid h1 { font-size:clamp(2.8rem,6.6vw,6.2rem); line-height:.95; font-variation-settings:"opsz" 144,"SOFT" 60 }
+  .title-grid h1 em { font-style:italic; color:var(--wine); font-variation-settings:"opsz" 144,"SOFT" 100 }
+  .kicker { display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:.76rem; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin-bottom:18px }
+  .kicker i { width:28px; height:1px; background:var(--teal); display:inline-block }
+  .meta { display:flex; gap:28px; flex-wrap:wrap; margin-top:clamp(18px,3vh,34px); font-family:var(--mono); font-size:.76rem; color:var(--muted) }
+  .meta b { display:block; color:var(--ink); font-family:var(--display); font-size:clamp(1.5rem,2.4vw,2.1rem); font-weight:500; line-height:1.1; font-variant-numeric:tabular-nums }
+  .flow { width:100%; height:auto; max-height:70vh; display:block }
+  .flow .lane { fill:none; stroke:var(--hair); stroke-width:2 }
+  .flow .ink-line { fill:none; stroke:var(--wine); stroke-width:2.5; stroke-linecap:round }
+  .flow .node { fill:var(--ground); stroke:var(--teal); stroke-width:2 } .flow .node.wine { stroke:var(--wine) } .flow .node.fill { fill:var(--teal) }
+  .flow text { font-family:var(--mono); font-size:11.5px; fill:var(--ink) } .flow .sub { fill:var(--muted); font-size:10px } .flow .pulse { fill:var(--wine) }
+
+  /* generic cards */
+  .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
+  .cards.two { grid-template-columns:repeat(2,1fr) } .cards.four { grid-template-columns:repeat(4,1fr) }
+  .card { background:#fff; border:1px solid var(--hair); border-radius:14px; padding:clamp(16px,2vw,26px); display:grid; gap:10px; align-content:start }
+  .card .tag { font-family:var(--mono); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--teal) }
+  .card p { color:var(--text); font-size:clamp(.84rem,.98vw,.98rem) }
+  .card .cmd { font-family:var(--mono); font-size:.78rem; background:var(--ground-2); border-radius:8px; padding:9px 12px; color:var(--wine-deep) }
+  .card .ends { font-family:var(--mono); font-size:.72rem; color:var(--muted); border-top:1px dashed var(--hair); padding-top:10px }
+  .card.wine { border-color:var(--wine); background:var(--wine-soft) } .card.teal { border-color:var(--teal); background:var(--teal-soft) }
+  .big { font-family:var(--display); font-size:clamp(2rem,3.6vw,3.6rem); line-height:1; color:var(--wine); font-variant-numeric:tabular-nums }
+  .big.teal { color:var(--teal) } .big.gold { color:var(--gold) }
+  .mono { font-family:var(--mono); font-size:.76rem; color:var(--muted) }
+
+  /* brief → rumble */
+  .split { display:grid; grid-template-columns:1fr 1.2fr; gap:clamp(20px,3vw,48px); align-items:start }
+  .brief { background:#fff; border:1px solid var(--hair); border-radius:14px; padding:18px 22px; font-size:clamp(.8rem,.92vw,.92rem); color:var(--text); max-height:62vh; overflow:hidden; position:relative }
+  .brief::after { content:""; position:absolute; left:0; right:0; bottom:0; height:80px; background:linear-gradient(transparent,#fff) }
+  .brief h4 { font-family:var(--mono); font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--wine); margin:0 0 8px }
+  .brief li { margin:4px 0 }
+  .rows { display:grid; gap:8px; max-height:62vh; overflow:hidden }
+  .drow { display:grid; grid-template-columns:64px 1fr; gap:12px; background:#fff; border:1px solid var(--hair); border-radius:10px; padding:9px 14px; font-size:clamp(.78rem,.9vw,.9rem); opacity:0; transform:translateX(16px); transition:opacity .5s var(--ease),transform .5s var(--ease) }
+  .drow.on { opacity:1; transform:none }
+  .drow .id { font-family:var(--mono); font-weight:600; color:var(--wine) } .drow .id.g { color:var(--teal) } .drow .id.m { color:var(--gold) }
+  .drow .t { color:var(--ink) } .drow .r { color:var(--muted); font-size:.85em }
+
+  /* issue */
+  .issue { background:#fff; border:1px solid var(--hair); border-radius:14px; overflow:hidden; box-shadow:0 30px 60px -40px rgba(74,18,32,.35); font-size:clamp(.78rem,.9vw,.9rem) }
+  .issue-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:12px 16px; border-bottom:1px solid var(--hair); font-family:var(--mono); font-size:.76rem }
+  .issue-top .num { color:var(--muted) }
+  .pill { display:inline-block; padding:2px 9px; border-radius:999px; font-family:var(--mono); font-size:.66rem; border:1px solid var(--hair); background:var(--ground-2); color:var(--ink) }
+  .pill.wine { background:var(--wine-soft); color:var(--wine-deep); border-color:transparent } .pill.teal { background:var(--teal-soft); color:var(--teal-deep); border-color:transparent }
+  .field { padding:9px 16px; border-bottom:1px solid var(--mist); display:grid; grid-template-columns:120px 1fr; gap:10px }
+  .field:last-child { border-bottom:0 }
+  .field b { font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; color:var(--wine); font-weight:500; padding-top:3px }
+  .field span { color:var(--text); white-space:pre-wrap; max-height:9.5em; overflow:hidden; display:block }
+  .waves { display:grid; gap:10px; align-content:start }
+  .wave { display:grid; grid-template-columns:70px 1fr; gap:12px; align-items:center; font-size:.9rem }
+  .wave .w { font-family:var(--mono); font-size:.72rem; color:var(--muted) }
+  .wave .chips { display:flex; gap:8px; flex-wrap:wrap }
+  .chip { font-family:var(--mono); font-size:.74rem; padding:5px 11px; border-radius:8px; border:1px solid var(--teal); color:var(--teal-deep); background:#fff }
+
+  /* pipeline */
+  .pipe { display:grid; grid-template-columns:1fr 1fr; gap:clamp(24px,4vw,60px); align-items:start }
+  .track { position:relative; padding-left:34px; display:grid; gap:4px }
+  .track::before { content:""; position:absolute; left:11px; top:14px; bottom:14px; width:2px; background:var(--hair); border-radius:2px }
+  .track .progress { position:absolute; left:11px; top:14px; width:2px; height:0; background:linear-gradient(var(--teal),var(--wine)); transition:height .6s var(--ease) }
+  .stage { position:relative; padding:9px 0; display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; color:var(--muted); transition:color .3s }
+  .stage::before { content:""; position:absolute; left:-29px; top:50%; transform:translateY(-50%); width:12px; height:12px; border-radius:50%; background:#fff; border:2px solid var(--hair); transition:all .3s }
+  .stage.is-active { color:var(--ink) } .stage.is-active::before { border-color:var(--wine); background:var(--wine); box-shadow:0 0 0 5px var(--wine-soft) }
+  .stage.is-done { color:var(--text) } .stage.is-done::before { border-color:var(--teal); background:var(--teal) }
+  .stage b { font-family:var(--display); font-weight:500; font-size:clamp(1rem,1.3vw,1.3rem) }
+  .stage .m { font-family:var(--mono); font-size:.7rem; color:var(--muted) }
+  .panel { display:none; background:#fff; border:1px solid var(--hair); border-radius:14px; padding:clamp(16px,2vw,26px); min-height:46vh; max-height:66vh; overflow:hidden }
+  .panel.is-active { display:block }
+  .panel .who { font-family:var(--mono); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:8px }
+  .panel pre { white-space:pre-wrap; font-family:var(--mono); font-size:.76rem; line-height:1.5; margin:8px 0 0; color:var(--text); max-height:54vh; overflow:hidden }
+  .verdict { display:inline-block; padding:5px 11px; border-radius:8px; font-family:var(--mono); font-size:.78rem; font-weight:600; background:var(--mist); margin:6px 8px 4px 0 }
+  .verdict.red { background:var(--red); color:#fff } .verdict.yellow { background:var(--gold); color:#fff } .verdict.clean { background:var(--green); color:#fff }
+  .finding { border-left:3px solid var(--red); padding:8px 14px; background:#fff; border-radius:0 10px 10px 0; font-size:clamp(.8rem,.92vw,.92rem); color:var(--text); margin-top:10px; white-space:pre-wrap; max-height:22vh; overflow:hidden }
+  .finding.fixed { border-left-color:var(--green) }
+
+  /* cost */
+  table.cost { border-collapse:collapse; width:100%; font-size:clamp(.78rem,.92vw,.94rem); background:#fff; border:1px solid var(--hair); border-radius:14px; overflow:hidden }
+  table.cost th,table.cost td { padding:8px 14px; text-align:left; border-bottom:1px solid var(--mist) }
+  table.cost th { font-family:var(--mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500 }
+  table.cost td.n { font-family:var(--mono); text-align:right; font-variant-numeric:tabular-nums }
+  table.cost tr.total td { font-weight:600; border-top:2px solid var(--hair) }
+  .bar { height:8px; border-radius:4px; background:linear-gradient(90deg,var(--teal),var(--wine)); width:0; transition:width 1s var(--ease) }
+
+  /* onboarding map */
+  .map { display:grid; grid-template-columns:1fr 40px 1fr; gap:8px 12px; align-items:center; font-size:clamp(.82rem,.95vw,.98rem) }
+  .map .l,.map .r { background:#fff; border:1px solid var(--hair); border-radius:10px; padding:9px 14px } .map .r { border-color:var(--teal); color:var(--teal-deep) }
+  .map .a { text-align:center; color:var(--wine); font-family:var(--mono) }
+  .live { width:100%; height:64vh; border:1px solid var(--hair); border-radius:14px; background:#fff }
+  .close h1 { font-size:clamp(2.4rem,5.4vw,5rem); line-height:1; font-variation-settings:"opsz" 144,"SOFT" 60 } .close h1 em { color:var(--wine); font-style:italic }
+  ul.plain { margin:0; padding-left:1.1em; color:var(--text); font-size:clamp(.88rem,1.02vw,1.04rem) } ul.plain li { margin:6px 0 }
+  @media (prefers-reduced-motion: reduce) { [data-step],.drow { transition:none } }
+  @media (max-width:900px) { .title-grid,.split,.pipe,.cards,.cards.two,.cards.four { grid-template-columns:1fr } .map { grid-template-columns:1fr } .map .a { display:none } .slide { align-content:start; overflow-y:auto } }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 1 · title -->
+<section class="slide is-current" data-title="Start">
+  <div class="title-grid">
+    <div>
+      <div class="kicker"><i></i>rumble framework · requisit</div>
+      <h1>From a<br><em>conversation</em><br>to main.</h1>
+      <p class="lede" style="margin-top:22px">A design talk becomes decisions. Decisions become issues. Agents build, review and merge — and the docs remember. Shown on a B2B requisition service that did not exist this morning.</p>
+      <div class="meta"><div><b id="mD">—</b>decisions</div><div><b id="mPR">—</b>pull requests</div><div><b id="mFind">—</b>review findings</div><div><b id="mTok">—</b>tokens</div></div>
+    </div>
+    <svg class="flow" viewBox="0 0 520 420" aria-hidden="true">
+      <path class="lane" d="M60 70 C 200 70, 200 200, 260 200 S 380 330, 460 330"/>
+      <path id="inkLine" class="ink-line" d="M60 70 C 200 70, 200 200, 260 200 S 380 330, 460 330"/>
+      <g class="nodes">
+        <g><circle class="node" cx="60" cy="70" r="26"/><text x="60" y="74" text-anchor="middle">rumble</text><text class="sub" x="60" y="112" text-anchor="middle">think · decide</text></g>
+        <g><circle class="node wine" cx="260" cy="200" r="26"/><text x="260" y="204" text-anchor="middle">issue</text><text class="sub" x="260" y="242" text-anchor="middle">the contract</text></g>
+        <g><circle class="node fill" cx="460" cy="330" r="26"/><text x="460" y="334" text-anchor="middle" fill="#fff" style="fill:#fff">main</text><text class="sub" x="460" y="372" text-anchor="middle">built · reviewed</text></g>
+      </g>
+      <circle id="pulse" class="pulse" r="5" cx="60" cy="70"/>
+    </svg>
+  </div>
+</section>
+
+<!-- 2 · the problem -->
+<section class="slide" data-title="The problem" data-steps="3">
+  <div class="head"><div class="eyebrow"><span class="n">01</span>why a framework</div><h2>Agents write code fast. Three other things break.</h2></div>
+  <div class="cards">
+    <div class="card" data-step="1"><div class="tag">memory</div><h3>Decisions vanish in chat</h3><p>Two weeks later nobody knows why the money is an integer. The chat is gone; the code only shows <em>what</em>.</p><div class="ends">→ every decision is a row in the docs, with the rejected alternatives</div></div>
+    <div class="card" data-step="2"><div class="tag">scope</div><h3>The agent builds its guess</h3><p>An open question at prompt time becomes a silent assumption in the diff. Reviews then argue about the assumption, not the code.</p><div class="ends">→ the issue is the whole contract; the thinking ends before building starts</div></div>
+    <div class="card" data-step="3"><div class="tag">trust</div><h3>Who reviewed that?</h3><p>Green CI is not a review. A PR needs evidence a person can read: suites, mutations, deviations, a verdict.</p><div class="ends">→ reviewer agents with a verdict line; a fix loop; a trail per issue</div></div>
+  </div>
+</section>
+
+<!-- 3 · three sessions -->
+<section class="slide" data-title="Three sessions" data-steps="3">
+  <div class="head"><div class="eyebrow"><span class="n">02</span>the shape</div><h2>Three sessions, one repo. GitHub is the only shared state.</h2></div>
+  <div class="cards">
+    <div class="card" data-step="1"><div class="tag">1 · rumble</div><h3>Think and decide</h3><p>A person and the model, with web search. Reads the brief, asks back, researches, writes decisions, gaps, measurements, a roadmap.</p><div class="cmd">/task-out</div><div class="ends">ends with issues on GitHub — never builds</div></div>
+    <div class="card" data-step="2"><div class="tag">2 · pipeline</div><h3>Orchestrate</h3><p>A fresh session. Never reads code. Briefs agents, reads verdicts, merges, posts the trail — in waves of at most three builders.</p><div class="cmd">/pipeline &lt;umbrella&gt;</div><div class="ends">retires when the umbrella is done</div></div>
+    <div class="card" data-step="3"><div class="tag">3 · agents</div><h3>One job each</h3><p>Triage · architect · implementer · quality reviewer · security reviewer. Each in its own git worktree, each ends with a PR or a <code>VERDICT:</code> line.</p><div class="cmd">.claude/agents/ · .codex/agents/</div><div class="ends">generated from one framework.json</div></div>
+  </div>
+</section>
+
+<!-- 4 · the rumble -->
+<section class="slide" data-title="The rumble" data-kind="rumble">
+  <div class="head"><div class="eyebrow"><span class="n">03</span>this morning: an empty repo and a brief</div><h2>The rumble turns a page of wishes into rows.</h2></div>
+  <div class="split">
+    <div class="brief" id="brief"></div>
+    <div class="rows" id="rows"></div>
+  </div>
+  <p class="mono" id="rumbleStats"></p>
+</section>
+
+<!-- 5 · task-out -->
+<section class="slide" data-title="Task-out" data-kind="issue">
+  <div class="head"><div class="eyebrow"><span class="n">04</span>/task-out</div><h2>The issue is the whole contract — written for an agent with zero context.</h2></div>
+  <div class="split" style="grid-template-columns:1.25fr 1fr">
+    <div class="issue" id="issueCard"></div>
+    <div>
+      <h3 style="margin-bottom:12px">The umbrella: run order in waves</h3>
+      <div class="waves" id="waves"></div>
+      <p class="mono" style="margin-top:16px">Dependencies decide the waves. Free issues run in parallel; the session that wrote the issues ends here.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · pipeline -->
+<section class="slide" data-title="Pipeline" data-kind="pipeline" data-steps="6">
+  <div class="head"><div class="eyebrow"><span class="n">05</span>/pipeline — a new session, the real trail of one issue</div><h2 id="pipeTitle">Triage, design, build, review, fix, gate.</h2></div>
+  <div class="pipe">
+    <div class="track"><i class="progress" id="progress"></i>
+      <div class="stage"><div><b>Triage</b><div class="m" id="mTriage">cheap model · labels area, size, risk</div></div></div>
+      <div class="stage"><div><b>Architect</b><div class="m">frontier model · only on size:L · a 🏛 Design comment</div></div></div>
+      <div class="stage"><div><b>Implement</b><div class="m">own worktree · draft PR with evidence</div></div></div>
+      <div class="stage"><div><b>Review</b><div class="m">quality always · security on risk:high · a VERDICT line</div></div></div>
+      <div class="stage"><div><b>Fix loop</b><div class="m">at most two rounds · one re-reviewer</div></div></div>
+      <div class="stage"><div><b>Gate &amp; trail</b><div class="m">squash-merge · full board on main · 📋 cost ledger</div></div></div>
+    </div>
+    <div id="panels">
+      <div class="panel"><div class="who">triage</div><div id="pTriage"></div></div>
+      <div class="panel"><div class="who">🏛 design</div><pre id="pDesign"></pre></div>
+      <div class="panel"><div class="who">pull request</div><pre id="pPR"></pre></div>
+      <div class="panel"><div class="who">reviews</div><div id="pReview"></div></div>
+      <div class="panel"><div class="who">fix rounds</div><div id="pFix"></div></div>
+      <div class="panel"><div class="who">📋 trail</div><pre id="pTrail"></pre></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · findings -->
+<section class="slide" data-title="What a review finds" data-kind="findings" data-steps="2">
+  <div class="head"><div class="eyebrow"><span class="n">06</span>reviews are readable</div><h2>A red finding, the fix, the re-review.</h2></div>
+  <div class="split">
+    <div><div id="findingRed" class="finding"></div><p class="mono" style="margin-top:10px">The reviewer reused the PR's evidence: the suites it named plus two mutations of its own — not a full re-run.</p></div>
+    <div data-step="1"><div id="findingFix" class="finding fixed"></div><p class="mono" style="margin-top:10px" id="findingMeta"></p></div>
+  </div>
+  <p class="lede" data-step="2">Two fix rounds at most. A red after that goes to a person — the only inbox is <code>needs-human</code>.</p>
+</section>
+
+<!-- 8 · docs after -->
+<section class="slide" data-title="Docs as memory" data-kind="docs">
+  <div class="head"><div class="eyebrow"><span class="n">07</span>after the arc</div><h2>The docs are the memory — and a check keeps them honest.</h2></div>
+  <div class="cards">
+    <div class="card"><div class="tag">decisions</div><div class="big" id="dCount">—</div><p>rows: the rumble's, plus the addenda PRs wrote when the design met reality.</p><p class="mono" id="dAddenda"></p></div>
+    <div class="card"><div class="tag">gaps · measurements</div><div class="big teal" id="gCount">—</div><p>open questions with the trigger that reopens them; numbers that read “pending” until measured.</p><p class="mono" id="mCount"></p></div>
+    <div class="card"><div class="tag">the check</div><div class="cmd" style="font-family:var(--mono);font-size:.76rem;background:var(--ground-2);border-radius:8px;padding:9px 12px;color:var(--teal-deep)" id="anchorLine">check-anchors …</div><p>A reference without a row fails the board. A doc that describes what the code does not do is a red finding.</p></div>
+  </div>
+</section>
+
+<!-- 9 · product -->
+<section class="slide" data-title="The product" data-kind="product">
+  <div class="head"><div class="eyebrow"><span class="n">08</span>what came out</div><h2>Requisit, running.</h2></div>
+  <iframe class="live" id="live" src="about:blank" title="Requisit live"></iframe>
+  <p class="mono" id="liveNote">start the service (`npm start`) and press <kbd>L</kbd> to load it here · buyer drafts → rule matches → approver rejects with a reason → the audit shows it</p>
+</section>
+
+<!-- 10 · cost -->
+<section class="slide" data-title="Cost" data-kind="cost">
+  <div class="head"><div class="eyebrow"><span class="n">09</span>the ledger</div><h2 id="costTitle">What the arc cost, by stage and model.</h2></div>
+  <table class="cost" id="costTable"></table>
+  <p class="mono" id="costNote"></p>
+</section>
+
+<!-- 11 · existing project -->
+<section class="slide" data-title="Existing project" data-steps="4">
+  <div class="head"><div class="eyebrow"><span class="n">10</span>bring it to a project that already exists</div><h2>You already have most of it under other names.</h2></div>
+  <div class="map">
+    <div class="l" data-step="1">docs/adr/0001-….md — one file per ADR</div><div class="a" data-step="1">→</div><div class="r" data-step="1"><code>docs.decisions</code> → the ADR index; a D-row per ADR, numbers kept</div>
+    <div class="l" data-step="2">CONTRIBUTING.md, the security policy</div><div class="a" data-step="2">→</div><div class="r" data-step="2">project sections appended to the core standards — yours win on safety</div>
+    <div class="l" data-step="3">your CI</div><div class="a" data-step="3">→</div><div class="r" data-step="3">stays. Add <code>render --check</code> and <code>check-anchors</code>; the pipeline's own automation stays off</div>
+    <div class="l" data-step="4">a backlog, wiki pages of numbers, open questions</div><div class="a" data-step="4">→</div><div class="r" data-step="4">the first rumble is a <em>reading</em> rumble: gaps first, then the smallest real change</div>
+  </div>
+</section>
+
+<!-- 12 · teams -->
+<section class="slide" data-title="Teams" data-steps="4">
+  <div class="head"><div class="eyebrow"><span class="n">11</span>several people</div><h2>The issue is the contract, so the author does not matter.</h2></div>
+  <div class="cards four">
+    <div class="card" data-step="1"><div class="tag">rumble</div><p>Everyone rumbles. Rows and issues come as a PR and are reviewed like code. Reserved numbers avoid collisions.</p></div>
+    <div class="card" data-step="2"><div class="tag">orchestrate</div><p>One person per arc runs the pipeline. State is on GitHub, so the next wave can be taken over in a new session by someone else.</p></div>
+    <div class="card" data-step="3"><div class="tag">review</div><p>Verdicts, evidence and trails are written for a person who was not there. Disagree in a review comment — the fix loop treats it like a finding.</p></div>
+    <div class="card" data-step="4"><div class="tag">merge</div><p><code>gate.merge: human</code> and the gate stops at “ready for review”. CODEOWNERS per area decide who the inbox is.</p></div>
+  </div>
+</section>
+
+<!-- 13 · intershop -->
+<section class="slide" data-title="Here" data-steps="3">
+  <div class="head"><div class="eyebrow"><span class="n">12</span>where this fits</div><h2>Agent features are decisions plus contracts plus reviewed PRs.</h2></div>
+  <div class="cards">
+    <div class="card" data-step="1"><div class="tag">buyer · merchant agents</div><p>What an agent may do is a D-row and a risk label before it is code. Requisit's drafting agent never approves — decided in the rumble, enforced in review.</p></div>
+    <div class="card" data-step="2"><div class="tag">pwa · commerce core</div><p>One framework repo, one <code>framework.json</code> per codebase: its own areas, implementers, verify board and risk:high list.</p></div>
+    <div class="card" data-step="3"><div class="tag">both runtimes</div><p>Claude Code and Codex from the same source; the model per stage is a binding, not a habit.</p></div>
+  </div>
+</section>
+
+<!-- 14 · close -->
+<section class="slide close" data-title="Close" data-steps="3">
+  <div class="head"><div class="eyebrow"><span class="n">13</span>the loop</div><h1>Think. <em>Contract.</em> Build. Remember.</h1></div>
+  <ul class="plain">
+    <li data-step="1">Rumble in a session that ends with issues, never with code.</li>
+    <li data-step="2">Build in a session that never reads code, from agents that each do one job.</li>
+    <li data-step="3">Keep the memory in the docs, checked by the board — so the next conversation starts where this one ended.</li>
+  </ul>
+  <p class="mono">github.com/FRZWLF/rumble-framework · github.com/FRZWLF/requisit</p>
+</section>
+
+</div>
+<div class="hud"><i id="hud"></i></div>
+<div class="brand"><i></i>rumble framework</div>
+<div class="counter-hud" id="counter">01 / 14</div>
+<div class="hint" id="hint"><kbd>→</kbd> next · <kbd>←</kbd> back · click anywhere</div>
+<div class="arrows"><button id="prevBtn" aria-label="previous">↑</button><button id="nextBtn" aria-label="next">↓</button></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function () {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const G = typeof gsap !== 'undefined' ? gsap : null;
+  const slides = [...document.querySelectorAll('.slide')];
+  const hud = document.getElementById('hud'), counter = document.getElementById('counter'), hint = document.getElementById('hint');
+  const D = window.DECISIONS || { decisions: [], gaps: [], measurements: [], brief: '', anchors: '' };
+  const T = window.TRAIL || null;           // export of the showcased issue (scripts/replay-from-gh.mjs)
+  const C = window.COST || null;            // { rows:[{issue, stage, model, tokens}], note }
+  const esc = s => String(s ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  const md = s => esc(s).replace(/```[\s\S]*?```/g, m => m).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  const num = n => n == null ? '—' : Number(n).toLocaleString('en');
+  const vclass = v => !v ? '' : /🔴|\bRED\b|[1-9]\d* red/i.test(v) ? 'red' : /🟡|\bYELLOW\b|[1-9]\d* nit/i.test(v) ? 'yellow' : 'clean';
+  let cur = 0, step = 0, busy = false;
+  const stepsOf = s => +(s.dataset.steps || 0), pad = n => String(n).padStart(2, '0');
+  const ev = k => T ? T.events.filter(e => e.kind === k) : [];
+  const section = (body, name) => { const m = (body || '').match(new RegExp(`## ${name}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`)); return m ? m[1].trim() : ''; };
+
+  // ---------- data → slides (once) ----------
+  function fill() {
+    // title counts
+    const prs = ev('pr'), reviews = ev('review');
+    const findings = reviews.reduce((n, r) => { const m = (r.verdict || '').match(/(\d+) red, (\d+) nit/); return n + (m ? +m[1] + +m[2] : 0); }, 0);
+    document.getElementById('mD').textContent = D.decisions.length || '—';
+    document.getElementById('mPR').textContent = C && C.prs != null ? C.prs : (prs.length || '—');
+    document.getElementById('mFind').textContent = C && C.findings != null ? C.findings : (findings || '—');
+    document.getElementById('mTok').textContent = C && C.total ? (Math.round(C.total / 1000) + 'k') : '—';
+    // rumble
+    document.getElementById('brief').innerHTML = D.brief ? md(D.brief).replace(/^# .*\n/, '').replace(/\n- /g, '\n• ').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>') : '<p>docs/00-brief.md</p>';
+    const rows = document.getElementById('rows');
+    const pick = [...D.decisions.slice(0, 5).map(r => ({ ...r, k: 'd' })), ...D.gaps.slice(0, 2).map(r => ({ ...r, k: 'g' })), ...D.measurements.slice(0, 1).map(r => ({ ...r, k: 'm' }))];
+    rows.innerHTML = pick.map(r => `<div class="drow"><span class="id ${r.k}">${esc(r.id)}</span><span><span class="t">${md(r.title)}</span>${r.rationale ? `<br><span class="r">${md(r.rationale.slice(0, 160))}${r.rationale.length > 160 ? '…' : ''}</span>` : ''}</span></div>`).join('');
+    document.getElementById('rumbleStats').textContent = `${D.decisions.length} decisions · ${D.gaps.length} gaps · ${D.measurements.length} measurements · ${D.research || 0} research entries with sources · one session, ended by /task-out`;
+    // issue card
+    const iss = ev('issue')[0];
+    if (iss) {
+      const labels = ev('labeled').map(l => l.text).filter((v, i, a) => a.indexOf(v) === i);
+      const f = (n, b) => `<div class="field"><b>${n}</b><span>${md(b)}</span></div>`;
+      document.getElementById('issueCard').innerHTML = `<div class="issue-top"><span class="num">#${T.issue}</span><b>${esc(T.title)}</b>${labels.map(l => `<span class="pill ${/risk:high|size:L/.test(l) ? 'wine' : /area:|pipeline:/.test(l) ? 'teal' : ''}">${esc(l)}</span>`).join('')}</div>`
+        + f('Goal', section(iss.body, 'Goal')) + f('Context', section(iss.body, 'Context').slice(0, 520) + '…') + f('Acceptance', section(iss.body, 'Acceptance criteria').split('\n').slice(0, 4).join('\n') + '\n…') + f('Out of scope', section(iss.body, 'Out of scope').slice(0, 220) + '…');
+    }
+    const waves = document.getElementById('waves');
+    waves.innerHTML = (D.waves || []).map((w, i) => `<div class="wave"><span class="w">wave ${i + 1}</span><span class="chips">${w.map(x => `<span class="chip">${esc(x)}</span>`).join('')}</span></div>`).join('') || '<p class="mono">umbrella pending</p>';
+    // pipeline panels
+    if (T) {
+      document.getElementById('pipeTitle').textContent = `#${T.issue} · ${T.title}`;
+      const tri = ev('triage')[0] || ev('comment').find(c => /triage/i.test(c.text));
+      document.getElementById('pTriage').innerHTML = (tri ? `<p>${md(tri.text)}</p>` : '') + `<p style="margin-top:10px">${ev('labeled').map(l => `<span class="pill ${/risk:high|size:L/.test(l.text) ? 'wine' : 'teal'}">${esc(l.text)}</span> `).join('')}</p>`;
+      const des = ev('design')[0]; document.getElementById('pDesign').textContent = des ? des.text.slice(0, 1800) + (des.text.length > 1800 ? '\n…' : '') : 'no architect stage (not size:L)';
+      const pr = prs[0]; document.getElementById('pPR').textContent = pr ? `PR #${pr.number} · ${pr.text}\n\n${(pr.body || '').slice(0, 1600)}${(pr.body || '').length > 1600 ? '\n…' : ''}` : 'PR pending';
+      document.getElementById('pReview').innerHTML = reviews.map(r => `<div><span class="verdict ${vclass(r.verdict)}">${esc(r.verdict)}</span><span class="mono">${esc(r.who)} · PR #${r.pr}</span></div>`).join('') || '<p class="mono">reviews pending</p>';
+      const fixes = ev('fix-round'); document.getElementById('pFix').innerHTML = fixes.map(f => `<p>${md(f.text.replace(/<!--.*?-->/g, ''))}</p>`).join('') || '<p class="mono">no fix round needed</p>';
+      const trail = ev('trail')[0]; document.getElementById('pTrail').textContent = trail ? trail.text.slice(0, 2200) : 'trail pending';
+      // findings slide
+      const red = reviews.find(r => vclass(r.verdict) === 'red'), redBlock = red ? (red.text.match(/🔴[\s\S]*?(?=\n\n🔴|\n\n🟡|\n\n##|\n\nVERDICT|$)/) || [red.text])[0] : '';
+      document.getElementById('findingRed').textContent = redBlock ? redBlock.slice(0, 900) : (reviews.length ? 'No red finding on this issue — the first review came back clean.' : 'reviews pending');
+      const afterFix = red ? reviews.filter(r => r.at > red.at && r.pr === red.pr) : [];
+      const fixCommit = red ? ev('commit').find(c => c.at > red.at) : null;
+      document.getElementById('findingFix').textContent = fixCommit ? `${fixCommit.sha} ${fixCommit.text}` + (afterFix[0] ? `\n\nre-review: ${afterFix[0].verdict}` : '') : (red ? 'fix pending' : '—');
+      document.getElementById('findingMeta').textContent = red ? `${fixes.length} fix round(s) · re-review by the reviewer that held the red` : '';
+    }
+    // docs
+    document.getElementById('dCount').textContent = D.decisions.length || '—';
+    document.getElementById('dAddenda').textContent = D.addenda != null ? `${D.addenda} addenda written by PRs` : '';
+    document.getElementById('gCount').textContent = (D.gaps.length || '—') + ' · ' + (D.measurements.length || '—');
+    document.getElementById('mCount').textContent = D.measured != null ? `${D.measured} of ${D.measurements.length} measured, the rest read “pending”` : '';
+    document.getElementById('anchorLine').textContent = D.anchors || 'check-anchors: pending';
+    // cost
+    const t = document.getElementById('costTable');
+    if (C && C.rows && C.rows.length) {
+      const max = Math.max(...C.rows.map(r => r.tokens || 0));
+      t.innerHTML = `<tr><th>issue</th><th>stage</th><th>model</th><th style="text-align:right">tokens</th><th></th></tr>` + C.rows.map(r => `<tr><td>${esc(r.issue)}</td><td>${esc(r.stage)}</td><td class="mono">${esc(r.model)}</td><td class="n">${num(r.tokens)}</td><td style="width:26%"><div class="bar" data-w="${Math.round((r.tokens || 0) / max * 100)}%"></div></td></tr>`).join('') + `<tr class="total"><td colspan="3">total</td><td class="n">${num(C.total)}</td><td></td></tr>`;
+      document.getElementById('costNote').textContent = C.note || '';
+    } else t.innerHTML = '<tr><td class="mono">the trails feed this table (data/cost.js) — pending</td></tr>';
+  }
+
+  // ---------- per-slide behaviours ----------
+  const running = {};
+  const enter = {
+    hero(s) {
+      const ink = s.querySelector('#inkLine'), pulse = s.querySelector('#pulse');
+      if (!G || reduce || !ink) return;
+      const len = ink.getTotalLength(); ink.style.strokeDasharray = len; ink.style.strokeDashoffset = len;
+      const tl = G.timeline();
+      tl.to(ink, { strokeDashoffset: 0, duration: 2.4, ease: 'power2.inOut' }, .2)
+        .from(s.querySelectorAll('.nodes > g'), { scale: .4, opacity: 0, transformOrigin: 'center', duration: .6, ease: 'back.out(2)', stagger: .18 }, .3)
+        .from(s.querySelectorAll('h1, .lede, .meta > div'), { y: 26, opacity: 0, duration: .8, ease: 'power3.out', stagger: .12 }, 0);
+      const travel = { t: 0 };
+      const loop = G.to(travel, { t: 1, duration: 9, ease: 'none', repeat: -1, delay: 2.8, onUpdate() { const p = ink.getPointAtLength(travel.t * len); pulse.setAttribute('cx', p.x); pulse.setAttribute('cy', p.y); } });
+      running.hero = [tl, loop];
+    },
+    rumble(s) { const rows = [...s.querySelectorAll('.drow')]; rows.forEach(r => r.classList.remove('on')); rows.forEach((r, i) => setTimeout(() => r.classList.add('on'), 500 + i * 350)); },
+    pipeline(s) { setStage(s, 0); },
+    cost(s) { setTimeout(() => s.querySelectorAll('.bar').forEach(b => b.style.width = b.dataset.w), 200); },
+    product(s) { /* L loads the live UI */ }
+  };
+  const leave = kind => { (running[kind] || []).forEach(t => t.kill()); delete running[kind]; };
+  function applySteps(s, n) { s.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('on', +el.dataset.step <= n)); if (s.dataset.kind === 'pipeline') setStage(s, n); }
+  function setStage(s, i) {
+    const stages = [...s.querySelectorAll('.stage')], panels = [...s.querySelectorAll('.panel')]; i = Math.min(i, stages.length - 1);
+    stages.forEach((st, j) => { st.classList.toggle('is-active', j === i); st.classList.toggle('is-done', j < i); });
+    panels.forEach((p, j) => { const on = j === i; p.classList.toggle('is-active', on); if (on && G && !reduce) G.fromTo(p, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: .5, ease: 'power3.out', overwrite: true }); });
+    s.querySelector('#progress').style.height = ((i + 1) / stages.length * 100) + '%';
+  }
+  function updateHud() { hud.style.width = ((cur + 1) / slides.length * 100) + '%'; counter.textContent = pad(cur + 1) + ' / ' + pad(slides.length); location.replace('#' + (cur + 1)); }
+  function show(i, dir) {
+    if (busy || i === cur || i < 0 || i >= slides.length) return;
+    const from = slides[cur], to = slides[i];
+    leave(from.dataset.kind || (cur === 0 ? 'hero' : ''));
+    cur = i; step = dir < 0 ? stepsOf(to) : 0; applySteps(to, step); to.classList.add('is-current'); updateHud();
+    const kind = to.dataset.kind || (i === 0 ? 'hero' : ''); const start = () => { if (enter[kind]) enter[kind](to); };
+    if (!G || reduce) { from.classList.remove('is-current'); start(); return; }
+    busy = true;
+    G.timeline({ onComplete() { from.classList.remove('is-current'); G.set(from, { clearProps: 'transform,opacity,filter' }); busy = false; } })
+      .to(from, { opacity: 0, scale: .985, y: -14 * dir, filter: 'blur(4px)', duration: .45, ease: 'power2.in' }, 0)
+      .fromTo(to, { opacity: 0, scale: 1.02, y: 22 * dir }, { opacity: 1, scale: 1, y: 0, duration: .65, ease: 'power3.out', onStart: start }, .25)
+      .fromTo(to.querySelectorAll('.head > *'), { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: .6, ease: 'power3.out', stagger: .08 }, .35);
+  }
+  function next() { hint.classList.add('gone'); const s = slides[cur]; if (step < stepsOf(s)) { step++; applySteps(s, step); return; } show(cur + 1, 1); }
+  function prev() { const s = slides[cur]; if (step > 0) { step--; applySteps(s, step); return; } show(cur - 1, -1); }
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') show(0, -1); else if (e.key === 'End') show(slides.length - 1, 1);
+    else if (e.key === 'l' || e.key === 'L') { const f = document.getElementById('live'); f.src = (window.COST && COST.liveUrl) || 'http://localhost:3000/'; document.getElementById('liveNote').textContent = 'live: ' + f.src; }
+  });
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', prev);
+  document.getElementById('deck').addEventListener('click', e => { if (e.target.closest('a, button, iframe')) return; next(); });
+  let wheelLock = 0; document.addEventListener('wheel', e => { const t = Date.now(); if (t - wheelLock < 900 || Math.abs(e.deltaY) < 24) return; wheelLock = t; e.deltaY > 0 ? next() : prev(); }, { passive: true });
+  let tx = 0, ty = 0; document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return; (Math.abs(dx) > Math.abs(dy) ? dx : dy) < 0 ? next() : prev(); }, { passive: true });
+
+  fill();
+  slides.forEach(s => applySteps(s, 0));
+  const want = parseInt((location.hash || '#1').slice(1), 10);
+  if (want > 1 && want <= slides.length) { slides[0].classList.remove('is-current'); cur = want - 1; slides[cur].classList.add('is-current'); const k = slides[cur].dataset.kind; if (enter[k]) enter[k](slides[cur]); }
+  else enter.hero(slides[0]);
+  updateHud();
+})();
+</script>
+</body>
+</html>
