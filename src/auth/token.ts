@@ -124,8 +124,14 @@ export function verifyToken(
   const signingInput = `${version}.${payloadB64}`;
   const expected = sign(key ?? Buffer.alloc(32), signingInput);
   const presented = Buffer.from(signatureB64, 'base64url');
+  // The encoding must be canonical as well as correct: base64url ignores the unused bits of
+  // the final character, so four distinct strings decode to the same 32 bytes. A token is
+  // one string, and a denylist of token hashes (G-013) must not be bypassable by respelling
+  // the signature.
   const matches =
-    presented.length === expected.length && crypto.timingSafeEqual(presented, expected);
+    presented.length === expected.length &&
+    crypto.timingSafeEqual(presented, expected) &&
+    signatureB64 === expected.toString('base64url');
   if (key === undefined || !matches) {
     return refuse('unauthenticated', 'bad signature');
   }

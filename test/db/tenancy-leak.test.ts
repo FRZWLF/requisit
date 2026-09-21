@@ -180,29 +180,100 @@ const CASES: readonly LeakCase[] = [
     writeAsA: (f) => {
       const requisitionId = seedRequisition(f, f.a);
       withTransaction(f.db, (tx) => {
-        auditRepo(f.db, f.a, TEST_CLOCK).writeAudit(tx, {
-          requisitionId,
-          actorPersonId: f.a.actor.personId,
-          actorKind: 'user',
-          action: 'draft.created',
-          fromState: null,
-          toState: 'draft',
-          ruleId: null,
-          totalMinor: 129_900,
-          currency: 'EUR',
-          reason: null,
-          requestId: null,
-        });
+        must(
+          auditRepo(f.db, f.a, TEST_CLOCK).writeAudit(tx, {
+            requisitionId,
+            actorPersonId: f.a.actor.personId,
+            actorKind: 'user',
+            action: 'draft.created',
+            fromState: null,
+            toState: 'draft',
+            ruleId: null,
+            totalMinor: 129_900,
+            currency: 'EUR',
+            reason: null,
+            requestId: null,
+          }),
+        );
       });
       return requisitionId;
     },
     readAsB: (f, id) => auditRepo(f.db, f.b, TEST_CLOCK).listForRequisition(id),
     readAsA: (f, id) => auditRepo(f.db, f.a, TEST_CLOCK).listForRequisition(id),
   },
+  {
+    name: 'audit.list',
+    writeAsA: (f) => {
+      const requisitionId = seedRequisition(f, f.a);
+      withTransaction(f.db, (tx) => {
+        must(
+          auditRepo(f.db, f.a, TEST_CLOCK).writeAudit(tx, {
+            requisitionId,
+            actorPersonId: f.a.actor.personId,
+            actorKind: 'user',
+            action: 'draft.created',
+            fromState: null,
+            toState: 'draft',
+            ruleId: null,
+            totalMinor: 129_900,
+            currency: 'EUR',
+            reason: null,
+            requestId: null,
+          }),
+        );
+      });
+      return requisitionId;
+    },
+    readAsB: (f) => auditRepo(f.db, f.b, TEST_CLOCK).list(),
+    readAsA: (f) => auditRepo(f.db, f.a, TEST_CLOCK).list(),
+  },
+  {
+    name: 'catalogue.list',
+    writeAsA: (f) =>
+      withTransaction(f.db, (tx) =>
+        must(
+          catalogueRepo(f.db, f.a, TEST_CLOCK).insert(tx, {
+            sku: 'SKU-2',
+            name: 'Monitor',
+            unitPriceMinor: 29_900,
+            currency: 'EUR',
+          }),
+        ).id,
+      ),
+    readAsB: (f) => catalogueRepo(f.db, f.b, TEST_CLOCK).list(),
+    readAsA: (f) => catalogueRepo(f.db, f.a, TEST_CLOCK).list(),
+  },
+  {
+    // Every organisation has people of its own, so the assertion is the sharper one:
+    // A's person is not *in* B's list.
+    name: 'people.list',
+    writeAsA: (f) =>
+      withTransaction(f.db, (tx) =>
+        must(
+          peopleRepo(f.db, f.a, TEST_CLOCK).insert(tx, {
+            name: 'Pia',
+            email: 'pia@example.test',
+          }),
+        ).id,
+      ),
+    readAsB: (f, id) => peopleRepo(f.db, f.b, TEST_CLOCK).list().filter((p) => p.id === id),
+    readAsA: (f, id) => peopleRepo(f.db, f.a, TEST_CLOCK).list().filter((p) => p.id === id),
+  },
+  {
+    name: 'requisitions.list by buyer',
+    writeAsA: (f) => {
+      const requisitionId = seedRequisition(f, f.a);
+      return must(requisitionsRepo(f.db, f.a, TEST_CLOCK).byId(requisitionId)).buyerPersonId;
+    },
+    readAsB: (f, buyerPersonId) =>
+      requisitionsRepo(f.db, f.b, TEST_CLOCK).list({ buyerPersonId }),
+    readAsA: (f, buyerPersonId) =>
+      requisitionsRepo(f.db, f.a, TEST_CLOCK).list({ buyerPersonId }),
+  },
 ];
 
 test('the leak table covers every repository that exists', () => {
-  assert.ok(CASES.length >= 9, `presence: ${CASES.length} read cases`);
+  assert.ok(CASES.length >= 13, `presence: ${CASES.length} read cases`);
 });
 
 for (const leakCase of CASES) {
@@ -319,3 +390,149 @@ function seedOrgBuyer(f: Fixture): string {
     ).id,
   );
 }
+
+
+test('cross-org write: a draft cannot name a buyer of another organisation', () => {
+  const fixture = setUp();
+  const personOfA = withTransaction(fixture.db, (tx) =>
+    must(
+      peopleRepo(fixture.db, fixture.a, TEST_CLOCK).insert(tx, {
+        name: 'Bea',
+        email: 'bea-a@example.test',
+      }),
+    ).id,
+  );
+  const costCentreOfB = seedCostCentre(fixture, fixture.b);
+  withTransaction(fixture.db, (tx) => {
+    const result = requisitionsRepo(fixture.db, fixture.b, TEST_CLOCK).insertDraft(tx, {
+      buyerPersonId: personOfA,
+      costCentreId: costCentreOfB,
+      lines: [{ description: 'Laptop', quantity: 1, unitPriceMinor: 1000 }],
+    });
+    assert.ok(isRefusal(result));
+    assert.equal(isRefusal(result) ? result.code : '', 'not_found');
+  });
+  // presence: with B's own buyer the same draft is created.
+  const buyerOfB = seedOrgBuyer(fixture);
+  withTransaction(fixture.db, (tx) => {
+    const ok = requisitionsRepo(fixture.db, fixture.b, TEST_CLOCK).insertDraft(tx, {
+      buyerPersonId: buyerOfB,
+      costCentreId: costCentreOfB,
+      lines: [{ description: 'Laptop', quantity: 1, unitPriceMinor: 1000 }],
+    });
+    assert.ok(!isRefusal(ok));
+  });
+});
+
+test('cross-org write: a line cannot point at a catalogue item of another organisation', () => {
+  const fixture = setUp();
+  const itemOfA = withTransaction(fixture.db, (tx) =>
+    must(
+      catalogueRepo(fixture.db, fixture.a, TEST_CLOCK).insert(tx, {
+        sku: 'SKU-A',
+        name: 'Laptop',
+        unitPriceMinor: 129_900,
+        currency: 'EUR',
+      }),
+    ).id,
+  );
+  const costCentreOfB = seedCostCentre(fixture, fixture.b);
+  const buyerOfB = seedOrgBuyer(fixture);
+  withTransaction(fixture.db, (tx) => {
+    const result = requisitionsRepo(fixture.db, fixture.b, TEST_CLOCK).insertDraft(tx, {
+      buyerPersonId: buyerOfB,
+      costCentreId: costCentreOfB,
+      lines: [
+        {
+          description: 'Laptop',
+          quantity: 1,
+          unitPriceMinor: 129_900,
+          catalogueItemId: itemOfA,
+        },
+      ],
+    });
+    assert.ok(isRefusal(result));
+    assert.equal(isRefusal(result) ? result.code : '', 'not_found');
+  });
+  // presence: B's own catalogue item is accepted on the same line.
+  const itemOfB = withTransaction(fixture.db, (tx) =>
+    must(
+      catalogueRepo(fixture.db, fixture.b, TEST_CLOCK).insert(tx, {
+        sku: 'SKU-B',
+        name: 'Laptop',
+        unitPriceMinor: 129_900,
+        currency: 'EUR',
+      }),
+    ).id,
+  );
+  withTransaction(fixture.db, (tx) => {
+    const ok = requisitionsRepo(fixture.db, fixture.b, TEST_CLOCK).insertDraft(tx, {
+      buyerPersonId: buyerOfB,
+      costCentreId: costCentreOfB,
+      lines: [
+        {
+          description: 'Laptop',
+          quantity: 1,
+          unitPriceMinor: 129_900,
+          catalogueItemId: itemOfB,
+        },
+      ],
+    });
+    assert.ok(!isRefusal(ok));
+  });
+});
+
+/**
+ * `audit_log`'s foreign keys are by id alone, and the append-only triggers make a wrong
+ * line permanent — so the write itself has to refuse a reference from another organisation
+ * (D-004, D-007).
+ */
+test('cross-org write: an audit line cannot reference another organisation', () => {
+  const fixture = setUp();
+  const requisitionOfA = seedRequisition(fixture, fixture.a);
+  const actorOfA = fixture.a.actor.personId;
+  assert.ok(actorOfA !== null, 'presence: organisation A has an actor');
+  const repoB = auditRepo(fixture.db, fixture.b, TEST_CLOCK);
+  const base = {
+    actorKind: 'user',
+    action: 'draft.created',
+    fromState: null,
+    toState: 'draft',
+    ruleId: null,
+    totalMinor: 129_900,
+    currency: 'EUR',
+    reason: null,
+    requestId: null,
+  } as const;
+
+  withTransaction(fixture.db, (tx) => {
+    const stolenRequisition = repoB.writeAudit(tx, {
+      ...base,
+      requisitionId: requisitionOfA,
+      actorPersonId: fixture.b.actor.personId,
+    });
+    assert.ok(isRefusal(stolenRequisition), "B wrote an audit line about A's requisition");
+    assert.equal(isRefusal(stolenRequisition) ? stolenRequisition.code : '', 'not_found');
+
+    const stolenActor = repoB.writeAudit(tx, {
+      ...base,
+      requisitionId: null,
+      actorPersonId: actorOfA,
+    });
+    assert.ok(isRefusal(stolenActor), "B wrote an audit line crediting A's person");
+    assert.equal(isRefusal(stolenActor) ? stolenActor.code : '', 'not_found');
+  });
+
+  // presence: nothing was written, and B's own references are accepted.
+  assert.equal(auditRepo(fixture.db, fixture.b, TEST_CLOCK).list().length, 0);
+  const requisitionOfB = seedRequisition(fixture, fixture.b);
+  withTransaction(fixture.db, (tx) => {
+    const ok = auditRepo(fixture.db, fixture.b, TEST_CLOCK).writeAudit(tx, {
+      ...base,
+      requisitionId: requisitionOfB,
+      actorPersonId: fixture.b.actor.personId,
+    });
+    assert.ok(!isRefusal(ok));
+  });
+  assert.equal(auditRepo(fixture.db, fixture.b, TEST_CLOCK).list().length, 1);
+});

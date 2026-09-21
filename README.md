@@ -21,7 +21,7 @@ installs only typescript, eslint and `@types/node` and there is no native build 
 npm ci
 npm run typecheck    # tsc --noEmit
 npm test             # node --test over test/**/*.test.ts, offline, in :memory:
-npm run lint         # builds dist/ first, then eslint over the emitted JS (D-019)
+npm run lint         # builds dist/ + dist-lint/, then eslint over the emitted JS of src/ and scripts/ (D-019)
 ```
 
 The full verify board (D-015) adds the two docs checks:

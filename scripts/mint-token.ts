@@ -16,6 +16,11 @@ import { isRefusal } from '../src/refusal.ts';
  * member of that organisation.
  */
 const DEFAULT_TTL_SECONDS = 86_400;
+/**
+ * A cap, not a policy: with revocation still open (G-013) a mistyped `--ttl` mints a
+ * credential that cannot be taken back short of rotating the organisation's secret.
+ */
+export const MAX_TTL_SECONDS = 90 * 86_400;
 
 export interface CliResult {
   readonly code: number;
@@ -59,6 +64,13 @@ export function main(
   const ttlSeconds = ttlRaw === undefined ? DEFAULT_TTL_SECONDS : Number(ttlRaw);
   if (!Number.isSafeInteger(ttlSeconds) || ttlSeconds < 1) {
     return { code: 1, out: '', err: `--ttl must be a positive integer\n${usage}` };
+  }
+  if (ttlSeconds > MAX_TTL_SECONDS) {
+    return {
+      code: 1,
+      out: '',
+      err: `--ttl must be at most ${MAX_TTL_SECONDS} seconds (90 days)\n${usage}`,
+    };
   }
 
   let config;

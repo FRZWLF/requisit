@@ -113,5 +113,9 @@ export function roundHalfUp(numerator: number, denominator: number): number {
   if (!Number.isSafeInteger(denominator) || denominator < 1) {
     throw new RangeError('roundHalfUp: denominator must be a positive safe integer');
   }
-  return Math.floor((2 * numerator + denominator) / (2 * denominator));
+  // Divide first and decide the half on the remainder, so no intermediate leaves the
+  // safe-integer range for inputs the guards above have just accepted (compare `lineTotal`).
+  return (
+    Math.floor(numerator / denominator) + (2 * (numerator % denominator) >= denominator ? 1 : 0)
+  );
 }

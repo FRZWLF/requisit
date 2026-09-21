@@ -14,7 +14,7 @@ import { instanceCreateOrg } from '../../src/db/instance.ts';
 import { peopleRepo } from '../../src/db/repos/people.ts';
 import { verifyToken } from '../../src/auth/token.ts';
 import { must } from '../support/seed.ts';
-import { main } from '../../scripts/mint-token.ts';
+import { MAX_TTL_SECONDS, main } from '../../scripts/mint-token.ts';
 
 const SECRET = 'a'.repeat(32);
 const CLOCK = fixedClock('2026-09-21T10:00:00.000Z');
@@ -118,5 +118,30 @@ test('a short secret stops the CLI and the value never reaches the output', () =
     assert.equal(result.code, 1);
     assert.match(result.err, /REQUISIT_TOKEN_SECRET/);
     assert.ok(!result.err.includes('short'));
+  });
+});
+
+/**
+ * Revocation is still open (G-013), so a token that outlives the org's secret is
+ * unrecoverable. The cap turns a typo into a refusal instead of a 3 000-year credential.
+ */
+test('--ttl is capped, and the cap refuses without touching the database', () => {
+  withFixture((f) => {
+    const tooLong = main(
+      ['--org', f.orgId, '--person', f.personId, '--ttl', String(MAX_TTL_SECONDS + 1)],
+      f.env,
+      CLOCK,
+    );
+    assert.equal(tooLong.code, 1);
+    assert.equal(tooLong.out, '');
+    assert.match(tooLong.err, /--ttl must be at most/);
+    // presence: exactly at the cap still mints.
+    const atCap = main(
+      ['--org', f.orgId, '--person', f.personId, '--ttl', String(MAX_TTL_SECONDS)],
+      f.env,
+      CLOCK,
+    );
+    assert.equal(atCap.code, 0);
+    assert.notEqual(atCap.out, '');
   });
 });

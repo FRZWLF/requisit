@@ -185,3 +185,33 @@ test('mintToken refuses a nonsensical ttl loudly — that is a bug, not a refusa
   assert.throws(() => mint(NOW, SECRET, -1), RangeError);
   assert.throws(() => mint(NOW, SECRET, 1.5), RangeError);
 });
+
+const B64URL_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+
+/**
+ * base64url ignores the two unused bits of the final character of a 32-byte MAC, so four
+ * spellings decode to the same bytes. Only the canonical one may verify: a revocation
+ * denylist keyed on the token string (G-013) would otherwise be bypassable four times over.
+ */
+test('a non-canonical spelling of the signature is refused', () => {
+  const token = mint();
+  const [version, payloadB64, signatureB64] = token.split('.') as [string, string, string];
+  const canonical = Buffer.from(signatureB64, 'base64url');
+  const variants: string[] = [];
+  for (const char of B64URL_ALPHABET) {
+    const candidate = `${signatureB64.slice(0, -1)}${char}`;
+    if (candidate === signatureB64) {
+      continue;
+    }
+    if (Buffer.from(candidate, 'base64url').equals(canonical)) {
+      variants.push(candidate);
+    }
+  }
+  // presence: if the encoding stops being malleable this must be re-derived, not silently pass.
+  assert.equal(variants.length, 3, `expected 3 malleable spellings, got ${variants.length}`);
+  for (const variant of variants) {
+    assertUnauthenticated(`${version}.${payloadB64}.${variant}`, `malleable signature ${variant}`);
+  }
+  // presence: the canonical spelling still verifies.
+  assert.ok(!isRefusal(verifyToken(KEYS, token, NOW)));
+});

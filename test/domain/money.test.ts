@@ -123,6 +123,18 @@ test('roundHalfUp rounds .5 away from zero and rejects a bad ratio', () => {
   assert.throws(() => roundHalfUp(1.5, 2), RangeError);
 });
 
+test('roundHalfUp holds at the ceiling: no intermediate leaves the safe-integer range', () => {
+  // The guards accept MAX_SAFE_MINOR, so the body must too: `2 * numerator + denominator`
+  // did not, and returned 9007199254740992 — one minor unit too many and not a safe integer.
+  const atCeiling = roundHalfUp(MAX_SAFE_MINOR, 1);
+  assert.equal(atCeiling, MAX_SAFE_MINOR);
+  assert.ok(Number.isSafeInteger(atCeiling), 'the result must stay a safe integer');
+  // (2^53 - 1) / 2 is exactly x.5, the one case where half-up has to round away from zero.
+  assert.equal(roundHalfUp(MAX_SAFE_MINOR, 2), 4_503_599_627_370_496);
+  assert.equal(roundHalfUp(MAX_SAFE_MINOR - 1, 2), 4_503_599_627_370_495);
+  assert.equal(roundHalfUp(MAX_SAFE_MINOR, MAX_SAFE_MINOR), 1);
+});
+
 test('v1 needs no rounding: nothing in src/ outside money.ts calls roundHalfUp', () => {
   const callers = sourceFiles(SRC).filter(
     (file) => !file.endsWith('domain/money.ts') && !file.endsWith('index.ts'),

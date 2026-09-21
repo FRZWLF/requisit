@@ -56,6 +56,31 @@ function oneOf<T extends string>(
   return hit;
 }
 
+/**
+ * `Object.freeze` does not freeze a `Map` — `set`/`delete`/`clear` still work through the
+ * `ReadonlyMap` type at the `dist/` boundary, where TypeScript is gone. This hands out a
+ * frozen read-only view instead, so "frozen typed config" (D-018) holds in JavaScript too.
+ */
+function freezeMap<K, V>(source: ReadonlyMap<K, V>): ReadonlyMap<K, V> {
+  const inner = new Map(source);
+  return Object.freeze({
+    get size(): number {
+      return inner.size;
+    },
+    get: (key: K) => inner.get(key),
+    has: (key: K) => inner.has(key),
+    keys: () => inner.keys(),
+    values: () => inner.values(),
+    entries: () => inner.entries(),
+    forEach: (callback: (value: V, key: K, map: ReadonlyMap<K, V>) => void, thisArg?: unknown) => {
+      for (const [key, value] of inner) {
+        callback.call(thisArg, value, key, inner);
+      }
+    },
+    [Symbol.iterator]: () => inner[Symbol.iterator](),
+  });
+}
+
 function port(env: NodeJS.ProcessEnv): number {
   const raw = env['PORT'];
   if (raw === undefined || raw === '') {
@@ -81,7 +106,7 @@ export function loadConfig(env: NodeJS.ProcessEnv): Config {
   const tokenKeys = new Map<string, Buffer>([[ACTIVE_KID, Buffer.from(secret, 'utf8')]]);
 
   return Object.freeze({
-    tokenKeys,
+    tokenKeys: freezeMap(tokenKeys),
     activeKid: ACTIVE_KID,
     dbPath,
     port: port(env),

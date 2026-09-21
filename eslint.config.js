@@ -6,10 +6,12 @@
 
 export default [
   {
-    ignores: ['node_modules/**', 'data/**', 'src/**', 'test/**', 'scripts/**/*.ts'],
+    // `scripts/**/*.ts` is linted through its emit in `dist-lint/scripts/` (D-019 addendum);
+    // `dist-lint/src/` is the same code as `dist/src/`, so it is not linted twice.
+    ignores: ['node_modules/**', 'data/**', 'src/**', 'test/**', 'scripts/**/*.ts', 'dist-lint/src/**'],
   },
   {
-    files: ['dist/**/*.js', 'scripts/**/*.mjs', 'eslint.config.js'],
+    files: ['dist/**/*.js', 'dist-lint/**/*.js', 'scripts/**/*.mjs', 'eslint.config.js'],
     languageOptions: {
       ecmaVersion: 2023,
       sourceType: 'module',

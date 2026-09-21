@@ -49,7 +49,7 @@ test('a committed state change leaves exactly one audit line', () => {
         lines: [{ description: 'Laptop', quantity: 1, unitPriceMinor: 129_900 }],
       }),
     );
-    auditRepo(db, scope, TEST_CLOCK).writeAudit(tx, auditInput(requisition.id, buyer.id));
+    must(auditRepo(db, scope, TEST_CLOCK).writeAudit(tx, auditInput(requisition.id, buyer.id)));
     return requisition.id;
   });
 
@@ -74,7 +74,7 @@ test('a rolled-back state change leaves no audit line and no requisition', () =>
           lines: [{ description: 'Laptop', quantity: 1, unitPriceMinor: 129_900 }],
         }),
       );
-      auditRepo(db, scope, TEST_CLOCK).writeAudit(tx, auditInput(requisition.id, buyer.id));
+      must(auditRepo(db, scope, TEST_CLOCK).writeAudit(tx, auditInput(requisition.id, buyer.id)));
       throw new Error('boom, after the audit line was written');
     }),
   );
@@ -94,7 +94,7 @@ test('the audit table is append-only in the engine, not only in the code', () =>
         lines: [{ description: 'Laptop', quantity: 1, unitPriceMinor: 129_900 }],
       }),
     );
-    auditRepo(db, scope, TEST_CLOCK).writeAudit(tx, auditInput(requisition.id, buyer.id));
+    must(auditRepo(db, scope, TEST_CLOCK).writeAudit(tx, auditInput(requisition.id, buyer.id)));
   });
 
   assert.throws(
@@ -120,7 +120,7 @@ test('audit ids are assigned in insertion order', () => {
   withTransaction(db, (tx) => {
     const repo = auditRepo(db, scope, TEST_CLOCK);
     for (const action of ['draft.created', 'draft.updated', 'draft.updated.again']) {
-      repo.writeAudit(tx, { ...auditInput(requisitionId, buyer.id), action });
+      must(repo.writeAudit(tx, { ...auditInput(requisitionId, buyer.id), action }));
     }
   });
   const lines = auditRepo(db, scope, TEST_CLOCK).listForRequisition(requisitionId);

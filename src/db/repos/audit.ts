@@ -4,6 +4,7 @@ import type { AuditLine } from '../../domain/types.ts';
 import type { OrgScope } from '../scope.ts';
 import type { Tx } from '../tx.ts';
 import { rows } from '../row.ts';
+import { refuse, type Result } from '../../refusal.ts';
 import { sameDb } from './guard.ts';
 
 interface AuditRow {
@@ -69,15 +70,31 @@ export function auditRepo(db: DatabaseSync, scope: OrgScope, clock: Clock = syst
   const selectAll = db.prepare(
     `SELECT ${COLUMNS} FROM audit_log WHERE org_id = ? ORDER BY id`,
   );
+  // The foreign keys of `audit_log` are by id alone, so the append-only table would
+  // otherwise be the one write path that can record another organisation's ids under this
+  // organisation — permanently, because the triggers forbid the correction (D-004, D-007).
+  const selectRequisition = db.prepare('SELECT id FROM requisitions WHERE org_id = ? AND id = ?');
+  const selectPerson = db.prepare('SELECT id FROM people WHERE org_id = ? AND id = ?');
 
   return {
-    writeAudit(tx: Tx, line: AuditInput): AuditLine {
+    writeAudit(tx: Tx, line: AuditInput): Result<AuditLine> {
       sameDb(db, tx);
+      const requisitionId = line.requisitionId ?? null;
+      const actorPersonId = line.actorPersonId ?? null;
+      if (
+        requisitionId !== null &&
+        selectRequisition.get(scope.orgId, requisitionId) === undefined
+      ) {
+        return refuse('not_found', 'requisition');
+      }
+      if (actorPersonId !== null && selectPerson.get(scope.orgId, actorPersonId) === undefined) {
+        return refuse('not_found', 'actor');
+      }
       const at = toIso(clock.now());
       const result = insertRow.run(
         scope.orgId,
-        line.requisitionId ?? null,
-        line.actorPersonId ?? null,
+        requisitionId,
+        actorPersonId,
         line.actorKind,
         line.action,
         line.fromState,
@@ -92,8 +109,8 @@ export function auditRepo(db: DatabaseSync, scope: OrgScope, clock: Clock = syst
       return {
         id: Number(result.lastInsertRowid),
         orgId: scope.orgId,
-        requisitionId: line.requisitionId ?? null,
-        actorPersonId: line.actorPersonId ?? null,
+        requisitionId,
+        actorPersonId,
         actorKind: line.actorKind,
         action: line.action,
         fromState: line.fromState,

@@ -20,6 +20,27 @@ test('a valid environment yields a frozen config with the documented defaults', 
   assert.ok(Object.isFrozen(config));
 });
 
+/**
+ * `Object.freeze` does not freeze a `Map`: at the `dist/` boundary TypeScript is gone and
+ * `ReadonlyMap` is only a type. D-018 says the config is frozen, so it must be frozen there
+ * too.
+ */
+test('the key map cannot be mutated once the config is built', () => {
+  const config = loadConfig({ REQUISIT_TOKEN_SECRET: GOOD_SECRET });
+  const escaped = config.tokenKeys as unknown as Record<string, unknown>;
+  assert.equal(typeof escaped['set'], 'undefined', 'a mutator survived onto the frozen view');
+  assert.equal(typeof escaped['delete'], 'undefined');
+  assert.equal(typeof escaped['clear'], 'undefined');
+  assert.ok(Object.isFrozen(config.tokenKeys));
+  assert.throws(() => {
+    escaped['get'] = () => undefined;
+  }, TypeError);
+  // presence: the read side still works, including iteration.
+  assert.deepEqual(config.tokenKeys.get('1'), Buffer.from(GOOD_SECRET, 'utf8'));
+  assert.deepEqual([...config.tokenKeys.keys()], ['1']);
+  assert.equal(config.tokenKeys.size, 1);
+});
+
 test('overrides are read and validated', () => {
   const config = loadConfig({
     REQUISIT_TOKEN_SECRET: GOOD_SECRET,
