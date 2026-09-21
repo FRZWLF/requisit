@@ -26,9 +26,9 @@ Fällt der Service aus: die Produktfolie zeigt den Hinweis, alles andere läuft 
 
 ## Folie 1 — Titel (30s)
 
-> Das ist eine Geschichte in vier Worten: von einer Unterhaltung nach main. Eine Design-Unterhaltung wird zu Entscheidungen, Entscheidungen werden zu Issues, Agenten bauen, prüfen und mergen, und die Docs erinnern sich. Alles, was Sie heute sehen, kommt aus einem einzigen echten Projekt, das heute Morgen ein leeres Repository war.
+> Das ist eine Geschichte in einem Satz: von einer Unterhaltung zu einem gelieferten Feature. Eine Design-Unterhaltung wird zu Entscheidungen, Entscheidungen werden zu Issues, Agenten bauen, prüfen und mergen, und die Docs erinnern sich. Alles, was Sie heute sehen, kommt aus einem einzigen echten Projekt, das heute Morgen ein leeres Repository war.
 
-*(Die Szene rechts erzählt genau das in drei Akten, ca. 40 s pro Durchlauf: Sie erklären, der Rumble-Roboter schreibt mit und fragt zurück, zeigt das Blatt (Issues #2–#5), Daumen hoch. Dann reicht er das Blatt dem Orchestrator, der Triage, Implementer, Quality- und Security-Reviewer spawnt; sie arbeiten, Häkchen. Der Orchestrator gibt einen Monitor mit dem Produkt zurück, der Rumble-Roboter bringt ihn zu Ihnen, Sie nehmen ihn ab. Einmal durchlaufen lassen, dann weiter.)*
+*(Die Szene rechts erzählt genau das in drei Akten, ca. 40 s pro Durchlauf: Sie erklären, der Rumble-Roboter schreibt mit und fragt zurück, zeigt das Blatt (Issues #2–#5), Daumen hoch. Dann reicht er das Blatt dem Orchestrator, der Triage, Implementer, Quality- und Security-Reviewer spawnt; sie arbeiten, Häkchen. Der Orchestrator gibt einen Monitor mit dem Produkt zurück, der Rumble-Roboter bringt ihn zu Ihnen, Sie nehmen ihn ab. Einmal durchlaufen lassen, dann weiter. Die vier Zahlen darunter: 4 Stunden vom leeren Repo zu vier Features auf main, 15,3 Tsd. Zeilen und 474 Tests ohne eine Zeile von Hand, 38 Review-Findings vor dem Merge, 19 Minuten menschliche Unterhaltung. Die Token-Zahl kommt erst auf der Kostenfolie, dort ist sie pro Station eingeordnet.)*
 
 ## Folie 2 — Das Problem (45s)
 

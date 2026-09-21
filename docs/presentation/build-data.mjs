@@ -64,5 +64,10 @@ if (umbrella) {
     }
   }
 }
-writeFileSync(join(HERE, 'data/cost.js'), 'window.COST = ' + JSON.stringify({ rows: costRows, total: costRows.reduce((s, r) => s + r.tokens, 0), prs: prs || null, findings: findings || null, note: costRows.length ? `from the 📋 trail comments of umbrella #${umbrella}; tokens as the runtime reported them` : '', liveUrl: process.env.REQUISIT_LIVE_URL || 'http://localhost:3000/' }, null, 1) + ';\n');
+// lines merged (M-009 result: "#N 4 164 lines"), and the minutes of human conversation = first commit → the rumble commit
+const lines = [...meas.matchAll(/#\d+ (\d[\d ]*\d)(?: lines)? \((?:L|M|S),/g)].reduce((s, m) => s + +m[1].replace(/ /g, ''), 0) || null;
+const log = sh('git', ['log', '--reverse', '--format=%at %s']).trim().split('\n');
+const first = +log[0].split(' ')[0], rumbleLine = log.find(l => /docs: rumble/.test(l));
+const humanMinutes = rumbleLine ? Math.round((+rumbleLine.split(' ')[0] - first) / 60) : null;
+writeFileSync(join(HERE, 'data/cost.js'), 'window.COST = ' + JSON.stringify({ rows: costRows, total: costRows.reduce((s, r) => s + r.tokens, 0), prs: prs || null, findings: findings || null, lines, humanMinutes, note: costRows.length ? `from the 📋 trail comments of umbrella #${umbrella}; tokens as the runtime reported them` : '', liveUrl: process.env.REQUISIT_LIVE_URL || 'http://localhost:3000/' }, null, 1) + ';\n');
 console.log(`decisions ${decisions.length} · gaps ${gapRows.length} · measurements ${mrows.length} (${measured} measured) · research ${research} · waves ${waves.length} · trail ${issue ? 'issue #' + issue : 'skipped'} · cost rows ${costRows.length}`);

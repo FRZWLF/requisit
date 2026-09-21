@@ -186,6 +186,8 @@ window.COST = {
  "total": 3390984,
  "prs": 4,
  "findings": 38,
+ "lines": 15286,
+ "humanMinutes": 19,
  "note": "from the 📋 trail comments of umbrella #6; tokens as the runtime reported them",
  "liveUrl": "http://localhost:3123/"
 };
