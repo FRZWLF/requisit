@@ -143,11 +143,11 @@
   .dk .sample { font-family:var(--mono); font-size:.72rem; line-height:1.5; color:var(--ink); background:var(--ground-2); border-radius:8px; padding:9px 11px; border-left:3px solid var(--hair) } .dk .sample b { color:var(--wine) } .dk .sample .rej { color:var(--muted) }
   .docsfoot { max-width:none }
   /* rendered comments and outlines */
-  .rendered p, .finding p { margin:0 0 8px; font-size:.86rem; line-height:1.5 } .rendered .mdh, .finding .mdh { font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--wine); margin:12px 0 6px; font-weight:600 }
-  .rendered .mdb, .finding .mdb { padding-left:1.1em; text-indent:-1.1em; font-size:.84rem; line-height:1.45; margin:2px 0 } .rendered .mdb::before, .finding .mdb::before { content:"· "; color:var(--muted) } .mdb.done::before { content:"☑ "; color:var(--green) } .mdb.todo::before { content:"☐ " }
-  table.mdt { border-collapse:collapse; font-size:.78rem; margin:6px 0; width:100% } table.mdt th, table.mdt td { border-bottom:1px solid var(--mist); padding:4px 8px; text-align:left; vertical-align:top } table.mdt th { font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:500 }
-  .outline .lead { margin:0 0 10px; font-size:.86rem; color:var(--text) } .outline .sec { display:grid; grid-template-columns:200px 1fr; gap:12px; padding:7px 0; border-top:1px solid var(--mist); font-size:.84rem } .outline .sec b { font-family:var(--mono); font-size:.74rem; color:var(--wine); font-weight:600 } .outline .sec span { color:var(--text) }
-  .causes { margin-top:16px; border-top:1px dashed var(--hair); padding-top:12px; display:grid; gap:6px } .causes .tag { font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin-bottom:4px } .causes div:not(.tag) { display:grid; grid-template-columns:110px 1fr; gap:10px; font-size:.86rem; color:var(--text) }
+  .rendered p, .finding p { margin:0 0 8px; font-size:clamp(.86rem,1vw,1rem); line-height:1.5 } .rendered .mdh, .finding .mdh { font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--wine); margin:12px 0 6px; font-weight:600 }
+  .rendered .mdb, .finding .mdb { padding-left:1.1em; text-indent:-1.1em; font-size:clamp(.84rem,.98vw,.98rem); line-height:1.45; margin:2px 0 } .rendered .mdb::before, .finding .mdb::before { content:"· "; color:var(--muted) } .mdb.done::before { content:"☑ "; color:var(--green) } .mdb.todo::before { content:"☐ " }
+  table.mdt { border-collapse:collapse; font-size:.84rem; margin:6px 0; width:100% } table.mdt th, table.mdt td { border-bottom:1px solid var(--mist); padding:4px 8px; text-align:left; vertical-align:top } table.mdt th { font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:500 }
+  .outline .lead { margin:0 0 10px; font-size:clamp(.86rem,1vw,1rem); color:var(--text) } .outline .sec { display:grid; grid-template-columns:200px 1fr; gap:12px; padding:8px 0; border-top:1px solid var(--mist); font-size:clamp(.84rem,.98vw,.98rem) } .outline .sec b { font-family:var(--mono); font-size:.74rem; color:var(--wine); font-weight:600 } .outline .sec span { color:var(--text) }
+  .causes { margin-top:16px; border-top:1px dashed var(--hair); padding-top:12px; display:grid; gap:6px } .causes .tag { font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin-bottom:4px } .causes div:not(.tag) { display:grid; grid-template-columns:110px 1fr; gap:10px; font-size:clamp(.86rem,1vw,1rem); color:var(--text) }
   .lens { font-family:var(--mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); width:70px; display:inline-block }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
@@ -192,8 +192,9 @@
   .artefact .bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:10px 16px; border-bottom:1px solid var(--hair); font-family:var(--mono); font-size:.74rem; color:var(--muted) }
   .artefact .bar b { color:var(--ink) }
   .artefact .bar a { color:var(--teal); text-decoration:none; margin-left:auto }
-  .artefact .inner { padding:12px 16px; overflow:hidden; font-size:clamp(.78rem,.9vw,.9rem); color:var(--text) }
-  .artefact pre { white-space:pre-wrap; font-family:var(--mono); font-size:.74rem; line-height:1.5; margin:0; color:var(--text) }
+  .artefact .inner { padding:14px 18px; overflow:hidden; font-size:clamp(.86rem,1vw,1rem); line-height:1.5; color:var(--text) }
+  .artefact .inner.over, .finding.over { mask-image:linear-gradient(#000 82%, transparent 99%); -webkit-mask-image:linear-gradient(#000 82%, transparent 99%) }
+  .artefact pre { white-space:pre-wrap; font-family:var(--mono); font-size:.8rem; line-height:1.55; margin:0; color:var(--text) }
   .pill { display:inline-block; padding:2px 9px; border-radius:999px; font-family:var(--mono); font-size:.66rem; border:1px solid var(--hair); background:var(--ground-2); color:var(--ink) }
   .pill.wine { background:var(--wine-soft); color:var(--wine-deep); border-color:transparent } .pill.teal { background:var(--teal-soft); color:var(--teal-deep); border-color:transparent }
   .pill.big { font-size:.9rem; padding:6px 14px }
@@ -201,20 +202,20 @@
   .field:last-child { border-bottom:0 }
   .field b { font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--wine); font-weight:500; padding-top:3px }
   .field span { white-space:pre-wrap; max-height:7.5em; overflow:hidden; display:block }
-  .drow { display:grid; grid-template-columns:60px 1fr; gap:10px; padding:7px 0; border-bottom:1px solid var(--mist); font-size:clamp(.76rem,.88vw,.88rem) }
+  .drow { display:grid; grid-template-columns:64px 1fr; gap:12px; padding:9px 0; border-bottom:1px solid var(--mist); font-size:clamp(.84rem,.98vw,.98rem) }
   .drow .id { font-family:var(--mono); font-weight:600; color:var(--wine) } .drow .id.g { color:var(--teal) } .drow .id.m { color:var(--gold) }
-  .drow .r { color:var(--muted); font-size:.85em }
+  .drow .r { color:var(--muted); font-size:.88em }
   .verdict { display:inline-block; padding:5px 11px; border-radius:8px; font-family:var(--mono); font-size:.76rem; font-weight:600; background:var(--mist); margin:4px 8px 4px 0 }
   .verdict.red { background:var(--red); color:#fff } .verdict.yellow { background:var(--gold); color:#fff } .verdict.clean { background:var(--green); color:#fff }
-  .finding { border-left:3px solid var(--red); padding:8px 14px; background:var(--ground); border-radius:0 10px 10px 0; margin-top:8px; white-space:pre-wrap; max-height:30vh; overflow:hidden }
+  .finding { border-left:3px solid var(--red); padding:10px 16px; background:var(--ground); border-radius:0 10px 10px 0; margin-top:8px; white-space:pre-wrap; max-height:34vh; overflow:hidden }
   .finding.fixed { border-left-color:var(--green) }
-  .commit { font-family:var(--mono); font-size:.74rem; padding:3px 0 } .commit b { color:var(--wine); font-weight:500 }
-  table.trail { border-collapse:collapse; width:100%; font-size:.78rem }
+  .commit { font-family:var(--mono); font-size:.8rem; padding:3px 0 } .commit b { color:var(--wine); font-weight:500 }
+  table.trail { border-collapse:collapse; width:100%; font-size:clamp(.82rem,.95vw,.95rem) }
   table.trail th,table.trail td { text-align:left; padding:5px 8px; border-bottom:1px solid var(--mist); vertical-align:top }
   table.trail th { font-family:var(--mono); font-size:.64rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); font-weight:500 }
   table.trail td.n { font-family:var(--mono); text-align:right; white-space:nowrap }
-  .legend { display:grid; gap:6px; font-size:.82rem; color:var(--text); margin-top:10px }
-  .legend div { display:grid; grid-template-columns:90px 1fr; gap:10px }
+  .legend { display:grid; gap:8px; font-size:clamp(.84rem,.98vw,.98rem); color:var(--text); margin-top:12px }
+  .legend div { display:grid; grid-template-columns:100px 1fr; gap:10px }
   .legend code { font-size:.78em }
   .waves { display:grid; gap:8px; margin-top:10px }
   .wave { display:grid; grid-template-columns:64px 1fr; gap:10px; align-items:center }
@@ -518,7 +519,7 @@
 </section>
 
 </div>
-<div class="ornament" aria-hidden="true"><div class="mesh"></div><div class="grain"></div><div class="rule" style="top:11%"></div><div class="rule" style="bottom:9%"></div><div class="glyph" id="glyph" style="right:-4vw;bottom:-8vw">R</div></div>
+<div class="ornament" aria-hidden="true"><div class="mesh"></div><div class="grain"></div><div class="rule" style="top:62px"></div><div class="rule" style="bottom:56px"></div><div class="glyph" id="glyph" style="right:-4vw;bottom:-8vw">R</div></div>
 <div class="hud"><i id="hud"></i></div>
 <div class="brandbar"><span class="mark">rumble</span><span class="sep"></span><span>framework · requisit</span><span class="counter" id="counter"></span></div>
 <div class="dots" id="dots"></div>
@@ -609,7 +610,7 @@
     document.getElementById('dsR').innerHTML = `<b>2026-09-21</b> ${esc((D.researchTitles[0] || '').replace(/^\d{4}-\d\d-\d\d · /, '').replace(/`/g, ''))}<br><span class="rej">${D.researchSources || 0} sources across ${D.research || 0} entries</span>`;
     document.getElementById('vocabWaves').innerHTML = (D.waves || []).map((w, i) => `<div class="wave"><i>wave ${i + 1}</i>${w.map(x => `<em>${esc(x)}</em>`).join('')}</div>`).join('');
     // rumble
-    const pick = [...D.decisions.slice(0, 6).map(r => ({ ...r, k: 'd' })), ...D.gaps.slice(0, 2).map(r => ({ ...r, k: 'g' })), ...D.measurements.slice(6, 7).map(r => ({ ...r, k: 'm' }))];
+    const pick = [...D.decisions.slice(0, 4).map(r => ({ ...r, k: 'd' })), ...D.gaps.slice(0, 1).map(r => ({ ...r, k: 'g' })), ...D.measurements.slice(5, 6).map(r => ({ ...r, k: 'm' }))];
     const first = s => { const m = (s || '').match(/^[\s\S]*?[.?!](?=\s|$)/); return m ? m[0] : (s || '').slice(0, 140); };
     document.getElementById('rows').innerHTML = pick.map(r => `<div class="drow"><span class="id ${r.k}">${esc(r.id)}</span><span>${md(first(r.title))}${r.rationale && /Rejected:/.test(r.rationale) ? `<br><span class="r">rejected: ${md(first(r.rationale.split('Rejected:')[1].replace(/^\*\s*/, '')).slice(0, 170))}${first(r.rationale.split('Rejected:')[1]).length > 170 ? '…' : ''}</span>` : ''}</span></div>`).join('');
     document.getElementById('rumbleStats').textContent = `${D.decisions.length} D · ${D.gaps.length} G · ${D.measurements.length} M`;
@@ -617,9 +618,11 @@
     // task-out
     const iss = ev('issue')[0];
     if (iss) {
+      const unwrap = s => (s || '').replace(/\n(?![-*]|\s*\[|#)/g, ' ').replace(/\s{2,}/g, ' ');
+      const cut = (s, n) => { s = unwrap(s); if (s.length <= n) return s; const i = s.lastIndexOf('. ', n); return (i > n * .5 ? s.slice(0, i + 1) : s.slice(0, n)) + ' …'; };
       const f = (n, b) => `<div class="field"><b>${n}</b><span>${md(b)}</span></div>`;
       document.getElementById('issueCard').innerHTML = `<div class="bar"><b>#${T.issue} ${esc(T.title)}</b><a href="${esc(iss.url)}" target="_blank" rel="noopener">open on GitHub ↗</a></div><div class="inner">`
-        + f('Goal', section(iss.body, 'Goal')) + f('Context', section(iss.body, 'Context').slice(0, 420) + '…') + f('Acceptance', section(iss.body, 'Acceptance criteria').split('\n').slice(0, 3).join('\n') + '\n…') + f('Tests', section(iss.body, 'Test expectations').slice(0, 160) + '…') + f('Out of scope', section(iss.body, 'Out of scope').slice(0, 160) + '…') + f('Routing', section(iss.body, 'Suggested routing')) + '</div>';
+        + f('Goal', unwrap(section(iss.body, 'Goal'))) + f('Context', cut(section(iss.body, 'Context'), 380)) + `<div class="field"><b>Acceptance</b><span>${section(iss.body, 'Acceptance criteria').split(/\n(?=- )/).slice(0, 2).map(l => '☐ ' + md(unwrap(l.replace(/^- \[ \]\s*/, '')))).join('<br>')}<br>…</span></div>` + f('Tests', cut(section(iss.body, 'Test expectations'), 170)) + f('Out of scope', cut(section(iss.body, 'Out of scope'), 170)) + f('Routing', section(iss.body, 'Suggested routing')) + '</div>';
     }
     document.getElementById('waves').innerHTML = (D.waves || []).map((w, i) => `<div class="wave"><span class="w">wave ${i + 1}</span><span>${w.map(x => `<span class="chip">${esc(x)}</span>`).join('')}</span></div>`).join('');
     if (T) {
@@ -637,7 +640,7 @@
       // architect
       const des = ev('design')[0];
       if (des) { const body = des.text.replace(/<!--[\s\S]*?-->/g, ''); const secs = body.split(/\n(?=#{2,4}\s)/).slice(1);
-        document.getElementById('designBox').innerHTML = `<p class="lead">${md(body.split('\n').find(l => l && !/^#/.test(l)) || '')}</p>` + secs.slice(0, 7).map(sc => { const [h, ...rest] = sc.split('\n'); const firstLine = rest.map(l => l.trim()).find(l => l && !/^\|/.test(l) && !/^\*{1,2}[^*]+\*{1,2}:?$/.test(l)) || ''; return `<div class="sec"><b>${md(h.replace(/^#+\s*/, ''))}</b><span>${md(firstLine.replace(/^[-*]\s*/, '').slice(0, 150))}${firstLine.length > 150 ? '…' : ''}</span></div>`; }).join('') + `<p class="mono" style="margin-top:8px">${secs.length} sections · ${num(body.length)} characters</p>`; }
+        document.getElementById('designBox').innerHTML = `<p class="lead">${md(body.split('\n').find(l => l && !/^#/.test(l)) || '')}</p>` + secs.slice(0, 7).map(sc => { const [h, ...rest] = sc.split('\n'); const firstLine = rest.map(l => l.trim()).find(l => l && !/^\||^```/.test(l) && !/^\*{1,2}[^*]+\*{1,2}:?$/.test(l)) || ''; return `<div class="sec"><b>${md(h.replace(/^#+\s*/, ''))}</b><span>${md(firstLine.replace(/^[-*]\s*/, '').slice(0, 150))}${firstLine.length > 150 ? '…' : ''}</span></div>`; }).join('') + `<p class="mono" style="margin-top:8px">${secs.length} sections · ${num(body.length)} characters</p>`; }
       else document.getElementById('designBox').textContent = 'no architect stage on this issue (not size:L)';
       document.getElementById('designMeta').textContent = des ? `${des.who} · ${when(des.at)} · the outline` : '';
       if (des) document.getElementById('designLink').href = des.url;
@@ -650,7 +653,8 @@
         document.getElementById('commits').innerHTML = commits.slice(0, 4).map(c => `<div class="commit"><b>${esc(c.sha)}</b> ${esc(c.text)}</div>`).join('');
         const body = pr.body || '';
         const evidence = section(body, 'Evidence for the reviewers') || section(body, 'Verification') || body;
-        document.getElementById('prBox').innerHTML = mdBlock(section(body, 'Summary').slice(0, 420) + '\n\n## Evidence for the reviewers\n' + evidence, 1500);
+        const sum = section(body, 'Summary').split(/\n(?=- )/)[0];
+        document.getElementById('prBox').innerHTML = mdBlock(sum + '\n\n## Evidence for the reviewers\n' + evidence, 1500);
         document.getElementById('implEx').textContent = `Requisit #${T.issue}: ${commits.length} commit(s) before review, draft PR #${pr.number}; the PR body lists the suites run, the mutations tried and the deviations from the design.`;
       }
       // review
@@ -966,6 +970,8 @@
     (running.hero = running.hero || []).push(tl);
   }
 
+  const markOverflow = () => document.querySelectorAll('.artefact .inner, .finding').forEach(el => el.classList.toggle('over', el.scrollHeight > el.clientHeight + 4));
+  addEventListener('resize', markOverflow);
   // ---------- behaviours ----------
   const running = {};
   const enter = {
@@ -998,6 +1004,7 @@
   const dots = [...dotsBox.children];
   function updateHud() { hud.style.width = ((cur + 1) / slides.length * 100) + '%'; counter.textContent = pad(cur + 1) + ' / ' + pad(slides.length); dots.forEach((d, i) => d.classList.toggle('active', i === cur)); location.replace('#' + (cur + 1)); }
   // the zoom: from a chapter (or the hub) through the schema into the next chapter's node
+  setTimeout(markOverflow, 50);
   function show(i, dir) {
     if (busy || i === cur || i < 0 || i >= slides.length) return;
     const from = slides[cur], to = slides[i];
