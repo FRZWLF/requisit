@@ -20,6 +20,7 @@ import {
 import { internalErrorBody, JSON_CONTENT_TYPE, problemBody, PROBLEM_CONTENT_TYPE, statusFor } from './problem.ts';
 import { matchRoute } from './router.ts';
 import { OUTBOX_ROUTES } from './routes/outbox.ts';
+import { handleWeb } from '../web/routes.ts';
 import { REQUISITION_ROUTES } from './routes/requisitions.ts';
 import { RULE_ROUTES } from './routes/rules.ts';
 import type { HandlerOutcome, HttpRequest, HttpResponse, RequestContext, Route } from './types.ts';
@@ -196,6 +197,14 @@ function handle(app: App, request: HttpRequest, requestId: string): Handled {
       orgId: null,
     };
   }
+  // The pages (D-013) are served by the same router, on the same origin, from the same
+  // process — `handleWeb` answers everything outside `/api/`, and returns `null` for
+  // `/api/`, so the JSON surface below is exactly what it was.
+  const web = handleWeb(app, request, url, requestId);
+  if (web !== null) {
+    return { response: web.response, pattern: web.pattern, orgId: web.orgId };
+  }
+
   const matched = matchRoute(app.routes, request.method, url.pathname);
   if (matched === null) {
     // One mapping for an unknown path, an unknown id shape and a wrong method alike: the

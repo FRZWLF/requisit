@@ -166,3 +166,26 @@ acknowledges through it; delivery is at-least-once and the merchant deduplicates
 Acknowledged rows are stamped, never deleted, so an older cursor replays the same rows with
 the same payloads. The two routes need the `merchant` role — a buyer or approver token is
 `not_authorised`, and a merchant token of one organisation sees nothing of another (D-004).
+
+### The pages
+
+The same process serves a small server-rendered UI on the same origin (D-012, D-013): plain
+HTML from template functions, one hand-written stylesheet, no framework, no bundler, no build
+step, and ~50 lines of vanilla JavaScript. **Every read path works with JavaScript switched
+off**; the script only asks the server for a draft's running total and matching rule, and keeps
+a double-click from becoming a second POST.
+
+| Page | Purpose |
+|---|---|
+| `GET /sign-in` | the personal token, typed once into a `POST` field |
+| `GET /` | redirects by role: a buyer to their requisitions, anybody else to the queue |
+| `GET /requisitions?state=` | the buyer's own requisitions, filterable by state |
+| `GET /requisitions/new`, `GET /requisitions/:id/edit` | the draft editor: catalogue picker, quantity, cost centre, note, and the server's total and matching rule |
+| `GET /requisitions/:id` | detail, the audit history verbatim, and the actions this caller may actually take |
+| `GET /approvals` | the approver queue, oldest wait first, with amount and matched rule per row |
+
+Forms `POST` to page routes that call the very same use cases as the JSON API — authority, the
+state machine, rule matching and the audit line are decided in one place, never twice. Each form
+carries the `Idempotency-Key` the server rendered into it, so a double-click is one state change
+(D-010). The session is the token in an `HttpOnly`, `SameSite=Strict` cookie (D-025); it reaches
+no URL, no log and no page source.
