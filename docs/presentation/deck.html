@@ -62,35 +62,37 @@
   .deck { z-index:1 }
   kbd { font-family:var(--mono); border:1px solid var(--hair); border-bottom-width:2px; border-radius:5px; padding:0 5px; background:#fff }
 
-  /* title: headline over the day graph */
-  .slide.hero { display:block; padding-top:max(72px, calc(var(--pad) * .8)) }
-  .hero-top { max-width:min(820px, 60vw) }
+  /* title: headline left, the story on the right */
+  .slide.hero { display:grid; grid-template-columns:minmax(0,1fr) clamp(360px,44vw,660px); column-gap:clamp(20px,3vw,48px); align-items:center; align-content:center; padding-top:max(72px, calc(var(--pad) * .8)) }
   .hero-top h1 { font-size:clamp(2.4rem,5vw,4.6rem); line-height:.96; font-variation-settings:"opsz" 144,"SOFT" 60 }
   .hero-top h1 em { font-style:italic; color:var(--wine); font-variation-settings:"opsz" 144,"SOFT" 100 }
   .hero-top h1 .line { display:block; overflow:hidden } .hero-top h1 .line > span { display:block }
   .hero-top .lede { margin-top:14px; max-width:58ch; font-size:clamp(.9rem,1.1vw,1.1rem) }
   .meta { display:flex; gap:24px; flex-wrap:wrap; margin-top:clamp(10px,1.8vh,20px); font-family:var(--mono); font-size:.7rem; color:var(--muted) }
   .meta b { display:block; color:var(--ink); font-family:var(--display); font-size:clamp(1.3rem,2vw,1.8rem); font-weight:500; line-height:1.1; font-variant-numeric:tabular-nums }
-  .scene { position:absolute; left:0; right:0; bottom:0; height:40vh; padding:0 var(--pad) 30px }
-  .scene svg { width:100%; height:100%; display:block; overflow:visible }
-  .scene .a-ring { fill:#fff; stroke:var(--teal); stroke-width:2 } .scene .a-star { fill:var(--teal) }
-  .scene #sRumble .a-ring, .scene #sOrch .a-ring { stroke:var(--wine) } .scene #sRumble .a-star, .scene #sOrch .a-star { fill:var(--wine) }
-  .scene .p-skin { fill:#fff; stroke:var(--ink); stroke-width:2 } .scene .p-eye { fill:var(--ink) } .scene .p-mouth { fill:none; stroke:var(--ink); stroke-width:1.8; stroke-linecap:round }
-  .scene .s-lbl { font-family:var(--mono); font-size:11px; fill:var(--muted) } .scene .s-lbl.strong { fill:var(--ink); font-size:12px }
-  .scene .s-cmd { font-family:var(--mono); font-size:12px; fill:var(--wine); font-weight:600 }
-  .scene .s-bubble rect { fill:#fff; stroke:var(--hair); stroke-width:1.2 } .scene .s-bubble.ai rect { fill:var(--teal-soft); stroke:none }
-  .scene .s-bubble text { font-family:var(--body); font-size:12.5px; fill:var(--text) } .scene .s-bubble.ai text { fill:var(--teal-deep) }
-  .scene .s-board { fill:var(--ground-2); stroke:var(--hair); stroke-width:1.2 }
-  .scene .s-issue rect:first-child { fill:#fff; stroke:var(--hair); stroke-width:1 } .scene .s-issue text { font-family:var(--mono); font-size:11px; fill:var(--ink) }
-  .scene .s-issue .tag { fill:var(--teal-soft) } .scene .s-issue .tag.hi { fill:var(--wine-soft) }
-  .scene .s-wire { fill:none; stroke:var(--hair); stroke-width:1.5 }
-  .scene .s-pr { fill:#fff; stroke:var(--wine); stroke-width:1.5 } .scene .s-pr-t { font-family:var(--mono); font-size:10px; fill:var(--wine) }
-  .scene .s-main { stroke:var(--ink); stroke-width:3; stroke-linecap:round; opacity:.6 } .scene .s-pulse { fill:var(--teal); opacity:0 }
-  .scene .s-app { fill:#fff; stroke:var(--hair); stroke-width:1.2; filter:drop-shadow(0 14px 24px rgba(74,18,32,.14)) } .scene .s-appbar { fill:var(--wine) }
-  .scene .s-app-t { font-family:var(--display); font-size:15px; fill:var(--ink) } .scene .s-app-s { font-family:var(--mono); font-size:10.5px; fill:var(--teal-deep) }
-  .scene .s-gift { fill:var(--teal) } .scene .s-check { fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round }
-  .scene .s-return { fill:none; stroke:var(--teal); stroke-width:1.5; stroke-dasharray:4 6; opacity:.5 }
-  .scene #sBubbles, .scene #sTaskout, .scene #sBoard, .scene #sPipeline, .scene #sOrch, .scene #sSwarm, .scene #sFeature, .scene #sGift, .scene #sReturn { opacity:0 }
+  .scene { height:min(78vh, 720px) }
+  .scene svg { width:100%; height:100%; display:block; overflow:hidden }
+  .scene .shadow { fill:var(--ink); opacity:.07 }
+  .scene .b-skin { fill:#fff; stroke:var(--teal); stroke-width:2 } .scene .b-line { stroke:var(--teal); stroke-width:2 } .scene .b-light { fill:var(--teal) }
+  .scene .b-eye { fill:#fff; stroke:var(--teal); stroke-width:1.5 } .scene .b-pupil { fill:var(--teal-deep) } .scene .b-mouth { fill:var(--teal) }
+  .scene .hand { fill:none; stroke:var(--teal); stroke-width:2 }
+  .scene .wine .b-skin, .scene .wine .b-eye { stroke:var(--wine) } .scene .wine .b-line { stroke:var(--wine) } .scene .wine .b-light, .scene .wine .b-mouth { fill:var(--wine) } .scene .wine .b-pupil { fill:var(--wine-deep) } .scene .wine .hand, .scene #pencil .hand { stroke:var(--wine) }
+  .scene .h-skin { fill:#fff; stroke:var(--ink); stroke-width:2 } .scene .h-hair { fill:var(--ink) } .scene .h-eye { fill:var(--ink) } .scene .h-mouth { fill:none; stroke:var(--ink); stroke-width:1.8; stroke-linecap:round }
+  .scene .human .hand { stroke:var(--ink) } .scene .thumb path { fill:var(--teal) }
+  .scene .s-lbl { font-family:var(--mono); font-size:11px; fill:var(--muted) }
+  .scene .pp { fill:#fff; stroke:var(--hair); stroke-width:1.2; filter:drop-shadow(0 4px 8px rgba(31,26,28,.14)) } .scene .p-lines path { fill:none; stroke:var(--ink); stroke-width:1.6; stroke-linecap:round } .scene .p-front text { font-family:var(--mono); font-size:9px; font-weight:600; fill:var(--wine) }
+  .scene .pen-body { fill:var(--gold) } .scene .pen-tip { fill:var(--ink) } .scene .pen-end { fill:var(--wine) }
+  .scene .s-bubble rect, .scene .s-bubble .tail { fill:#fff; stroke:var(--hair); stroke-width:1.2 } .scene .s-bubble text { font-family:var(--body); font-size:12.5px; fill:var(--text) }
+  .scene .s-bubble.ai rect, .scene .s-bubble.ai .tail { fill:var(--wine-soft); stroke:none } .scene .s-bubble.ai text { fill:var(--wine-deep) }
+  .scene .sk rect { fill:var(--teal-soft); stroke:none } .scene .sk text { font-family:var(--mono); font-size:9.5px; fill:var(--teal-deep) } .scene .sk path { fill:none; stroke:var(--muted); stroke-width:1.2; stroke-linecap:round } .scene .sk .strike { text-decoration:line-through; fill:var(--red); font-size:10.5px }
+  .scene .gear .ring { fill:#fff; stroke:var(--teal); stroke-width:2 } .scene .gear .tooth { fill:var(--teal) } .scene .gear .core { fill:var(--teal) }
+  .scene .hm-handle { fill:var(--gold) } .scene .hm-head { fill:var(--ink) }
+  .scene .lp-ring { fill:rgba(225,237,236,.5); stroke:var(--ink); stroke-width:2 } .scene .lp-handle { stroke:var(--ink); stroke-width:3.5; stroke-linecap:round }
+  .scene .hood { fill:var(--ink); opacity:.92 } .scene .rain-col { font-family:var(--mono); font-size:8px; fill:var(--teal); opacity:.55; writing-mode:vertical-rl; text-orientation:upright; letter-spacing:1px }
+  .scene .done circle { fill:var(--green) } .scene .done path { fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round }
+  .scene .mon-bezel, .scene .mon-stand { fill:var(--ink) } .scene .mon-screen { fill:#fff } .scene .lg-mark { fill:var(--wine) } .scene .lg-text { font-family:var(--display); font-size:9.5px; font-weight:600; fill:var(--ink); letter-spacing:.01em }
+  .scene .bd-ring { fill:var(--gold) } .scene .bd-star { fill:#fff } .scene .bd-ribbon { fill:var(--wine) }
+  @media (max-aspect-ratio: 5/4) { .slide.hero { grid-template-columns:1fr } .scene { height:44vh } }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -193,49 +195,7 @@
     <p class="lede">A design talk becomes decisions. Decisions become issues. Agents build, review and merge — and the docs remember. Every example in this talk is one real project, built this way from an empty repository in one afternoon.</p>
     <div class="meta"><div><b id="mD">—</b>decisions</div><div><b id="mPR">—</b>pull requests</div><div><b id="mFind">—</b>review findings</div><div><b id="mTok">—</b>tokens</div></div>
   </div>
-  <div class="scene"><svg id="story" viewBox="0 0 1400 420" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-    <defs>
-      <clipPath id="boardClip"><rect x="520" y="70" width="180" height="290"/></clipPath>
-    </defs>
-    <!-- 1 · the person and the rumble agent -->
-    <g id="sUser" transform="translate(110 250)"><g class="av"><circle class="p-skin" r="12" cy="-10"/><path class="p-skin" d="M-22 26 C -22 6, 22 6, 22 26 Z"/><circle class="p-eye" cx="-4.5" cy="-11" r="1.4"/><circle class="p-eye" cx="4.5" cy="-11" r="1.4"/></g><path id="sMouth" class="p-mouth" d="M-5 -5 Q 0 -5 5 -5"/><text class="s-lbl" y="46" text-anchor="middle">you</text></g>
-    <g id="sRumble" transform="translate(330 250)"><g class="av"><circle r="18" class="a-ring"/><path class="a-star" transform="scale(1.15)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="46" text-anchor="middle">rumble</text></g>
-    <g id="sBubbles">
-      <g class="s-bubble" transform="translate(150 118)"><rect width="150" height="34" rx="12"/><text x="14" y="22">honest approvals, no floats</text></g>
-      <g class="s-bubble ai" transform="translate(212 160)"><rect width="140" height="34" rx="12"/><text x="14" y="22">minor units, rule visible?</text></g>
-      <g class="s-bubble" transform="translate(150 202)"><rect width="88" height="34" rx="12"/><text x="14" y="22">yes. go.</text></g>
-    </g>
-    <text id="sTaskout" class="s-cmd" x="330" y="330" text-anchor="middle">/task-out</text>
-    <!-- 2 · the board -->
-    <g id="sBoard"><rect class="s-board" x="520" y="70" width="180" height="290" rx="14"/><text class="s-lbl" x="610" y="94" text-anchor="middle">issues</text>
-      <g clip-path="url(#boardClip)">
-        <g class="s-issue" transform="translate(536 110)"><rect width="148" height="44" rx="8"/><text x="10" y="18">#2 scaffold · audit</text><rect class="tag hi" x="10" y="26" width="36" height="10" rx="5"/><rect class="tag" x="50" y="26" width="26" height="10" rx="5"/></g>
-        <g class="s-issue" transform="translate(536 166)"><rect width="148" height="44" rx="8"/><text x="10" y="18">#3 rules · lifecycle</text><rect class="tag hi" x="10" y="26" width="36" height="10" rx="5"/><rect class="tag" x="50" y="26" width="26" height="10" rx="5"/></g>
-        <g class="s-issue" transform="translate(536 222)"><rect width="148" height="44" rx="8"/><text x="10" y="18">#4 web pages</text><rect class="tag" x="10" y="26" width="36" height="10" rx="5"/></g>
-        <g class="s-issue" transform="translate(536 278)"><rect width="148" height="44" rx="8"/><text x="10" y="18">#5 outbox · merchant</text><rect class="tag hi" x="10" y="26" width="36" height="10" rx="5"/></g>
-      </g>
-    </g>
-    <text id="sPipeline" class="s-cmd" x="790" y="330" text-anchor="middle">/pipeline</text>
-    <!-- 3 · orchestrator and the swarm -->
-    <g id="sOrch" transform="translate(790 250)"><g class="av"><circle r="18" class="a-ring"/><path class="a-star" transform="scale(1.15)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="46" text-anchor="middle">orchestrator</text></g>
-    <g id="sSwarm">
-      <g class="s-agent" data-x="950" data-y="90"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="32" text-anchor="middle">triage</text></g>
-      <g class="s-agent" data-x="950" data-y="160"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="32" text-anchor="middle">architect</text></g>
-      <g class="s-agent" data-x="950" data-y="230"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="32" text-anchor="middle">implement</text></g>
-      <g class="s-agent" data-x="1010" data-y="265"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g></g>
-      <g class="s-agent" data-x="1010" data-y="195"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g></g>
-      <g class="s-agent" data-x="950" data-y="320"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="32" text-anchor="middle">review</text></g>
-      <g class="s-agent" data-x="1010" data-y="345"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g></g>
-    </g>
-    <g id="sWires"></g>
-    <!-- 4 · PRs into main -->
-    <g id="sPRs"></g>
-    <g id="sMain"><line class="s-main" x1="1130" y1="70" x2="1130" y2="360"/><text class="s-lbl strong" x="1130" y="386" text-anchor="middle">main</text><circle id="sMergePulse" class="s-pulse" cx="1130" cy="250" r="0"/></g>
-    <!-- 5 · the feature -->
-    <g id="sFeature" transform="translate(1260 250)"><rect class="s-app" x="-56" y="-40" width="112" height="80" rx="12"/><rect class="s-appbar" x="-56" y="-40" width="112" height="16" rx="12"/><text class="s-app-t" x="0" y="2" text-anchor="middle">Requisit</text><text class="s-app-s" x="0" y="22" text-anchor="middle">approved ✓</text></g>
-    <g id="sGift" transform="translate(1260 250)"><circle class="s-gift" r="14"/><path class="s-check" d="M-6 0 L-2 4 L7 -5"/></g>
-    <path id="sReturn" class="s-return" d="M1260 200 C 1100 20, 300 20, 130 195"/>
-  </svg></div>
+  <div class="scene"><svg id="story" viewBox="16 24 528 496" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg></div>
 </section>
 
 <!-- 2 · why -->
@@ -640,54 +600,185 @@
     document.querySelectorAll('section.chapter').forEach(s => { const k = s.dataset.node; s.querySelector('.minimap').innerHTML = NODES.map((n, i) => `<span class="${n.key === k ? 'now' : chapterKeys.indexOf(k) > i ? 'done' : ''}">${n.label}</span>${i < NODES.length - 1 ? '<i></i>' : ''}`).join(''); });
   }
 
-  // ---------- the title scene: you ↔ rumble → issues → orchestrator → swarm → PRs → main → the feature → you ----------
+  // ---------- the title scene: three acts on the right ----------
+  // 1 · you explain, the rumble robot writes; it asks back; the paper is shown, you give a thumbs up
+  // 2 · the robot hands the paper to the orchestrator, which spawns triage · implementer · quality · security; they work; done
+  // 3 · the orchestrator hands back a monitor with the product; the rumble robot brings it to you; you approve it
   function storyScene(s) {
     const svg = s.querySelector('#story'); if (!svg || svg.dataset.built) return; svg.dataset.built = '1';
-    const $ = id => svg.querySelector('#' + id), $$ = sel => [...svg.querySelectorAll(sel)];
-    const agents = $$('#sSwarm .s-agent'); agents.forEach(a => a.setAttribute('transform', 'translate(790 250) scale(.2)'));
-    // wires orchestrator → agents, PR cards agents → main
-    const wires = $('sWires'), prs = $('sPRs');
-    wires.innerHTML = agents.map(a => `<path class="s-wire" d="M812 250 C 860 250, 880 ${a.dataset.y}, ${+a.dataset.x - 18} ${a.dataset.y}"/>`).join('');
-    const prSrc = [agents[2], agents[3], agents[4], agents[5]];
-    prs.innerHTML = prSrc.map((a, i) => `<g class="s-prcard" transform="translate(${+a.dataset.x + 24} ${a.dataset.y})" opacity="0"><rect class="s-pr" x="0" y="-11" width="54" height="22" rx="6"/><text class="s-pr-t" x="27" y="4" text-anchor="middle">PR #${7 + i}</text></g>`).join('');
-    const wirePaths = $$('#sWires path'); wirePaths.forEach(w => { const l = w.getTotalLength(); w.style.strokeDasharray = l; w.style.strokeDashoffset = l; });
-    const ret = $('sReturn'); const rl = ret.getTotalLength(); ret.style.strokeDasharray = '4 6';
-    const mouth = $('sMouth');
-    if (!G || reduce) { ['sBubbles', 'sTaskout', 'sBoard', 'sPipeline', 'sOrch', 'sSwarm', 'sFeature', 'sGift'].forEach(id => $(id).style.opacity = 1); agents.forEach(a => a.setAttribute('transform', `translate(${a.dataset.x} ${a.dataset.y})`)); wirePaths.forEach(w => w.style.strokeDashoffset = 0); $$('.s-prcard').forEach(p => p.setAttribute('opacity', 1)); $('sGift').setAttribute('transform', 'translate(150 200)'); mouth.setAttribute('d', 'M-6 -6 Q 0 0 6 -6'); return; }
-    const tl = G.timeline({ repeat: -1, repeatDelay: 2.5, delay: .8 });
-    const bubbles = $$('#sBubbles .s-bubble');
-    tl.set(['#sBubbles', '#sTaskout', '#sBoard', '#sPipeline', '#sOrch', '#sSwarm', '#sFeature', '#sGift', '#sReturn'].map(id => svg.querySelector(id)), { opacity: 0 })
-      .set(bubbles, { opacity: 0, y: 8 }).set($$('.s-issue'), { opacity: 0, x: 40 }).set($$('.s-prcard'), { opacity: 0, x: 0 }).set(mouth, { attr: { d: 'M-5 -5 Q 0 -5 5 -5' } })
-      .set(wirePaths, { strokeDashoffset: (i, w) => w.getTotalLength() })
-      // 1 · the conversation
-      .set('#sBubbles', { opacity: 1 }).to(bubbles, { opacity: 1, y: 0, duration: .45, ease: 'power3.out', stagger: .7 })
-      .to('#sTaskout', { opacity: 1, duration: .4 }, '+=.4')
-      // 2 · issues land on the board
-      .to('#sBoard', { opacity: 1, duration: .4 }, '-=.1').to($$('.s-issue'), { opacity: 1, x: 0, duration: .45, ease: 'power3.out', stagger: .28 })
-      .to(bubbles, { opacity: 0, duration: .4 }, '<')
-      // 3 · the pipeline: orchestrator, then the swarm fans out
-      .to('#sPipeline', { opacity: 1, duration: .4 }, '+=.3').to('#sOrch', { opacity: 1, duration: .4 }, '<')
-      .set('#sSwarm', { opacity: 1 })
-      .to(agents, { attr: { transform: (i, a) => `translate(${a.dataset.x} ${a.dataset.y}) scale(1)` }, duration: .7, ease: 'back.out(1.6)', stagger: .12 })
-      .to(wirePaths, { strokeDashoffset: 0, duration: .6, stagger: .08, ease: 'power2.out' }, '<.1')
-      // agents work: a small breathing pulse
-      .to($$('#sSwarm .a-ring'), { attr: { r: 20 }, duration: .35, yoyo: true, repeat: 3, stagger: { each: .06, yoyo: true }, ease: 'sine.inOut' })
-      // 4 · PRs travel into main, each with a merge pulse
-      .to($$('.s-prcard'), { opacity: 1, duration: .3, stagger: .35 })
-      .to($$('.s-prcard'), { x: (i, p) => 1130 - 54 - (+p.getAttribute('transform').match(/translate\(([\d.]+)/)[1]), duration: .8, ease: 'power2.inOut', stagger: .35 }, '<.2')
-      .fromTo('#sMergePulse', { attr: { r: 0 }, opacity: 1 }, { attr: { r: 30 }, opacity: 0, duration: 1, ease: 'power2.out', repeat: 3, repeatDelay: .05 }, '<.6')
-      .to($$('.s-prcard'), { opacity: 0, duration: .3, stagger: .35 }, '<.3')
-      // 5 · the feature exists, and comes back to you
-      .to('#sFeature', { opacity: 1, duration: .5, ease: 'power3.out' }, '+=.2')
-      .to('#sReturn', { opacity: 1, duration: .3 })
-      .set('#sGift', { opacity: 1 })
-      .to({ t: 0 }, { t: 1, duration: 1.6, ease: 'power2.inOut', onUpdate() { const p = ret.getPointAtLength(this.targets()[0].t * rl); $('sGift').setAttribute('transform', `translate(${p.x} ${p.y})`); } })
-      .to(mouth, { attr: { d: 'M-6 -6 Q 0 1 6 -6' }, duration: .4, ease: 'power2.out' }, '-=.2')
-      .to('#sGift', { opacity: 0, duration: .3 }, '<.4')
-      .to({}, { duration: 1.2 })
-      .to(['#sBoard', '#sPipeline', '#sOrch', '#sSwarm', '#sFeature', '#sReturn', '#sTaskout'].map(id => svg.querySelector(id)), { opacity: 0, duration: .6 })
-      .to(mouth, { attr: { d: 'M-5 -5 Q 0 -5 5 -5' }, duration: .4 }, '<')
-      .set(agents, { attr: { transform: 'translate(790 250) scale(.2)' } }).set($('sGift'), { attr: { transform: 'translate(1260 250)' } });
+    const botInner = (p = {}) => `<ellipse class="shadow" cy="54" rx="34" ry="5"/><g class="fig">
+      <line class="b-line" x1="0" y1="-92" x2="0" y2="-80"/><circle class="b-light" cy="-96" r="4"/>
+      <rect class="b-skin" x="-24" y="-80" width="48" height="40" rx="12"/>
+      <circle class="b-eye" cx="-9" cy="-62" r="5"/><circle class="b-eye" cx="9" cy="-62" r="5"/><circle class="b-pupil" cx="-7" cy="-62" r="2.2"/><circle class="b-pupil" cx="11" cy="-62" r="2.2"/>
+      <rect class="b-mouth" x="-7" y="-50" width="14" height="3" rx="1.5"/>${p.hood || ''}
+      <rect class="b-skin" x="-6" y="-40" width="12" height="8"/><rect class="b-skin" x="-30" y="-32" width="60" height="70" rx="16"/><circle class="b-light chest" cy="-6" r="5"/>
+      <rect class="b-skin" x="-22" y="38" width="16" height="8" rx="4"/><rect class="b-skin" x="6" y="38" width="16" height="8" rx="4"/>
+      <circle class="hand hl" cx="-44" cy="0" r="8"/><circle class="hand hr" cx="44" cy="0" r="8"${p.noHr ? ' opacity="0"' : ''}/>${p.tool || ''}</g>`;
+    const HOOD = `<path class="prop hood" fill-rule="evenodd" opacity="0" d="M-32 -46 Q-32 -106 0 -106 Q32 -106 32 -46 Z M-18 -50 Q-18 -80 0 -80 Q18 -80 18 -50 Z"/>`;
+    const gear = (x, y, r, n) => `<g class="gear" data-base="translate(${x} ${y})" transform="translate(${x} ${y}) rotate(0)">${Array.from({ length: n }, (_, k) => `<rect class="tooth" x="-1.6" y="${-r - 3}" width="3.2" height="4.5" rx=".8" transform="rotate(${k * 360 / n})"/>`).join('')}<circle class="ring" r="${r}"/><circle class="core" r="${r * .32}"/></g>`;
+    const GEARS = `<g class="prop gears" opacity="0">${gear(35, -88, 6, 8)}${gear(49, -73, 7.5, 9)}${gear(34, -60, 5.5, 7)}</g>`;
+    const HAMMER = `<g class="prop hammer" opacity="0" transform="translate(44 0)"><g class="swing" transform="rotate(-70)"><rect class="hm-handle" x="-2" y="-36" width="4" height="34" rx="1.5"/><rect class="hm-head" x="-11" y="-44" width="22" height="11" rx="2"/><circle class="hand" r="8"/></g></g>`;
+    const LUPE = `<g class="prop lupe" opacity="0" transform="translate(44 0)"><g class="glass" transform="translate(0 0)"><circle class="lp-ring" cx="4" cy="-20" r="10"/><line class="lp-handle" x1="0" y1="-11" x2="-6" y2="-2"/><circle class="hand" cx="-8" cy="1" r="8"/></g></g>`;
+    const DONE = `<g class="done" transform="translate(0 -86) scale(0)"><circle r="9"/><path d="M-4 0 L-1 3 L5 -4"/></g>`;
+    const RAIN = `<g class="rain" clip-path="url(#rainClip)">${[-32, -16, 0, 16, 32].map(x => `<text class="rain-col" x="${x}" y="-160">1 0 1 1 0 1 0 0 1 1 0 1 0 1 1 0</text>`).join('')}</g>`;
+    const sub = (id, label, x, y, p) => `<g class="sub" id="${id}" data-x="${x}" data-y="${y}" transform="translate(${x} ${y}) scale(0)">${p.rain ? RAIN : ''}<g class="sc" transform="scale(.68)">${botInner(p)}</g>${DONE}<text class="s-lbl" y="52" text-anchor="middle">${label}</text></g>`;
+    svg.innerHTML = `
+      <defs><clipPath id="rainClip"><rect x="-44" y="-96" width="88" height="130"/></clipPath></defs>
+      <g id="sOrch" class="bot" transform="translate(-160 262)" opacity="0">${botInner()}<text class="s-lbl" y="72" text-anchor="middle">orchestrator</text></g>
+      ${sub('sub1', 'triage', 95, 452, { tool: GEARS })}
+      ${sub('sub2', 'implementer', 220, 452, { tool: HAMMER, noHr: true })}
+      ${sub('sub3', 'quality review', 345, 452, { tool: LUPE, noHr: true })}
+      ${sub('sub4', 'security review', 470, 452, { hood: HOOD, rain: true })}
+      <g id="sRumble" class="bot wine" transform="translate(170 262)">${botInner()}<text class="s-lbl" y="72" text-anchor="middle">rumble</text></g>
+      <g id="sHuman" class="human" transform="translate(470 262)"><ellipse class="shadow" cy="54" rx="34" ry="5"/><g class="fig" transform="scale(-1 1)">
+        <path class="h-skin" d="M-34 46 C-34 -6 -20 -40 0 -40 C20 -40 34 -6 34 46 Z"/>
+        <circle class="h-skin" cy="-62" r="17"/>
+        <path class="h-hair" d="M-17 -64 Q-12 -84 4 -80 Q15 -78 17 -64 Q8 -71 -3 -69 Q-12 -69 -17 -64 Z"/>
+        <circle class="h-eye" cx="-4" cy="-63" r="1.7"/><circle class="h-eye" cx="8" cy="-63" r="1.7"/>
+        <path id="hMouth" class="h-mouth" d="M-6 -55 Q1 -47 8 -55"/>
+        <circle class="hand hl" cx="-44" cy="-4" r="8"/><circle class="hand hr" cx="44" cy="-4" r="8"/>
+        <g class="thumb" opacity="0" transform="translate(44 -30)"><path d="M-8 1 h-5 v11 h5 z M-7 2 l5 -11 q2 -3 4.5 -1 l-1 7 h7 q3 0 2.5 3 l-2 9 q-1 2 -3.5 2 h-12.5 z"/></g>
+      </g><text class="s-lbl" y="72" text-anchor="middle">you</text></g>
+      <g id="paper" transform="translate(186 262)" opacity="0"><g class="pg"><rect class="pp" x="-22" y="-28" width="44" height="56" rx="3"/>
+        <g class="p-lines"><path d="M-14 -14 H 12"/><path d="M-14 -4 H 14"/><path d="M-14 6 H 8"/><path d="M-14 16 H 13"/></g>
+        <g class="p-front" opacity="0"><text x="0" y="-9" text-anchor="middle">issues</text><text x="0" y="6" text-anchor="middle">#2 · #3</text><text x="0" y="20" text-anchor="middle">#4 · #5</text></g></g></g>
+      <g id="pencil" transform="translate(210 286)" opacity="0"><g class="pen-rot" transform="rotate(45)"><rect class="pen-end" x="-2.5" y="-34" width="5" height="4" rx="1"/><rect class="pen-body" x="-2.5" y="-30" width="5" height="24" rx="1"/><path class="pen-tip" d="M-2.5 -6 L0 0 L2.5 -6 Z"/><circle class="hand" cy="-20" r="8"/></g></g>
+      <g id="hb1" class="s-bubble"><path class="tail" d="M430 150 L444 178 L456 150 Z"/><rect x="270" y="38" width="220" height="116" rx="14"/>
+        <g class="bl"><text x="288" y="64">purchase requests,</text></g>
+        <g class="bl"><text x="288" y="84">approval by a visible rule</text></g>
+        <g class="bl sk"><rect x="288" y="100" width="38" height="20" rx="5"/><text x="307" y="114" text-anchor="middle">draft</text><path d="M330 110 h12 m-3 -3 l3 3 l-3 3"/><rect x="346" y="100" width="58" height="20" rx="5"/><text x="375" y="114" text-anchor="middle">submitted</text><path d="M408 110 h12 m-3 -3 l3 3 l-3 3"/><rect x="424" y="100" width="54" height="20" rx="5"/><text x="451" y="114" text-anchor="middle">approved</text></g></g>
+      <g id="hb2" class="s-bubble"><path class="tail" d="M430 150 L444 178 L456 150 Z"/><rect x="270" y="38" width="220" height="116" rx="14"/>
+        <g class="bl"><text x="288" y="64">the buyer always sees the rule,</text></g>
+        <g class="bl"><text x="288" y="84">money in minor units — no floats</text></g>
+        <g class="bl sk"><text class="strike" x="288" y="114">€ 12.50</text><path d="M338 110 h12 m-3 -3 l3 3 l-3 3"/><rect x="356" y="100" width="42" height="20" rx="5"/><text x="377" y="114" text-anchor="middle">1250</text><text x="404" y="114">minor units</text></g></g>
+      <g id="rb1" class="s-bubble ai"><path class="tail" d="M150 102 L162 160 L176 102 Z"/><rect x="32" y="62" width="215" height="44" rx="14"/><g class="bl"><text x="48" y="89">who approves — who sees why?</text></g></g>
+      <g id="rb2" class="s-bubble ai"><path class="tail" d="M150 102 L162 160 L176 102 Z"/><rect x="32" y="62" width="215" height="44" rx="14"/><g class="bl"><text x="48" y="89">got it — I write the issues.</text></g></g>
+      <g id="monitor" transform="translate(426 254)" opacity="0"><g class="mon" transform="scale(1)"><rect class="mon-stand" x="-12" y="24" width="24" height="6" rx="2"/><rect class="mon-stand" x="-3" y="18" width="6" height="8"/><rect class="mon-bezel" x="-36" y="-26" width="72" height="48" rx="6"/><rect class="mon-screen" x="-32" y="-22" width="64" height="40" rx="3"/>
+        <g class="logo"><rect class="lg-mark" x="-27" y="-6" width="9" height="9" rx="2"/><text class="lg-text" x="-15" y="2">intershop</text></g>
+        <g id="badge" transform="translate(30 -24) scale(0)"><path class="bd-ribbon" d="M-5 6 L-8 21 L0 16 L8 21 L5 6 Z"/><circle class="bd-ring" r="10"/><path class="bd-star" d="M0 -5.5 L1.7 -1.8 L5.7 -1.6 L2.6 1 L3.5 5 L0 2.8 L-3.5 5 L-2.6 1 L-5.7 -1.6 L-1.7 -1.8 Z"/></g></g></g>`;
+    if (!G) return;
+    const $ = sel => svg.querySelector(sel), $$ = sel => [...svg.querySelectorAll(sel)];
+    const q = (r, sel) => r.querySelector(sel), qq = (r, sel) => [...r.querySelectorAll(sel)];
+    const R = $('#sRumble'), H = $('#sHuman'), O = $('#sOrch'), P = $('#paper'), PEN = $('#pencil'), MON = $('#monitor');
+    const rFig = q(R, '.fig'), rPup = qq(R, '.b-pupil'), rHL = q(R, '.hl'), rHR = q(R, '.hr'), rChest = q(R, '.chest');
+    const oPup = qq(O, '.b-pupil'), oHR = q(O, '.hr'), oChest = q(O, '.chest');
+    const hMouth = $('#hMouth'), hHL = q(H, '.hl'), hHR = q(H, '.hr'), thumb = q(H, '.thumb');
+    const subs = $$('.sub'), pLines = $$('#paper .p-lines path'), pg = q(P, '.pg'), pFront = q(P, '.p-front'), pLinesG = q(P, '.p-lines'), penRot = q(PEN, '.pen-rot');
+    const mon = q(MON, '.mon'), badge = $('#badge'), bubbles = $$('.s-bubble'), bl = $$('.s-bubble .bl');
+    const gears = $$('.gear'), swing = $('.swing'), glass = $('.glass'), rain = $$('.rain-col'), props = $$('.prop'), dones = $$('.done');
+    pLines.forEach(p => { const l = p.getTotalLength(); p.style.strokeDasharray = l; });
+    const MOUTH = { shut: 'M-5 -54 Q1 -53 7 -54', open: 'M-5 -54 Q1 -45 7 -54', smile: 'M-6 -55 Q1 -47 8 -55' };
+    const PUP = { rest: [[-7, -62], [11, -62]], down: [[-8, -59.5], [10, -59.5]], you: [[-5, -62], [13, -62]] };
+    const reset = () => {
+      G.set(R, { x: 170, y: 262, opacity: 1 }); G.set(rFig, { attr: { transform: 'scale(1 1)' } });
+      G.set(rHL, { attr: { cx: -10, cy: 30 } }); G.set(rHR, { attr: { cx: 44, cy: 0 }, opacity: 0 });
+      G.set(rPup[0], { attr: { cx: -7, cy: -62 } }); G.set(rPup[1], { attr: { cx: 11, cy: -62 } }); G.set(rChest, { attr: { r: 5 } });
+      G.set(H, { x: 470, y: 262, opacity: 1 }); G.set(hMouth, { attr: { d: MOUTH.shut } }); G.set([hHL, hHR], { attr: { cy: -4 } }); G.set(thumb, { opacity: 0 });
+      G.set(O, { x: -160, y: 262, opacity: 0 }); G.set(oHR, { attr: { cx: 44, cy: 0 } }); G.set(oPup[0], { attr: { cx: -7, cy: -62 } }); G.set(oPup[1], { attr: { cx: 11, cy: -62 } }); G.set(oChest, { attr: { r: 5 } });
+      G.set(subs, { attr: { transform: 'translate(170 262) scale(0)' }, opacity: 1 }); G.set(props, { opacity: 0 }); G.set(dones, { attr: { transform: 'translate(0 -86) scale(0)' } });
+      G.set(gears, { attr: { transform: (i, el) => el.dataset.base + ' rotate(0)' } }); G.set(swing, { attr: { transform: 'rotate(-70)' } }); G.set(glass, { attr: { transform: 'translate(0 0)' } }); G.set(rain, { attr: { y: -160 } });
+      G.set(P, { x: 186, y: 262, scale: 1, opacity: 1, transformOrigin: '50% 50%' }); G.set(pg, { attr: { transform: 'scale(1 1)' } }); G.set(pFront, { opacity: 0 }); G.set(pLinesG, { opacity: 1 }); G.set(pLines, { strokeDashoffset: (i, p) => p.getTotalLength() });
+      G.set(PEN, { x: 210, y: 286, opacity: 1 }); G.set(penRot, { attr: { transform: 'rotate(45)' } });
+      G.set(MON, { x: 214, y: 254, opacity: 0 }); G.set(mon, { attr: { transform: 'scale(0)' } }); G.set(badge, { attr: { transform: 'translate(30 -24) scale(0)' } });
+      G.set(bubbles, { opacity: 0 }); G.set(bl, { opacity: 0, y: 6 });
+    };
+    reset();
+    if (reduce) { // the last frame as a still: the product is with you, approved
+      G.set([P, PEN], { opacity: 0 }); G.set(rHR, { opacity: 1 }); G.set(MON, { x: 426, opacity: 1 }); G.set(mon, { attr: { transform: 'scale(1)' } }); G.set(badge, { attr: { transform: 'translate(30 -24) scale(1)' } });
+      G.set(hMouth, { attr: { d: MOUTH.smile } }); G.set(hHR, { attr: { cy: 4 } }); G.set(hHL, { attr: { cy: -30 } }); return;
+    }
+    const tl = G.timeline({ repeat: -1, repeatDelay: 1.4, delay: .5 });
+    const look = (pups, k, pos) => { tl.to(pups[0], { attr: { cx: PUP[k][0][0], cy: PUP[k][0][1] }, duration: .3 }, pos); tl.to(pups[1], { attr: { cx: PUP[k][1][0], cy: PUP[k][1][1] }, duration: .3 }, '<'); };
+    // ---- act 1: two exchanges, then the paper is shown
+    const exchange = (n, lines) => {
+      const hb = $('#hb' + n), rb = $('#rb' + n);
+      tl.to(hb, { opacity: 1, duration: .35 })
+        .to(qq(hb, '.bl'), { opacity: 1, y: 0, duration: .45, ease: 'power3.out', stagger: .55 }, '<.1')
+        .to(hMouth, { attr: { d: MOUTH.open }, duration: .14, yoyo: true, repeat: 13, ease: 'sine.inOut' }, '<')
+        .to(hHR, { attr: { cy: -30 }, duration: .45, yoyo: true, repeat: 3, ease: 'sine.inOut' }, '<')
+        .to(hHL, { attr: { cy: -22 }, duration: .55, yoyo: true, repeat: 3, ease: 'sine.inOut' }, '<.2');
+      look(rPup, 'down', '<.3');
+      lines.forEach((li, k) => {
+        const y = 248 + li * 10;
+        tl.set(PEN, { x: 172, y }, k ? '>' : '<.25')
+          .to(PEN, { x: 198, duration: .9, ease: 'none' })
+          .to(PEN, { y: y - 2, duration: .15, yoyo: true, repeat: 5, ease: 'sine.inOut' }, '<')
+          .to(pLines[li], { strokeDashoffset: 0, duration: .9, ease: 'none' }, '<');
+      });
+      tl.to(hb, { opacity: 0, duration: .35 }, '+=.25');
+      look(rPup, 'you', '<');
+      tl.to(PEN, { x: 238, y: 250, duration: .5, ease: 'power2.inOut' }, '<').to(penRot, { attr: { transform: 'rotate(-100)' }, duration: .5, ease: 'power2.inOut' }, '<')
+        .to(rb, { opacity: 1, duration: .35 }, '<.2').to(qq(rb, '.bl'), { opacity: 1, y: 0, duration: .4 }, '<.1')
+        .to({}, { duration: 1.4 })
+        .to(rb, { opacity: 0, duration: .3 })
+        .to(PEN, { x: 210, y: 286, duration: .4 }, '<').to(penRot, { attr: { transform: 'rotate(45)' }, duration: .4 }, '<');
+    };
+    exchange(1, [0, 1]);
+    tl.to({}, { duration: .2 });
+    exchange(2, [2, 3]);
+    tl.to(PEN, { opacity: 0, duration: .3 }, '+=.2').to(rHR, { opacity: 1, duration: .3 }, '<')
+      .to(P, { x: 214, y: 248, duration: .5, ease: 'power2.inOut' }, '<')
+      .to(rHL, { attr: { cx: 18, cy: 16 }, duration: .5 }, '<').to(rHR, { attr: { cx: 52, cy: 16 }, duration: .5 }, '<')
+      .to(pg, { attr: { transform: 'scale(0 1)' }, duration: .3, ease: 'power2.in' })
+      .set(pLinesG, { opacity: 0 }).set(pFront, { opacity: 1 })
+      .to(pg, { attr: { transform: 'scale(1 1)' }, duration: .3, ease: 'power2.out' })
+      .to(hHR, { attr: { cy: -34 }, duration: .35, ease: 'back.out(2)' }, '+=.25').to(thumb, { opacity: 1, duration: .25 }, '<.15')
+      .to(hMouth, { attr: { d: MOUTH.smile }, duration: .3 }, '<')
+      .to({}, { duration: 1.1 });
+    // ---- act 2: the hand-over and the swarm
+    tl.addLabel('act2')
+      .to(H, { x: 760, opacity: 0, duration: .6, ease: 'power2.in' }, 'act2')
+      .to(R, { x: 470, duration: 1, ease: 'power2.inOut' }, 'act2+=.2')
+      .to(P, { x: 446, y: 256, duration: 1, ease: 'power2.inOut' }, '<')
+      .to(rFig, { attr: { transform: 'scale(-1 1)' }, duration: .3, ease: 'power1.inOut' }, 'act2+=.55')
+      .to(rHL, { attr: { cx: -44, cy: 0 }, duration: .3 }, '<').to(rHR, { attr: { cx: 28, cy: 12 }, duration: .3 }, '<')
+      .to(O, { x: 170, opacity: 1, duration: .9, ease: 'power3.out' }, 'act2+=.7')
+      .to(P, { x: 218, y: 250, duration: .9, ease: 'power2.inOut' }, '+=.2')
+      .to(rHR, { attr: { cx: 44, cy: 0 }, duration: .5 }, '<.3')
+      .to(oHR, { attr: { cx: 36, cy: 12 }, duration: .5 }, '<');
+    look(oPup, 'down', '>');
+    tl.to({}, { duration: .5 })
+      .to(P, { x: 170, y: 256, scale: .2, opacity: 0, duration: .5, ease: 'power2.in' })
+      .to(oChest, { attr: { r: 9 }, duration: .25, yoyo: true, repeat: 3 }, '<.3')
+      .to(oHR, { attr: { cx: 44, cy: 0 }, duration: .4 }, '<');
+    look(oPup, 'rest', '<');
+    tl.to(subs, { attr: { transform: (i, el) => `translate(${el.dataset.x} ${el.dataset.y}) scale(1)` }, duration: .75, ease: 'back.out(1.4)', stagger: .35 }, '+=.1')
+      .addLabel('work', '>-.2')
+      .to(props, { opacity: 1, duration: .35, stagger: .1 }, 'work')
+      .to(gears, { attr: { transform: (i, el) => `${el.dataset.base} rotate(${i === 1 ? -360 : 360})` }, duration: 3.2, ease: 'none' }, 'work')
+      .fromTo(swing, { attr: { transform: 'rotate(-70)' } }, { attr: { transform: 'rotate(15)' }, duration: .27, yoyo: true, repeat: 11, ease: 'power1.in' }, 'work')
+      .to(glass, { attr: { transform: 'translate(18 -6)' }, duration: .8, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 'work')
+      .fromTo(rain, { attr: { y: -160 } }, { attr: { y: 30 }, duration: 1.1, repeat: 2, ease: 'none', stagger: { each: .22 } }, 'work')
+      .to(dones, { attr: { transform: 'translate(0 -86) scale(1)' }, duration: .45, ease: 'back.out(2.5)', stagger: .18 }, 'work+=3.1')
+      .to(props, { opacity: .35, duration: .4 }, '<')
+      .set(MON, { x: 214, y: 254, opacity: 1 }, '>-.1')
+      .to(mon, { attr: { transform: 'scale(1)' }, duration: .5, ease: 'back.out(1.7)' })
+      .to(oHR, { attr: { cy: 8 }, duration: .3 }, '<')
+      .to(MON, { x: 426, duration: .9, ease: 'power2.inOut' }, '+=.3')
+      .to(oHR, { attr: { cy: 0 }, duration: .4 }, '<.3').to(rHR, { attr: { cx: 42, cy: 8 }, duration: .4 }, '<');
+    look(rPup, 'down', '<');
+    // ---- act 3: the product comes to you
+    tl.addLabel('act3', '+=.4')
+      .to(O, { x: -160, opacity: 0, duration: .7, ease: 'power2.in' }, 'act3')
+      .to(subs, { attr: { transform: (i, el) => `translate(${el.dataset.x} ${el.dataset.y}) scale(0)` }, opacity: 0, duration: .4, stagger: .07, ease: 'power2.in' }, 'act3')
+      .set(hMouth, { attr: { d: MOUTH.shut } }, 'act3').set(thumb, { opacity: 0 }, 'act3').set([hHL, hHR], { attr: { cy: -4 } }, 'act3')
+      .to(R, { x: 170, duration: 1, ease: 'power2.inOut' }, 'act3+=.3')
+      .to(MON, { x: 214, duration: 1, ease: 'power2.inOut' }, '<')
+      .to(rFig, { attr: { transform: 'scale(1 1)' }, duration: .3 }, 'act3+=.65')
+      .to(H, { x: 470, opacity: 1, duration: .8, ease: 'power3.out' }, 'act3+=.8')
+      .to(MON, { x: 426, duration: .9, ease: 'power2.inOut' }, '+=.2')
+      .to(rHR, { attr: { cx: 44, cy: 0 }, duration: .4 }, '<.3').to(hHR, { attr: { cy: 4 }, duration: .4 }, '<');
+    look(rPup, 'you', '<');
+    tl.to(badge, { attr: { transform: 'translate(30 -24) scale(1)' }, duration: .5, ease: 'back.out(2.5)' }, '+=.3')
+      .to(hMouth, { attr: { d: MOUTH.smile }, duration: .3 }, '<')
+      .to(hHL, { attr: { cy: -30 }, duration: .35, ease: 'back.out(2)' }, '<')
+      .to(rChest, { attr: { r: 8 }, duration: .3, yoyo: true, repeat: 3 }, '<')
+      .to({}, { duration: 2.4 })
+      .to(MON, { opacity: 0, duration: .5 })
+      .to(hMouth, { attr: { d: MOUTH.shut }, duration: .3 }, '<').to([hHL, hHR], { attr: { cy: -4 }, duration: .3 }, '<')
+      .call(() => { reset(); G.set([P, PEN], { opacity: 0 }); G.set(rHR, { opacity: 1 }); })
+      .to([P, PEN], { opacity: 1, duration: .4 }).to(rHR, { opacity: 0, duration: .3 }, '<');
+    const seek = new URLSearchParams(location.search).get('t'); if (seek) tl.pause(+seek); // ?t=12 freezes the story at that second (screenshots)
     (running.hero = running.hero || []).push(tl);
   }
 

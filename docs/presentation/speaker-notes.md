@@ -28,7 +28,7 @@ Fällt der Service aus: die Produktfolie zeigt den Hinweis, alles andere läuft 
 
 > Das ist eine Geschichte in vier Worten: von einer Unterhaltung nach main. Eine Design-Unterhaltung wird zu Entscheidungen, Entscheidungen werden zu Issues, Agenten bauen, prüfen und mergen, und die Docs erinnern sich. Alles, was Sie heute sehen, kommt aus einem einzigen echten Projekt, das heute Morgen ein leeres Repository war.
 
-*(Die Animation rechts erzählt genau das: Chat → Zeile → Commit → main. Einmal durchlaufen lassen, dann weiter.)*
+*(Die Szene rechts erzählt genau das in drei Akten, ca. 40 s pro Durchlauf: Sie erklären, der Rumble-Roboter schreibt mit und fragt zurück, zeigt das Blatt (Issues #2–#5), Daumen hoch. Dann reicht er das Blatt dem Orchestrator, der Triage, Implementer, Quality- und Security-Reviewer spawnt; sie arbeiten, Häkchen. Der Orchestrator gibt einen Monitor mit dem Produkt zurück, der Rumble-Roboter bringt ihn zu Ihnen, Sie nehmen ihn ab. Einmal durchlaufen lassen, dann weiter.)*
 
 ## Folie 2 — Das Problem (45s)
 
