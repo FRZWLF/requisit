@@ -35,7 +35,8 @@ input,select,textarea{font:inherit;padding:.4rem;border:1px solid var(--line);bo
 background:var(--card);color:var(--ink);max-width:100%}
 button{font:inherit;padding:.45rem .9rem;border:1px solid var(--accent);border-radius:3px;
 background:var(--accent);color:#fff;cursor:pointer}
-button.secondary{background:var(--card);color:var(--accent)}
+button.secondary,a.button.secondary{background:var(--card);color:var(--accent)}
+a.button{display:inline-block;font:inherit;padding:.45rem .9rem;border:1px solid var(--accent);border-radius:3px;text-decoration:none}
 button[aria-disabled=true]{opacity:.5;cursor:progress}
 form.inline{display:inline}
 .actions{display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end;margin-top:1rem}

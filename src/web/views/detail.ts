@@ -87,7 +87,7 @@ function actionForm(
   keyFor: (action: Action) => string,
 ): string {
   if (action === 'edit') {
-    return `<a href="/requisitions/${esc(detail.id)}/edit"><button class="secondary" type="button">${esc(actionLabel(action))}</button></a>`;
+    return `<a class="button secondary" href="/requisitions/${esc(detail.id)}/edit">${esc(actionLabel(action))}</a>`;
   }
   const fields = actionFields(keyFor(action), detail.version);
   if (action === 'reject') {
