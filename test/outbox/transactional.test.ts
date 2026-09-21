@@ -5,6 +5,7 @@ import { withTransaction } from '../../src/db/tx.ts';
 import { auditRepo } from '../../src/db/repos/audit.ts';
 import { outboxRepo } from '../../src/db/repos/outbox.ts';
 import { requisitionsRepo } from '../../src/db/repos/requisitions.ts';
+import { acknowledge } from '../../src/app/outbox.ts';
 import { approve, createDraft, submit, type ServiceContext } from '../../src/app/requisitions.ts';
 import type { OrderPayload } from '../../src/domain/order.ts';
 import { ORDER_PAYLOAD_VERSION } from '../../src/domain/order.ts';
@@ -159,6 +160,97 @@ test('a fault after the state change and before the commit leaves no row, no lin
     auditBefore + 1,
   );
   assert.equal(outboxOf(fixture).listAfter(0, 100).length, 1);
+});
+
+/**
+ * The multi-line case, derived by hand: 3 × 129 900 + 2 × 29 900 + 1 × 8 900 = 458 400.
+ * A single-line requisition cannot tell "the sum of the lines" from "the first line", which
+ * is exactly the mutation this test exists to see.
+ */
+test('the payload total is the sum of every line, recomputed at build time', () => {
+  const fixture = setUp();
+  const ctx = contextFor(fixture, fixture.seed.buyer.id);
+  const id = withTransaction(fixture.db, (tx) => {
+    const draft = must(
+      createDraft(ctx, tx, {
+        costCentreId: fixture.seed.costCentre.id,
+        lines: [
+          { description: 'Laptop', quantity: 3, unitPriceMinor: 129_900 },
+          { description: 'Monitor', quantity: 2, unitPriceMinor: 29_900 },
+          { description: 'Keyboard', quantity: 1, unitPriceMinor: 8_900 },
+        ],
+      }),
+    );
+    must(submit(ctx, tx, draft.id, {}));
+    return draft.id;
+  });
+  const owner = contextFor(fixture, fixture.seed.owner.id);
+  withTransaction(fixture.db, (tx) => {
+    must(approve(owner, tx, id, { version: 2 }));
+  });
+
+  const payload = payloadOf(outboxOf(fixture).listAfter(0, 100)[0]?.payloadJson ?? '{}');
+  assert.equal(payload.lines.length, 3, 'the payload dropped a line');
+  assert.deepEqual(
+    payload.lines.map((line) => line.lineTotalMinor),
+    [389_700, 59_800, 8_900],
+  );
+  assert.equal(payload.totalMinor, 458_400);
+  assert.equal(
+    payload.lines.reduce((sum, line) => sum + line.lineTotalMinor, 0),
+    payload.totalMinor,
+  );
+});
+
+/**
+ * The acknowledgement's own guard, which no public path can reach: every outbox row is
+ * written by an approval, and nothing moves a requisition out of `approved` but the
+ * acknowledgement itself. So the case is produced at the repository seam — an order row for a
+ * *draft* — and the invariant is that it throws and rolls back, never that a draft quietly
+ * becomes `ordered` (D-009). Without this the whole `decide` call could be deleted and every
+ * other test would still pass.
+ */
+test('an order row for a requisition that was never approved rolls the acknowledgement back', () => {
+  const fixture = setUp();
+  const ctx = contextFor(fixture, fixture.seed.buyer.id);
+  const draftId = withTransaction(fixture.db, (tx) =>
+    must(
+      createDraft(ctx, tx, {
+        costCentreId: fixture.seed.costCentre.id,
+        lines: [{ description: 'Laptop', quantity: 1, unitPriceMinor: 250_000 }],
+      }),
+    ).id,
+  );
+  const merchant = contextFor(fixture, fixture.seed.merchant.id);
+  const rowId = withTransaction(fixture.db, (tx) =>
+    must(
+      outboxRepo(fixture.db, ctx.scope, TEST_CLOCK).append(tx, {
+        requisitionId: draftId,
+        payloadJson: '{"version":1}',
+      }),
+    ).id,
+  );
+
+  assert.throws(
+    () => withTransaction(fixture.db, (tx) => acknowledge(merchant, tx, { throughId: rowId })),
+    /cannot be ordered|wrong_state/,
+  );
+  assert.equal(must(requisitionsRepo(fixture.db, ctx.scope, TEST_CLOCK).byId(draftId)).state, 'draft');
+  assert.equal(must(outboxOf(fixture).byId(rowId)).deliveredAt, null);
+
+  // presence: with the requisition approved, the very same row acknowledges cleanly.
+  withTransaction(fixture.db, (tx) => {
+    must(submit(ctx, tx, draftId, {}));
+  });
+  const owner = contextFor(fixture, fixture.seed.owner.id);
+  withTransaction(fixture.db, (tx) => {
+    must(approve(owner, tx, draftId, { version: 2 }));
+  });
+  const acked = withTransaction(fixture.db, (tx) =>
+    must(acknowledge(merchant, tx, { throughId: rowId })),
+  );
+  assert.deepEqual(acked.ordered, [draftId]);
+  assert.equal(must(requisitionsRepo(fixture.db, ctx.scope, TEST_CLOCK).byId(draftId)).state, 'ordered');
 });
 
 test('a JPY requisition carries exponent-0 minor units through the payload unchanged', () => {
