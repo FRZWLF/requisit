@@ -344,7 +344,7 @@
     document.getElementById('mFind').textContent = C && C.findings != null ? C.findings : (findings || '—');
     document.getElementById('mTok').textContent = C && C.total ? (Math.round(C.total / 1000) + 'k') : '—';
     // rumble
-    document.getElementById('brief').innerHTML = D.brief ? md(D.brief).replace(/^# .*\n/, '').replace(/\n- /g, '\n• ').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>') : '<p>docs/00-brief.md</p>';
+    document.getElementById('brief').innerHTML = D.brief ? '<h4>docs/00-brief.md</h4>' + md(D.brief.replace(/^# .*\n/, '').replace(/^\*[^\n]*\n(?:[^\n]+\n)*\n/, '').replace(/\n(?![\n-])/g, ' ')).replace(/\n- /g, '\n• ').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>') : '<p>docs/00-brief.md</p>';
     const rows = document.getElementById('rows');
     const pick = [...D.decisions.slice(0, 5).map(r => ({ ...r, k: 'd' })), ...D.gaps.slice(0, 2).map(r => ({ ...r, k: 'g' })), ...D.measurements.slice(0, 1).map(r => ({ ...r, k: 'm' }))];
     rows.innerHTML = pick.map(r => `<div class="drow"><span class="id ${r.k}">${esc(r.id)}</span><span><span class="t">${md(r.title)}</span>${r.rationale ? `<br><span class="r">${md(r.rationale.slice(0, 160))}${r.rationale.length > 160 ? '…' : ''}</span>` : ''}</span></div>`).join('');
