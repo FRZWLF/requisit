@@ -108,6 +108,7 @@ export interface WebFixture extends TestApp {
   readonly ownerToken: string;
   readonly financeToken: string;
   readonly strangerToken: string;
+  readonly merchantToken: string;
 }
 
 export function setUpWeb(
@@ -149,6 +150,7 @@ export function setUpWeb(
     ownerToken: tokenFor(seed.org.id, seed.owner.id, fixture.clock),
     financeToken: tokenFor(seed.org.id, seed.finance.id, fixture.clock),
     strangerToken: tokenFor(seed.org.id, seed.stranger.id, fixture.clock),
+    merchantToken: tokenFor(seed.org.id, seed.merchant.id, fixture.clock),
   };
 }
 

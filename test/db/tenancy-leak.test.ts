@@ -11,6 +11,7 @@ import { rulesRepo } from '../../src/db/repos/rules.ts';
 import { requisitionsRepo } from '../../src/db/repos/requisitions.ts';
 import { auditRepo } from '../../src/db/repos/audit.ts';
 import { idempotencyKeysRepo } from '../../src/db/repos/idempotency.ts';
+import { outboxRepo } from '../../src/db/repos/outbox.ts';
 import { makeDb } from '../support/db.ts';
 import { must, seedOrg, TEST_CLOCK } from '../support/seed.ts';
 
@@ -91,6 +92,21 @@ function seedRequisition(f: Fixture, scope: OrgScope): string {
     );
     return requisition.id;
   });
+}
+
+/** An order row of `scope`; the id carried through the case is its integer cursor. */
+function seedOutboxRow(f: Fixture, scope: OrgScope): string {
+  const requisitionId = seedRequisition(f, scope);
+  return withTransaction(f.db, (tx) =>
+    String(
+      must(
+        outboxRepo(f.db, scope, TEST_CLOCK).append(tx, {
+          requisitionId,
+          payloadJson: '{"version":1,"totalMinor":129900,"currency":"EUR"}',
+        }),
+      ).id,
+    ),
+  );
 }
 
 const CASES: readonly LeakCase[] = [
@@ -312,6 +328,21 @@ const CASES: readonly LeakCase[] = [
       [idempotencyKeysRepo(f.db, f.a, TEST_CLOCK).find('POST /api/v1/requisitions', key)].filter(
         (row) => row !== undefined,
       ),
+  },
+  {
+    // The order feed carries every approved amount and line description an organisation ever
+    // produced, and its cursor is an *integer* — the one enumerable key in the schema
+    // (D-017). `org_id` is bound first or it is a cross-tenant read (D-004, D-011).
+    name: 'outbox.listAfter',
+    writeAsA: (f) => seedOutboxRow(f, f.a),
+    readAsB: (f) => outboxRepo(f.db, f.b, TEST_CLOCK).listAfter(0, 100),
+    readAsA: (f) => outboxRepo(f.db, f.a, TEST_CLOCK).listAfter(0, 100),
+  },
+  {
+    name: 'outbox.byId',
+    writeAsA: (f) => seedOutboxRow(f, f.a),
+    readAsB: (f, id) => outboxRepo(f.db, f.b, TEST_CLOCK).byId(Number(id)),
+    readAsA: (f, id) => outboxRepo(f.db, f.a, TEST_CLOCK).byId(Number(id)),
   },
   {
     name: 'requisitions.list by buyer',
@@ -661,6 +692,53 @@ test('cross-org write: transition cannot move a requisition of another organisat
     requisitionsRepo(fixture.db, fixture.a, TEST_CLOCK).transition(tx, input),
   );
   assert.equal(moved.state, 'approved');
+});
+
+/**
+ * The write half of the order feed: organisation B must not be able to stamp organisation
+ * A's row — that stamp is what moves a requisition to `ordered` (D-009, D-011).
+ */
+test('cross-org write: markDelivered cannot stamp an outbox row of another organisation', () => {
+  const fixture = setUp();
+  const idOfA = Number(seedOutboxRow(fixture, fixture.a));
+  withTransaction(fixture.db, (tx) => {
+    assert.equal(
+      outboxRepo(fixture.db, fixture.b, TEST_CLOCK).markDelivered(tx, idOfA, null),
+      false,
+    );
+  });
+  assert.equal(must(outboxRepo(fixture.db, fixture.a, TEST_CLOCK).byId(idOfA)).deliveredAt, null);
+  // presence: A's own repository stamps the very same row.
+  withTransaction(fixture.db, (tx) => {
+    assert.equal(
+      outboxRepo(fixture.db, fixture.a, TEST_CLOCK).markDelivered(tx, idOfA, null),
+      true,
+    );
+  });
+  assert.notEqual(must(outboxRepo(fixture.db, fixture.a, TEST_CLOCK).byId(idOfA)).deliveredAt, null);
+  assert.equal(outboxRepo(fixture.db, fixture.b, TEST_CLOCK).cursor(), 0, "B counted A's cursor");
+});
+
+test('cross-org write: append refuses a requisition of another organisation', () => {
+  const fixture = setUp();
+  const requisitionOfA = seedRequisition(fixture, fixture.a);
+  withTransaction(fixture.db, (tx) => {
+    const refused = outboxRepo(fixture.db, fixture.b, TEST_CLOCK).append(tx, {
+      requisitionId: requisitionOfA,
+      payloadJson: '{}',
+    });
+    assert.ok(isRefusal(refused));
+    assert.equal(isRefusal(refused) ? refused.code : '', 'not_found');
+  });
+  assert.equal(outboxRepo(fixture.db, fixture.b, TEST_CLOCK).maxId(), 0);
+  // presence: A's own repository accepts the same requisition.
+  withTransaction(fixture.db, (tx) => {
+    const ok = outboxRepo(fixture.db, fixture.a, TEST_CLOCK).append(tx, {
+      requisitionId: requisitionOfA,
+      payloadJson: '{}',
+    });
+    assert.ok(!isRefusal(ok));
+  });
 });
 
 test('cross-org write: an idempotency key of one organisation never satisfies another', () => {

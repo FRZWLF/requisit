@@ -65,6 +65,23 @@ export function instanceFindOrg(db: DatabaseSync, id: string): Result<Org> {
 }
 
 /**
+ * An organisation by name, across the instance — the seed script's idempotency check
+ * (D-018): a second run must find the organisation it created rather than make another.
+ * Names are not unique by constraint, so this returns the *first* match by creation order
+ * and is a development convenience, never a request path. Deliberately **not** re-exported
+ * from `src/index.ts` (#5 security review): the package surface is what a handler can reach,
+ * and the only caller is `scripts/seed.ts`, which imports this module directly.
+ */
+export function instanceFindOrgByNameUnscoped(db: DatabaseSync, name: string): Result<Org> {
+  const row = db
+    .prepare(
+      'SELECT id, name, currency, requisition_seq, created_at FROM orgs WHERE name = ? ORDER BY created_at, id LIMIT 1',
+    )
+    .get(name) as OrgRow | undefined;
+  return row === undefined ? refuse('not_found', 'org') : toOrg(row);
+}
+
+/**
  * The 24 h sweep of the idempotency ledger (D-010). Cross-organisation by design — it is
  * housekeeping, not a request — so it lives here and says so in its name (D-022). Never
  * called inside a request; `main.ts` runs it at startup and daily.

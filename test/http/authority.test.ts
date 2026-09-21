@@ -19,6 +19,7 @@ function setUp() {
     owner: tokenFor(seed.org.id, seed.owner.id),
     finance: tokenFor(seed.org.id, seed.finance.id),
     stranger: tokenFor(seed.org.id, seed.stranger.id),
+    merchant: tokenFor(seed.org.id, seed.merchant.id),
   };
   return { db, app, seed, tokens };
 }
@@ -266,7 +267,14 @@ test('any member of the organisation may read any requisition of the organisatio
   const fixture = setUp();
   const draft = newDraft(fixture, 250_000);
   const id = String(draft.json['id']);
-  for (const token of Object.values(fixture.tokens)) {
+  // The four *human* roles (D-024). The merchant integration is not a member of the
+  // organisation and is pinned separately below (#5 security review).
+  for (const token of [
+    fixture.tokens.buyer,
+    fixture.tokens.owner,
+    fixture.tokens.finance,
+    fixture.tokens.stranger,
+  ]) {
     const answer = get(fixture, id, token);
     assert.equal(answer.status, 200);
     assert.equal(answer.json['id'], id);
@@ -474,4 +482,58 @@ test('GET /rules returns the organisation table by seq', () => {
       [30, 'R3'],
     ],
   );
+});
+
+/**
+ * The merchant narrowing (#5 security review). A `merchant`-only token is a counterparty's
+ * service credential: `docs/08-security.md` gives it "the outbox feed and its
+ * acknowledgement" and this pins that the rest of the surface says so. Before the fix it
+ * read drafts, rejected rows, their line descriptions and amounts, and the whole approval
+ * ladder with its thresholds — the last of which is what an outside party would use to size
+ * orders just under a threshold.
+ */
+test('a merchant-only token reaches the outbox and nothing else', () => {
+  const fixture = setUp();
+  const draft = newDraft(fixture, 250_000);
+  assert.equal(draft.status, 201);
+  const id = String(draft.json['id']);
+
+  for (const path of ['/api/v1/requisitions', `/api/v1/requisitions/${id}`, '/api/v1/rules']) {
+    const answer = call(fixture.app, { method: 'GET', path, token: fixture.tokens.merchant });
+    assert.equal(answer.status, 403, `${path}: ${answer.body}`);
+    assert.equal(answer.json['code'], 'not_authorised');
+    // The wording pins *which* seam answered: this is the route table's `audience`, before
+    // any handler runs. The service seam underneath phrases its own refusal differently and
+    // is pinned in `test/app/lifecycle-authority.test.ts`.
+    assert.equal(answer.json['detail'], 'this token reaches the order outbox and nothing else');
+    // Nothing of the requisition leaks through the refusal document.
+    assert.ok(!answer.body.includes('Laptop'), `${path} names no line`);
+    assert.ok(!answer.body.includes('250000'), `${path} names no amount`);
+  }
+
+  // A mutating member route is refused before its idempotency key is ever spent, so the key
+  // is still free for the person who may use it.
+  const key = nextKey();
+  const attempted = post(fixture, id, 'submit', fixture.tokens.merchant, {}, key);
+  assert.equal(attempted.status, 403);
+  assert.equal(attempted.json['code'], 'not_authorised');
+  const byTheBuyer = post(fixture, id, 'submit', fixture.tokens.buyer, {}, key);
+  assert.equal(byTheBuyer.status, 200, byTheBuyer.body);
+
+  // And the two routes it does reach still answer it.
+  const feed = call(fixture.app, {
+    method: 'GET',
+    path: '/api/v1/outbox?after=0',
+    token: fixture.tokens.merchant,
+  });
+  assert.equal(feed.status, 200, feed.body);
+});
+
+test('a member without the merchant role is refused the outbox, by the same table', () => {
+  const fixture = setUp();
+  for (const token of [fixture.tokens.buyer, fixture.tokens.finance]) {
+    const feed = call(fixture.app, { method: 'GET', path: '/api/v1/outbox?after=0', token });
+    assert.equal(feed.status, 403);
+    assert.equal(feed.json['code'], 'not_authorised');
+  }
 });

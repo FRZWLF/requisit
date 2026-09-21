@@ -123,3 +123,34 @@ test('a member without the buyer role is offered no editor and no new requisitio
   assert.equal(posted.status, 403);
   assert.match(posted.body, /the buyer role is required/);
 });
+
+/**
+ * A merchant has no page (#5 security review). The pages are the members' half of the
+ * product; the order feed is JSON over a service token, and signing a merchant token into a
+ * browser would put the organisation's queue on a screen the counterparty controls.
+ */
+test('a merchant-only token has no page: not the sign-in, not the queue, not a detail', () => {
+  const fixture = setUpWeb();
+  const id = draftThroughPages(fixture, { description: 'Monitor', quantity: '1', unitPrice: '10.00' });
+
+  const signedIn = visit(fixture.app, {
+    method: 'POST',
+    path: '/sign-in',
+    form: { token: fixture.merchantToken },
+  });
+  assert.equal(signedIn.status, 403, 'the sign-in says so rather than handing out a cookie');
+  assert.match(signedIn.body, /<code>not_authorised<\/code>/);
+  assert.equal(signedIn.headers['Set-Cookie'], undefined, 'no cookie is handed out');
+
+  for (const path of ['/', '/requisitions', '/approvals', `/requisitions/${id}`]) {
+    const page = visit(fixture.app, { path, token: fixture.merchantToken });
+    assert.equal(page.status, 403, `${path}: ${String(page.status)}`);
+    assert.match(page.body, /<code>not_authorised<\/code>/);
+    assert.ok(!page.body.includes('Monitor'), `${path} names no requisition`);
+  }
+
+  // presence: a member of the same organisation still gets every one of those pages.
+  for (const path of ['/requisitions', '/approvals', `/requisitions/${id}`]) {
+    assert.equal(visit(fixture.app, { path, token: fixture.buyerToken }).status, 200, path);
+  }
+});

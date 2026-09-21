@@ -25,7 +25,8 @@ Decisions in force: D-001 … D-018. New rows are expected from the PRs (addenda
 D-008 and D-010 in particular) — the drafts reserve nothing beyond that, because a reserved
 number nobody uses is noise.
 
-**Arc 1 exit criterion.** On a clean checkout, offline: `npm ci && npm run seed && npm start`,
+**Arc 1 exit criterion.** On a clean checkout, offline, with a `REQUISIT_TOKEN_SECRET` in
+`.env` or exported: `npm ci && npm run seed && npm start` (which builds before it serves),
 then a buyer drafts a requisition above the self-approval threshold, sees which rule will
 match, submits it; the named approver sees it in their queue and rejects it with a reason the
 buyer reads; the buyer copies it forward, resubmits, the approver approves; the outbox poll

@@ -2,7 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { toIso, type Clock } from '../clock.ts';
 import { log } from '../log.ts';
 import { isRefusal, refuse, type Refusal, type Result } from '../refusal.ts';
-import { hasRole, type OrgScope } from '../db/scope.ts';
+import { hasRole, isMember, type OrgScope } from '../db/scope.ts';
 import type { Tx } from '../db/tx.ts';
 import { auditRepo } from '../db/repos/audit.ts';
 import { costCentresRepo } from '../db/repos/cost-centres.ts';
@@ -12,7 +12,9 @@ import {
   type DraftLineInput,
   type ListFilter,
 } from '../db/repos/requisitions.ts';
+import { outboxRepo } from '../db/repos/outbox.ts';
 import { lineTotal, sumMoney, type Money } from '../domain/money.ts';
+import { orderPayload } from '../domain/order.ts';
 import { matchRule, resolveApprover } from '../domain/rules.ts';
 import {
   allowedActions,
@@ -136,6 +138,7 @@ interface Repos {
   readonly rules: ReturnType<typeof rulesRepo>;
   readonly costCentres: ReturnType<typeof costCentresRepo>;
   readonly audit: ReturnType<typeof auditRepo>;
+  readonly outbox: ReturnType<typeof outboxRepo>;
 }
 
 /**
@@ -157,6 +160,7 @@ function repos(ctx: ServiceContext): Repos {
     rules: rulesRepo(ctx.db, ctx.scope),
     costCentres: costCentresRepo(ctx.db, ctx.scope, ctx.clock),
     audit: auditRepo(ctx.db, ctx.scope, ctx.clock),
+    outbox: outboxRepo(ctx.db, ctx.scope, ctx.clock),
   };
   REPO_CACHE.set(ctx, built);
   return built;
@@ -343,6 +347,21 @@ function reload(ctx: ServiceContext, id: string): Result<RequisitionDetail> {
   return detailOf(ctx, loaded);
 }
 
+/**
+ * The organisation's own data is for the organisation's own people (#5 security review). A
+ * `merchant`-only scope is an outside party's service credential: it reaches D-011's outbox
+ * and nothing else, so the queue, a requisition's detail and the rule table with its
+ * thresholds are refused here as well as at the route table (`src/http/app.ts`'s
+ * `audienceGuard`). Two seams on purpose — this one holds for any caller of the service,
+ * the route one holds for any route that forgets to ask.
+ */
+function memberGuard(ctx: ServiceContext, what: string): Refusal | null {
+  if (isMember(ctx.scope)) {
+    return null;
+  }
+  return refuse('not_authorised', `this token reaches the order outbox, not ${what}`);
+}
+
 function buyerRoleGuard(ctx: ServiceContext, action: Action): Refusal | null {
   if (hasRole(ctx.scope, 'buyer')) {
     return null;
@@ -411,9 +430,24 @@ function writeLine(ctx: ServiceContext, tx: Tx, requisitionId: string, facts: Au
 }
 
 /**
+ * A refused payload or outbox row after the state change is the D-011 failure the outbox
+ * pattern exists to prevent: an approval committed without the order it owes. `prepareLines`
+ * has already proved this line set can be totalled, and the requisition was loaded through
+ * this very scope, so both refusals are broken invariants — they throw, the transaction rolls
+ * back and the caller gets a 500 (compare `mustAudit`, `mustTotal`).
+ */
+function mustOrder<T>(written: Result<T>, what: string): T {
+  if (isRefusal(written)) {
+    throw new Error(`${what} refused: ${written.code} ${written.detail ?? ''}`.trimEnd());
+  }
+  return written;
+}
+
+/**
  * The single function that writes `approved` — the automatic self-rule approval and the
- * manual one both come through here, so split 04 adds the outbox row in exactly one place
- * (D-011). The version guard has already been compared by the caller inside this `Tx`.
+ * manual one both come through here, so the outbox row is written in exactly one place, in
+ * the approving transaction (D-011). The version guard has already been compared by the
+ * caller inside this `Tx`.
  */
 export function recordApproval(
   ctx: ServiceContext,
@@ -443,6 +477,16 @@ export function recordApproval(
     reason: null,
     bySystem: options.bySystem,
   });
+  // The order, in the same transaction as the state change and the audit line (D-011). The
+  // payload is built from `after` — the rows as they stand *approved* — and its total is
+  // recomputed from the lines, never copied from `total` (D-003).
+  mustOrder(
+    repo.outbox.append(tx, {
+      requisitionId: requisition.id,
+      payloadJson: JSON.stringify(mustOrder(orderPayload(after), 'order payload')),
+    }),
+    'order outbox row',
+  );
   return after;
 }
 
@@ -798,6 +842,10 @@ export function copyForward(
 }
 
 export function detail(ctx: ServiceContext, id: string): Result<RequisitionDetail> {
+  const denied = memberGuard(ctx, 'a requisition');
+  if (denied !== null) {
+    return denied;
+  }
   return reload(ctx, id);
 }
 
@@ -806,6 +854,10 @@ export function detail(ctx: ServiceContext, id: string): Result<RequisitionDetai
  * a `finance` rule resolves to a role, not a person (D-024). M-002 measures what that costs.
  */
 export function list(ctx: ServiceContext, input: ListInput): Result<{ items: RequisitionSummary[] }> {
+  const denied = memberGuard(ctx, "the organisation's requisitions");
+  if (denied !== null) {
+    return denied;
+  }
   if (input.awaitingMe === true && input.state !== undefined && input.state !== 'submitted') {
     return { items: [] };
   }
@@ -873,7 +925,11 @@ export function list(ctx: ServiceContext, input: ListInput): Result<{ items: Req
   return { items };
 }
 
-export function ruleTable(ctx: ServiceContext): { items: RuleRowView[] } {
+export function ruleTable(ctx: ServiceContext): Result<{ items: RuleRowView[] }> {
+  const denied = memberGuard(ctx, 'the approval rules');
+  if (denied !== null) {
+    return denied;
+  }
   return {
     items: repos(ctx).rules.listBySeq().map((rule) => ({
       id: rule.id,
