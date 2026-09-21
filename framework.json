@@ -16,7 +16,7 @@
   "risk_high": "authentication, roles and approval authority, anything that crosses an organisation, anything that approves, cancels or changes an amount, agent tools that write, secrets, CI/CD",
   "verify": {
     "board": "npm ci && npm run typecheck && npm test && npm run lint && node ../rumble-framework/scripts/check-anchors.mjs . && node ../rumble-framework/render.mjs . --check",
-    "extra": "the stack is decided in the rumble (the first D-row); until then the board is the two docs checks alone"
+    "extra": "TypeScript on Node 24 LTS, one package, zero runtime dependencies (D-001) — `npm ci` installs devDependencies only; storage is the built-in `node:sqlite` (D-002), so there is no native build step. Tests are `node --test` and run offline against an in-memory database (D-014). Mandatory when the diff touches `src/db/`, `src/domain/rules` or the approve/reject path: the cross-org leak suite and the lifecycle/authority suite must be green (D-004, D-014) — a red result is a 🔴 of the review."
   },
   "docs": {
     "decisions": "docs/02-decisions.md",

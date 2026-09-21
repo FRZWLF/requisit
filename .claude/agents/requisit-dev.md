@@ -22,7 +22,7 @@ GitHub issue is the full spec: `gh issue view N --json title,body,labels,comment
    without live services (no external service in tests; the agent's model calls are recorded fixtures).
 4. Verify — fully green:
    `npm ci && npm run typecheck && npm test && npm run lint && node ../rumble-framework/scripts/check-anchors.mjs . && node ../rumble-framework/render.mjs . --check`
-   Also: the stack is decided in the rumble (the first D-row); until then the board is the two docs checks alone
+   Also: TypeScript on Node 24 LTS, one package, zero runtime dependencies (D-001) — `npm ci` installs devDependencies only; storage is the built-in `node:sqlite` (D-002), so there is no native build step. Tests are `node --test` and run offline against an in-memory database (D-014). Mandatory when the diff touches `src/db/`, `src/domain/rules` or the approve/reject path: the cross-org leak suite and the lifecycle/authority suite must be green (D-004, D-014) — a red result is a 🔴 of the review.
 5. Self-review the diff against the standards (reuse, safety, security, maintainability);
    mutate what you built and watch the test go red — a check that cannot produce the case
    is not a check. Fix what you find.

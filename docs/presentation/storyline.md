@@ -41,7 +41,7 @@ real: this repo was built, live or recorded, by the process the talk describes.
    *Recording R2 (90 s screen capture) — or live if the demo is stable.*
 9. **Cost.** M-rows from the trails: tokens per stage, per issue, what the four levers saved
    (rumble ends at task-out, fresh session per arc, ≤ 3 builders, evidence reuse).
-   *Deck slide "M-080" with Requisit's numbers instead of Lumos'.*
+   *Deck slide "cost" with Requisit's own numbers: M-007 (per issue), M-008 (the rumble), M-009 (split size).*
 10. **Bring it to an existing project.** `framework.json`, markers in the guide file,
     `docs.decisions` may point at `docs/adr/`; render; the first rumble reads the ADRs.
     *Doc: `rumble-framework/docs/onboarding-existing-project.md`.*
