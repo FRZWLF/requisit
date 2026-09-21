@@ -129,7 +129,17 @@ id because they all share one date.
 - **Setup:** the 📋 trail comment of each of the four Arc 1 issues; sum per stage, normalise
   per issue and per 1 000 changed lines. Record the model used per stage alongside, so a later
   model-policy change is comparable.
-- **Result:** pending.
+- **Result (2026-09-21, four issues, one arc, Claude Code Max subscription — tokens as the harness reported per agent, no money figure because the subscription has no per-token price):**
+
+  | issue | size | tokens | of which implement | reviews (first) | fix rounds | re-reviews |
+  |---|---|---|---|---|---|---|
+  | #2 | L | 806 746 | 215 628 | 212 165 | 117 814 | 113 205 |
+  | #3 | L | 1 248 237 | 315 524 | 264 988 | 276 882 | 150 823 |
+  | #4 | M | 399 131 | 213 897 | 115 302 | 0 | 0 |
+  | #5 | M | 936 870 | 310 852 | 216 383 | 185 210 | 151 023 |
+  | **arc** | | **3 390 984** | 1 055 901 (31 %) | 808 838 (24 %) | 579 906 (17 %) | 415 051 (12 %) |
+
+  By stage across the arc: triage (haiku, 8 runs) 249 143 · architect (fable, 2 runs) 282 145 · implement 1 055 901 · first reviews 808 838 · fix rounds 579 906 · re-reviews 415 051. Per issue: 847 746 average; per 1 000 merged lines (15 286 lines): 221 837. The two risk:high issues with a red finding cost 2.3–3.1× the one issue without.
 - **What it changes:** the model policy in `framework.json` (which stages deserve the large
   model) and the size of future splits. It is also slide 9 of the talk, which is a reason to
   get it right rather than round it.
@@ -140,7 +150,7 @@ id because they all share one date.
   issue drafts — cost, and how does that compare to one implementation issue (M-007)?
 - **Setup:** the session's own token accounting for the Arc 1 rumble, recorded once the
   session ends; note the number of web searches and the number of rows produced.
-- **Result:** pending.
+- **Result (2026-09-21):** 111 974 tokens on opus for the whole rumble — 6 web searches + 2 fetches, 18 D-rows, 15 G-rows, 10 M-rows, the vision, the threat model, the roadmap and the four issue drafts. That is 13 % of an average Arc 1 issue (M-007) and 28 % of the cheapest one. The thinking *is* the cheap part; what it bought is visible in M-007's fix rounds, which were all about things the rumble had not decided (refusal-before-write, actor in the idempotency key, merchant scope) rather than about decided rows.
 - **What it changes:** the claim that "thinking is the cheap part" — either it is evidence for
   the framework's first lever (the rumble ends at task-out) or it is a correction to it.
 
@@ -149,7 +159,7 @@ id because they all share one date.
 - **Question:** how close do the four Arc 1 splits come to the ~3 000-line ceiling
   (`limits.split_lines`), and did any split need a second PR?
 - **Setup:** `git diff --shortstat` per merged PR, plus the number of review rounds each took.
-- **Result:** pending.
+- **Result (2026-09-21):** #2 4 164 lines (L, 1 fix round) · #3 5 502 (L, 1 fix round, the fixer ran as two agents) · #4 3 177 (M, no fix round) · #5 2 443 (M, 1 fix round). Both size:L splits overran the ~3 000-line ceiling; both times the orchestrator kept one PR because the design's cut point would have left a first half over the ceiling anyway and cost a second risk:high review round. No split needed a second fix round. Test volume, not feature volume, is what overran: #3 was 2 616 lines of `src/` and 2 820 of `test/`. The ceiling should count `src/` lines, or the next rumble should cut L issues into an API half and a tests-plus-hardening half.
 - **What it changes:** how the next rumble cuts an arc. A split that lands far under the
   ceiling with two fix rounds says the ceiling is not the binding constraint — review surface
   is.

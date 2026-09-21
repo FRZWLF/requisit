@@ -86,3 +86,7 @@ purchase, and the measurements that justified each arc (M-002, M-003, M-004, M-0
 numbers in `16-measurements.md` rather than "pending". Deliberately *not* included: anything
 that would make Requisit a workflow engine or a commerce backend — those remain non-goals
 (`01-vision.md`).
+
+## Status 2026-09-21
+
+Arc 1 — done: #2, #3, #4, #5 merged (PRs #7, #8, #9, #10), umbrella #6 closed; follow-up #11 open. Exit criterion met by `test/flow/quickstart.test.ts` (the README quickstart as real processes) and `test/flow/end-to-end.test.ts`. Arc 2 (the buyer drafting agent) is the next rumble.
