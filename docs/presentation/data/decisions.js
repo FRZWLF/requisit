@@ -432,6 +432,15 @@ window.DECISIONS = {
  "measured": 4,
  "addenda": 14,
  "research": 6,
+ "researchTitles": [
+  "2026-09-21 · Is `node:sqlite` stable enough to be the only database in a small service?",
+  "2026-09-21 · How do real B2B suites model requisition approval?",
+  "2026-09-21 · Money in JavaScript: store integers, or use a money library?",
+  "2026-09-21 · Multi-tenancy on one SQLite database: what actually goes wrong?",
+  "2026-09-21 · Idempotency for submit and approve",
+  "2026-09-21 · Operating SQLite under one Node process"
+ ],
+ "researchSources": 24,
  "anchors": "anchors: 25 D · 23 G · 10 M rows, every reference resolves",
  "waves": [
   [
@@ -446,5 +455,5 @@ window.DECISIONS = {
   ]
  ],
  "brief": "# Requisit — the brief (the rumble's input)\n\n*What a person types or pastes at the start of the rumble session: everything they know\nabout the wish. The rumble turns it into a vision, decisions, gaps, a roadmap and issues.*\n\nOur customers' buyers order on account, and above a certain amount someone has to approve\nbefore the order goes out. Today that lives in e-mail threads and a spreadsheet of \"who may\napprove how much\". I want a small, honest service for that — a purchase-requisition and\napproval flow that a B2B shop can sit in front of.\n\n- A **buyer** in an organisation creates a requisition: line items from a catalogue\n  (SKU, quantity, unit price), a cost centre, a note. They can save a draft and submit it.\n- **Approval rules** per organisation: up to X the buyer's own authority; up to Y the cost\n  centre owner; above that a named finance approver. The rule that matched is visible on the\n  requisition. An approver approves or rejects **with a reason the buyer sees**.\n- On approval the requisition becomes an **order** for the merchant side — for v1 that is a\n  webhook or an outbox the shop polls; the real commerce backend comes later.\n- An **agent for the buyer**: \"order 20 more of the blue ones like last month\" → a draft\n  requisition the buyer reviews and submits. The agent never submits or approves on its own.\n- Later: a merchant-side agent that answers \"why is this stuck?\", reorder suggestions,\n  SSO, multi-currency, a PWA for approvers on the phone.\n\nConstraints and taste:\n\n- One container, one database (SQLite is fine for v1, the design must allow Postgres).\n- Roles for v1 via signed personal tokens; SSO later — the design must not paint us in.\n- Many organisations on one instance from day one; an organisation must never see\n  another's data — that is the one thing that would end the project.\n- Money must be right: no floats, one rounding rule, a currency on every amount.\n- Honest: if it says \"approved by Anna under rule R2 at 14:02\", that is exactly what happened.\n- Team: three developers and a product person; decisions written down where the next person\n  finds them; every PR reviewed; the docs are the memory, not the chat.\n",
- "built": "2026-09-21T18:00:21.980Z"
+ "built": "2026-09-21T18:19:04.994Z"
 };

@@ -4,7 +4,7 @@ Audience: Intershop engineering and product (see README.md here for where every 
 side, the PWA, the new commerce core). Length: 30–40 min + demo + Q&A. Everything shown is
 real: this repo was built, live or recorded, by the process the talk describes.
 
-## Storyline (one slide = one idea)
+## Storyline (the deck follows this order: hub → zoom into each stage → back out)
 
 1. **The problem is not writing code.** Agents write code fast; what breaks is memory
    (decisions lost in chat), scope (the agent builds what it guessed), and trust (who

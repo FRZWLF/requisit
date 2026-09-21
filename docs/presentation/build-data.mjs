@@ -22,11 +22,14 @@ const decisions = rows(dec, 'D'), gapRows = rows(gaps, 'G').map(r => ({ ...r, ti
 const mrows = [...meas.matchAll(/^(?:#{2,4}\s+|\|\s*|\*\*)(M-\d+)\b[^\n]*/gm)].map(m => ({ id: m[1], title: m[0].replace(/^[#|* ]+/, '').replace(/\*\*/g, '').trim().slice(0, 120) }));
 const measured = mrows.filter(r => !/pending|steht aus/i.test(meas.slice(meas.indexOf(r.id), meas.indexOf(r.id) + 600))).length;
 const addenda = decisions.filter(r => /addend/i.test(r.title + ' ' + r.rationale + ' ' + r.status)).length;   // rows a PR extended
-const research = (doc('docs/15-research-log.md').match(/^## /gm) || []).length;
+const researchDoc = doc('docs/15-research-log.md');
+const researchTitles = [...researchDoc.matchAll(/^## (.+)$/gm)].map(m => m[1].trim());
+const research = researchTitles.length;
+const researchSources = (researchDoc.match(/https?:\/\/[^\s)>\]]+/g) || []).length;
 let anchors = ''; try { anchors = sh('node', [join(FW, 'scripts/check-anchors.mjs'), '.']).trim().split('\n').pop(); } catch (e) { anchors = String(e.stdout || '').trim().split('\n').pop(); }
 let waves = [];
 if (umbrella) { const b = JSON.parse(sh('gh', ['issue', 'view', umbrella, '-R', REPO, '--json', 'body'])).body; waves = [...b.matchAll(/wave\s*\d+\s*[:=→-]+\s*\**\s*([^*·\n]+)/gi)].map(m => (m[1].match(/#?\d+/g) || []).map(x => '#' + x.replace('#', ''))); }
-writeFileSync(join(HERE, 'data/decisions.js'), 'window.DECISIONS = ' + JSON.stringify({ decisions, gaps: gapRows, measurements: mrows, measured, addenda, research, anchors, waves, brief: doc('docs/00-brief.md'), built: new Date().toISOString() }, null, 1) + ';\n');
+writeFileSync(join(HERE, 'data/decisions.js'), 'window.DECISIONS = ' + JSON.stringify({ decisions, gaps: gapRows, measurements: mrows, measured, addenda, research, researchTitles, researchSources, anchors, waves, brief: doc('docs/00-brief.md'), built: new Date().toISOString() }, null, 1) + ';\n');
 
 // --- trail.js
 if (issue) writeFileSync(join(HERE, 'data/trail.js'), 'window.TRAIL = ' + sh('node', [join(FW, 'scripts/replay-from-gh.mjs'), REPO, issue]) + ';\n');

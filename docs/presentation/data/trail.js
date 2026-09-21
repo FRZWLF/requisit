@@ -2,7 +2,7 @@ window.TRAIL = {
  "repo": "FRZWLF/requisit",
  "issue": 2,
  "title": "Project scaffold, domain model, storage with audit, and token authentication",
- "exported": "2026-09-21T18:00:25.156Z",
+ "exported": "2026-09-21T18:19:08.469Z",
  "events": [
   {
    "at": "2026-09-21T14:17:33Z",
@@ -170,7 +170,7 @@ window.TRAIL = {
   },
   {
    "at": "2026-09-21T15:09:33Z",
-   "kind": "design",
+   "kind": "trail",
    "who": "FRZWLF",
    "text": "## 📋 Pipeline (in-chat) — issue #2 → PR #7 → `061f856`\n\n| stage | model | outcome | tokens |\n|---|---|---|---|\n| triage | haiku | area:api · size:L · risk:high · pipeline:build | 36617 |\n| architect | fable | 🏛 Design: one PR, contracts, D-019…D-022, test plan with mutations | 111317 |\n| implement | opus | draft PR #7 — 4 164 lines, 86 tests, 18 mutations red | 215628 |\n| quality review | opus | findings (1 red, 5 nits) — `roundHalfUp` could leave the safe-integer range | 119264 |\n| security review | opus | findings (0 red, 4 nits) — malleable signature encoding, unscoped audit references | 92901 |\n| fix round 1 | opus | 1 red + 9 nits fixed, 99 tests, 7 mutations red | 117814 |\n| re-review quality | opus | clean (fix verified against exact arithmetic) | 51594 |\n| re-review security | opus | findings (0 red, 2 nits) — one fixed at the gate, one noted for G-016 | 61611 |\n| gate | orchestrator | nit fixed (`freezeMap` view), board green on branch and on `main` (typecheck · 99/99 · lint · anchors 22 D · 16 G · 10 M · render 19 files) | — |\n| **total** | | | **806746** |\n\n**Reviews found:** an overflow at the money ceiling in the one rounding function (unreachable in v1, reachable from split 02), 4 spellings of one token signature, audit lines that could reference another organisation's requisition, six repository methods the leak suite did not assert, shallow redaction and freezing. All fixed on the branch except a note for G-016 (foreign secret shapes in logs).\n\n**Decisions:** the PR stayed one PR at 4.1k lines (orchestrator's call; the design's cut point would still leave 3.3k and cost a second risk:high review round) — logged for M-009. PR assigned to FRZWLF for the after-the-fact risk:high review.\n\n**Manual steps left for FRZWLF:** a board run on a real Node 24 LTS (this machine runs v25); read the two review threads on PR #7.\n\n**Follow-ups:** `writeAudit` now returns `Result` with no `src/` caller yet — split 02 must handle it; log redaction of foreign secret shapes (G-016 note).\n",
    "url": "https://github.com/FRZWLF/requisit/issues/2#issuecomment-5762762970"
