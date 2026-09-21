@@ -10,6 +10,7 @@ import { catalogueRepo } from '../../src/db/repos/catalogue.ts';
 import { rulesRepo } from '../../src/db/repos/rules.ts';
 import { requisitionsRepo } from '../../src/db/repos/requisitions.ts';
 import { auditRepo } from '../../src/db/repos/audit.ts';
+import { idempotencyKeysRepo } from '../../src/db/repos/idempotency.ts';
 import { makeDb } from '../support/db.ts';
 import { must, seedOrg, TEST_CLOCK } from '../support/seed.ts';
 
@@ -260,6 +261,59 @@ const CASES: readonly LeakCase[] = [
     readAsA: (f, id) => peopleRepo(f.db, f.a, TEST_CLOCK).list().filter((p) => p.id === id),
   },
   {
+    name: 'requisitions.listWithLines',
+    writeAsA: (f) => seedRequisition(f, f.a),
+    readAsB: (f, id) =>
+      requisitionsRepo(f.db, f.b, TEST_CLOCK)
+        .listWithLines()
+        .filter((requisition) => requisition.id === id),
+    readAsA: (f, id) =>
+      requisitionsRepo(f.db, f.a, TEST_CLOCK)
+        .listWithLines()
+        .filter((requisition) => requisition.id === id),
+  },
+  {
+    name: 'rules.byId',
+    writeAsA: (f) =>
+      withTransaction(f.db, (tx) =>
+        must(
+          rulesRepo(f.db, f.a).insert(tx, {
+            seq: 40,
+            maxTotalMinor: null,
+            approverKind: 'finance',
+            ruleCode: 'terminal',
+          }),
+        ).id,
+      ),
+    readAsB: (f, id) => rulesRepo(f.db, f.b).byId(id),
+    readAsA: (f, id) => rulesRepo(f.db, f.a).byId(id),
+  },
+  {
+    // The key ledger is keyed by `(org_id, endpoint, key)`: one tenant must be unable to
+    // collide with — or probe for — another's keys (D-010, D-004). The `id` carried through
+    // the case is the key itself.
+    name: 'idempotencyKeys.find',
+    writeAsA: (f) =>
+      withTransaction(f.db, (tx) => {
+        idempotencyKeysRepo(f.db, f.a, TEST_CLOCK).insert(tx, {
+          endpoint: 'POST /api/v1/requisitions',
+          key: 'shared-key',
+          fingerprint: 'fingerprint',
+          status: 201,
+          body: '{"secret":"of A"}',
+        });
+        return 'shared-key';
+      }),
+    readAsB: (f, key) =>
+      [idempotencyKeysRepo(f.db, f.b, TEST_CLOCK).find('POST /api/v1/requisitions', key)].filter(
+        (row) => row !== undefined,
+      ),
+    readAsA: (f, key) =>
+      [idempotencyKeysRepo(f.db, f.a, TEST_CLOCK).find('POST /api/v1/requisitions', key)].filter(
+        (row) => row !== undefined,
+      ),
+  },
+  {
     name: 'requisitions.list by buyer',
     writeAsA: (f) => {
       const requisitionId = seedRequisition(f, f.a);
@@ -273,7 +327,9 @@ const CASES: readonly LeakCase[] = [
 ];
 
 test('the leak table covers every repository that exists', () => {
-  assert.ok(CASES.length >= 13, `presence: ${CASES.length} read cases`);
+  // 13 rows from issue #2 plus the three read paths split 02 added. Rows are appended,
+  // never removed or weakened.
+  assert.ok(CASES.length >= 16, `presence: ${CASES.length} read cases`);
 });
 
 for (const leakCase of CASES) {
@@ -535,4 +591,101 @@ test('cross-org write: an audit line cannot reference another organisation', () 
     assert.ok(!isRefusal(ok));
   });
   assert.equal(auditRepo(fixture.db, fixture.b, TEST_CLOCK).list().length, 1);
+});
+
+
+/* The write paths split 02 added (D-008…D-010). */
+
+test('cross-org write: replaceDraft cannot reach a draft of another organisation', () => {
+  const fixture = setUp();
+  const requisitionOfA = seedRequisition(fixture, fixture.a);
+  const before = JSON.stringify(must(requisitionsRepo(fixture.db, fixture.a, TEST_CLOCK).byId(requisitionOfA)));
+  withTransaction(fixture.db, (tx) => {
+    const refused = requisitionsRepo(fixture.db, fixture.b, TEST_CLOCK).replaceDraft(tx, requisitionOfA, {
+      lines: [{ description: 'Stolen', quantity: 1, unitPriceMinor: 1 }],
+    });
+    assert.ok(isRefusal(refused));
+    assert.equal(isRefusal(refused) ? refused.code : '', 'not_found');
+  });
+  assert.equal(
+    JSON.stringify(must(requisitionsRepo(fixture.db, fixture.a, TEST_CLOCK).byId(requisitionOfA))),
+    before,
+  );
+  // presence: A's own repository does change it.
+  withTransaction(fixture.db, (tx) => {
+    const ok = requisitionsRepo(fixture.db, fixture.a, TEST_CLOCK).replaceDraft(tx, requisitionOfA, {
+      lines: [{ description: 'Mine', quantity: 1, unitPriceMinor: 1 }],
+    });
+    assert.ok(!isRefusal(ok));
+  });
+});
+
+test('cross-org write: copyForward cannot copy a requisition of another organisation', () => {
+  const fixture = setUp();
+  const requisitionOfA = seedRequisition(fixture, fixture.a);
+  withTransaction(fixture.db, (tx) => {
+    const refused = requisitionsRepo(fixture.db, fixture.b, TEST_CLOCK).copyForward(tx, requisitionOfA);
+    assert.ok(isRefusal(refused));
+    assert.equal(isRefusal(refused) ? refused.code : '', 'not_found');
+  });
+  assert.equal(requisitionsRepo(fixture.db, fixture.b, TEST_CLOCK).list().length, 0);
+  // presence: A copies its own.
+  withTransaction(fixture.db, (tx) => {
+    const ok = requisitionsRepo(fixture.db, fixture.a, TEST_CLOCK).copyForward(tx, requisitionOfA);
+    assert.ok(!isRefusal(ok));
+  });
+});
+
+test('cross-org write: transition cannot move a requisition of another organisation', () => {
+  const fixture = setUp();
+  const requisitionOfA = seedRequisition(fixture, fixture.a);
+  const input = {
+    id: requisitionOfA,
+    expectedVersion: 1,
+    toState: 'approved' as const,
+    ruleId: null,
+    ruleCode: null,
+    submittedAt: null,
+    decidedAt: null,
+  };
+  assert.throws(
+    () =>
+      withTransaction(fixture.db, (tx) =>
+        requisitionsRepo(fixture.db, fixture.b, TEST_CLOCK).transition(tx, input),
+      ),
+    /expected exactly one row/,
+  );
+  assert.equal(must(requisitionsRepo(fixture.db, fixture.a, TEST_CLOCK).byId(requisitionOfA)).state, 'draft');
+  // presence: A's own repository moves the same row with the same input.
+  const moved = withTransaction(fixture.db, (tx) =>
+    requisitionsRepo(fixture.db, fixture.a, TEST_CLOCK).transition(tx, input),
+  );
+  assert.equal(moved.state, 'approved');
+});
+
+test('cross-org write: an idempotency key of one organisation never satisfies another', () => {
+  const fixture = setUp();
+  const row = {
+    endpoint: 'POST /api/v1/requisitions',
+    key: 'same-key',
+    fingerprint: 'same-fingerprint',
+    status: 201,
+    body: '{}',
+  };
+  withTransaction(fixture.db, (tx) => {
+    idempotencyKeysRepo(fixture.db, fixture.a, TEST_CLOCK).insert(tx, row);
+  });
+  assert.equal(
+    idempotencyKeysRepo(fixture.db, fixture.b, TEST_CLOCK).find(row.endpoint, row.key),
+    undefined,
+  );
+  // presence: B may take the very same key for itself, and A still sees its own row.
+  withTransaction(fixture.db, (tx) => {
+    idempotencyKeysRepo(fixture.db, fixture.b, TEST_CLOCK).insert(tx, { ...row, body: '{"b":1}' });
+  });
+  assert.equal(idempotencyKeysRepo(fixture.db, fixture.a, TEST_CLOCK).find(row.endpoint, row.key)?.body, '{}');
+  assert.equal(
+    idempotencyKeysRepo(fixture.db, fixture.b, TEST_CLOCK).find(row.endpoint, row.key)?.body,
+    '{"b":1}',
+  );
 });

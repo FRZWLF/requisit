@@ -63,3 +63,15 @@ export function instanceFindOrg(db: DatabaseSync, id: string): Result<Org> {
     .get(id) as OrgRow | undefined;
   return row === undefined ? refuse('not_found', 'org') : toOrg(row);
 }
+
+/**
+ * The 24 h sweep of the idempotency ledger (D-010). Cross-organisation by design — it is
+ * housekeeping, not a request — so it lives here and says so in its name (D-022). Never
+ * called inside a request; `main.ts` runs it at startup and daily.
+ */
+export function instanceSweepIdempotencyKeys(tx: Tx, olderThan: string): number {
+  const changed = tx.db
+    .prepare('DELETE FROM idempotency_keys WHERE created_at < ?')
+    .run(olderThan);
+  return Number(changed.changes);
+}

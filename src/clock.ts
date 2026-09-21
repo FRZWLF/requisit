@@ -29,3 +29,8 @@ export function fixedClock(iso: string): Clock {
 export function toIso(date: Date): string {
   return date.toISOString();
 }
+
+/** An instant `millis` before now, as the ISO string every timestamp column stores. */
+export function isoBefore(clock: Clock, millis: number): string {
+  return toIso(new Date(clock.now().getTime() - millis));
+}

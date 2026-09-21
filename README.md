@@ -52,3 +52,27 @@ npm run mint-token -- --org <org-uuid> --person <person-uuid> [--ttl 86400]
 
 It exits `2` when that person is not a member of that organisation, and `1` on a bad
 configuration or bad usage.
+
+## The HTTP API
+
+`npm start` binds `127.0.0.1:$PORT` (D-012). Every route is under `/api/v1`, takes
+`Authorization: Bearer <personal token>`, and every mutating route additionally requires an
+`Idempotency-Key` (D-010). Refusals are RFC 9457 problem documents with a stable `code`
+(D-016, D-023); a cross-organisation id is `404 not_found`, never `403`.
+
+| Route | Purpose |
+|---|---|
+| `POST /requisitions` | a new draft for the calling buyer |
+| `PATCH /requisitions/:id` | replace a draft's cost centre and line set |
+| `GET /requisitions?state=&mine=&awaiting_me=` | the organisation's requisitions |
+| `GET /requisitions/:id` | detail: lines, total, the matched-or-stored rule, `actions`, audit history |
+| `POST /requisitions/:id/submit` | match a rule, store it, move to `submitted` — or straight to `approved` under a `self` rule |
+| `POST /requisitions/:id/approve` | decide, under the **stored** rule; `version` required |
+| `POST /requisitions/:id/reject` | decide, with a reason of 1–500 characters; `version` required |
+| `POST /requisitions/:id/cancel` | the buyer withdraws a draft or a submitted requisition |
+| `POST /requisitions/:id/copy` | a rejected requisition forward into a new draft |
+| `GET /rules` | the organisation's approval rule table, read-only in v1 |
+
+Who may do what comes from the matched rule, not from a role name (D-006, D-024): the
+detail's `actions` is computed by the same functions the write routes use, so a UI renders
+buttons instead of re-implementing authority.
