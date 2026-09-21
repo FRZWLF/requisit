@@ -90,6 +90,15 @@ test('a token issued too far in the future is refused; the skew window is not', 
   assert.ok(!isRefusal(verifyToken(KEYS, withinSkew, NOW)));
 });
 
+test('the signature is an HMAC over "v1.<payload>", derived independently of the source', () => {
+  const [version, payloadB64, signatureB64] = mint().split('.') as [string, string, string];
+  const over = (input: string): string =>
+    crypto.createHmac('sha256', SECRET).update(input, 'utf8').digest('base64url');
+  assert.equal(signatureB64, over(`${version}.${payloadB64}`));
+  // The point of the prefix: signing the payload alone would let the version be edited.
+  assert.notEqual(signatureB64, over(payloadB64));
+});
+
 test('the version is inside the signature: a prefix swap does not verify', () => {
   const parts = mint().split('.') as [string, string, string];
   assertUnauthenticated(`v2.${parts[1]}.${parts[2]}`, 'version swap');

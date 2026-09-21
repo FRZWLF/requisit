@@ -4,9 +4,9 @@ Numbers worth keeping: question, setup, result, what the result changes. Newest 
 Unmeasured reads "pending" — never a target dressed as a result. The pipeline's own cost per
 issue is a measurement too (the 📋 trails feed it).
 
-All rows below were opened by the Arc 1 rumble on 2026-09-21 and are **pending**: nothing has
-been built yet, so there is nothing to measure. They are listed by id because they all share
-one date.
+The rows below were opened by the Arc 1 rumble on 2026-09-21. All of them are still
+**pending** except M-001, which took its first data point from issue #2. They are listed by
+id because they all share one date.
 
 ### M-001 · Verify board wall-clock time
 
@@ -16,10 +16,26 @@ one date.
 - **Setup:** MacBook, Node 24 LTS, a fresh `git worktree` of `main` with no `node_modules`
   (cold) and immediately again (warm). Three runs each, report median and the per-step split
   from `time` around each command.
-- **Result:** pending.
+- **Result:** first data point, from issue #2's own board runs — the implementer's machine
+  (MacBook, Apple silicon), Node v25.2.1 (the repository targets Node 24 LTS, D-001), a
+  `git worktree` of `feat/issue-2`, 86 tests. The npm *cache* was warm — only
+  `node_modules/` was deleted before the cold run, which is what an agent's fresh worktree
+  on this machine actually looks like. **One run per column, not the three-run median
+  the setup above asks for; the median is still pending.**
+
+  | Step | Cold (no `node_modules`) | Warm |
+  |---|---|---|
+  | `npm ci` | 0.5 s | 0.5 s |
+  | `npm run typecheck` | 0.6 s | 0.6 s |
+  | `npm test` | 0.4 s | 0.4 s |
+  | `npm run lint` (builds `dist/` first, D-019) | 0.8 s | 0.8 s |
+  | `check-anchors.mjs` | 0.05 s | 0.05 s |
+  | `render.mjs --check` | 0.04 s | 0.04 s |
+  | **total** | **2.4 s** | **2.5 s** |
+
 - **What it changes:** above ~90 s cold, split the board (a fast pre-commit subset vs the full
   board) or cache `node_modules` across worktrees; it also feeds the disk/time budget for
-  parallel builders.
+  parallel builders. At 2.4 s the board is nowhere near that threshold, so nothing changes yet — but the interesting part of the number is *why*: three devDependencies and no transpile step (D-001, D-019) are what keep `npm ci` under a second. The figure to watch is what happens once the npm cache is cold or the suite grows past a few hundred tests.
 
 ### M-002 · Read path p95 (requisition list and detail)
 
