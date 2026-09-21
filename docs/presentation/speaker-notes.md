@@ -30,19 +30,29 @@ Fällt der Service aus: die Produktfolie zeigt den Hinweis, alles andere läuft 
 
 *(Die Szene rechts erzählt genau das in drei Akten, ca. 40 s pro Durchlauf: Sie erklären, der Rumble-Roboter schreibt mit und fragt zurück, zeigt das Blatt (Issues #2–#5), Daumen hoch. Dann reicht er das Blatt dem Orchestrator, der Triage, Implementer, Quality- und Security-Reviewer spawnt; sie arbeiten, Häkchen. Der Orchestrator gibt einen Monitor mit dem Produkt zurück, der Rumble-Roboter bringt ihn zu Ihnen, Sie nehmen ihn ab. Einmal durchlaufen lassen, dann weiter. Die vier Zahlen darunter: 4 Stunden vom leeren Repo zu vier Features auf main, 15,3 Tsd. Zeilen und 474 Tests ohne eine Zeile von Hand, 38 Review-Findings vor dem Merge, 19 Minuten menschliche Unterhaltung. Die Token-Zahl kommt erst auf der Kostenfolie, dort ist sie pro Station eingeordnet.)*
 
-## Folie 2 — Das Problem (45s)
+## Folie 2 — Das Problem (50s)
 
-> Wer mit Coding-Agenten arbeitet, kennt das: der Code kommt schnell. Drei andere Dinge brechen. Erstens Gedächtnis: zwei Wochen später weiß niemand mehr, warum das Geld ein Integer ist, der Chat ist weg, der Code zeigt nur das Was. Zweitens Scope: eine offene Frage im Prompt wird zur stillen Annahme im Diff, und das Review streitet über die Annahme statt über den Code. Drittens Vertrauen: grüne CI ist kein Review. Das Framework gibt jedem der drei einen Ort: eine Zeile in den Docs, ein Issue als Vertrag, einen Trail pro Issue.
+> Wer mit Coding-Agenten arbeitet, kennt das: der Code kommt schnell. Vier andere Dinge brechen. Erstens Gedächtnis: „Warum ist das Geld ein Integer?“ Niemand weiß es mehr, der Chat ist weg, der Code zeigt nur das Was. Zweitens Scope: eine offene Frage im Prompt wird zur stillen Annahme im Diff. Drittens Vertrauen: grüne CI ist kein Review. Viertens Kosten: niemand weiß, was ein Feature gekostet hat oder welche Station das Budget gefressen hat. Das Framework gibt jedem der vier einen Ort: eine Zeile in den Docs, ein Issue als Vertrag, ein Urteil mit einem menschlichen Gate, einen Trail pro Issue.
+
+*(Die vier Karten erscheinen nacheinander; die Pfeilzeile unten ist jeweils die Antwort.)*
 
 ## Folie 3 — Das Beispiel (40s)
 
-> Damit das nicht abstrakt bleibt: Requisit. Ein B2B-Service für Bestellanforderungen. Einkäufer erstellen einen Entwurf, eine Freigaberegel greift, ein Genehmiger entscheidet mit Begründung, die Bestellung geht an den Händler. Viele Organisationen auf einer Instanz, Geld nie als Float, ein Audit-Eintrag pro Zustandswechsel. Klein genug für einen Nachmittag, echt genug, um Autorität, Mandantentrennung und Geld zu haben, also die Dinge, die schiefgehen. Rechts: der Brief, der komplette Input. Eine Seite.
+> Damit das nicht abstrakt bleibt: Requisit. Ein B2B-Service für Bestellanforderungen. Einkäufer erstellen einen Entwurf, eine Freigaberegel greift, ein Genehmiger entscheidet mit Begründung, die Bestellung geht an den Händler. Viele Organisationen auf einer Instanz, Geld nie als Float, ein Audit-Eintrag pro Zustandswechsel. Klein genug für einen Nachmittag, echt genug, um Autorität, Mandantentrennung und Geld zu haben, also die Dinge, die schiefgehen. Rechts: der Brief, der komplette Input, eine Seite, 386 Wörter. Die vier markierten Zeilen sind die, die Entscheidungen wurden: Freigaberegel sichtbar, Mandantentrennung, Geld ohne Floats, ehrliche Freigaben. Der Rest ist eingeklappt.
 
-## Folie 4 — Das Schema (60s)
+## Folie 4 — Fünf Wörter (45s)
 
-**Erst die Lanes, dann die Knoten von links nach rechts:**
+> Bevor wir ins Schema gehen, fünf Wörter, die gleich dauernd fallen. Eine Phase ist eine Produktstufe mit Ausstiegskriterium; Requisit ist in Phase 1, dem v1-Flow. Ein Arc ist ein Rumble, ein Task-out, ein Pipeline-Lauf; Arc 1 waren vier Issues an einem Nachmittag. Die Rumble-Session denkt und entscheidet und endet mit task-out. Das Umbrella-Issue hält die Reihenfolge in Wellen, jeder Split ist ein Issue von etwa dreitausend Zeilen, maximal drei Builder pro Welle. Und die Pipeline-Session ist eine frische Session, die nur das Umbrella liest: sie orchestriert, liest nie Code, und geht, wenn das Umbrella zu ist.
 
-> Drei Sessions, neun Stationen, ein Repository. Oben die Rumble-Session: ein Mensch und das Modell denken und entscheiden, sie endet mit Issues. In der Mitte die Pipeline-Session: ein Orchestrator, der nie Code liest, und Agenten, die je eine Aufgabe haben. Unten das Repository: die Docs als Gedächtnis, und der Pfeil zurück nach oben: der nächste Rumble liest die Docs, nicht den Chat. Wir zoomen jetzt in jede Station.
+*(Die Boxen sind ineinander geschachtelt: Phase außen, Arc innen, die drei Kästen darunter. Rechts unten die echten Wellen: #2, dann #3, dann #4 und #5 parallel.)*
+
+## Folie 5 — Das Schema (75s)
+
+**Die Szene baut sich von links oben nach rechts unten auf, ca. 12 s. Mitsprechen:**
+
+> So läuft es wirklich. Oben: Sie und der Rumble-Agent reden, daraus werden Zeilen in den Docs, nicht Chat. Task-out, Sie bestätigen die Entwürfe, und auf GitHub liegen ein Umbrella und vier Issues. GitHub ist der einzige geteilte Zustand. Dann die rote Linie: neue Session, nichts kommt mit außer dem, was auf GitHub steht. Warum? Der Rumble-Kontext steckt voller Abwägungen, die den Builder beeinflussen würden, und die Pipeline muss aus GitHub allein reproduzierbar sein, damit jemand anderes die nächste Welle übernehmen kann. Unten: Sie tippen pipeline, der Orchestrator liest das Umbrella und spawnt pro Welle Triage, Architekt, Builder, Quality, Security, jeder in seinem eigenen Worktree. PRs gehen nach main, der Trail geht als Kommentar zurück ins Issue, und bei risk-high prüfen Sie nach. Ganz unten: die Docs als Gedächtnis, und der Pfeil zurück: der nächste Rumble liest die Docs, nicht den Chat.
+
+*(Die zwei gepunkteten Pillen mit dem Punkt sind die menschlichen Gates.)*
 
 ---
 
@@ -134,7 +144,7 @@ Jede Chapter-Folie ist gleich gebaut: links die Rolle (wer, Input, was, Output, 
 
 ## Kosten (75s)
 
-> Ehrliche Zahlen aus den Trails. 3,39 Millionen Tokens für vier Issues. Implementierung ist ein knappes Drittel, Reviews ein Viertel, Fix-Runden ein Sechstel. Die zwei risk-high-Issues mit einem Rot kosteten das Zwei- bis Dreifache des einen ohne. Und der Rumble selbst: 112 Tausend, 13 Prozent eines Issues. Das Denken ist der billige Teil, und was es gekauft hat, sieht man an den Fix-Runden: die drehten sich um Dinge, die der Rumble nicht entschieden hatte, nie um entschiedene Zeilen.
+> Ehrliche Zahlen aus den Trails, oben pro Feature: 848 Tausend Tokens im Schnitt. Implementierung ist ein knappes Drittel, Reviews ein Viertel, Fix-Runden ein Sechstel. Die zwei risk-high-Issues mit einem Rot kosteten das Zwei- bis Dreifache des einen ohne. Und der Rumble selbst: 112 Tausend, 13 Prozent eines Issues. Das Denken ist der billige Teil, und was es gekauft hat, sieht man an den Fix-Runden: die drehten sich um Dinge, die der Rumble nicht entschieden hatte, nie um entschiedene Zeilen.
 
 ## Bestehendes Projekt (60s)
 

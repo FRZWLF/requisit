@@ -105,6 +105,31 @@
   .reality .s-main { stroke:var(--ink); stroke-width:3; stroke-linecap:round; opacity:.6 } .reality .s-pulse { fill:var(--teal); opacity:0 }
   .reality .s-pr { fill:#fff; stroke:var(--wine); stroke-width:1.5 } .reality .s-pr-t { font-family:var(--mono); font-size:10px; fill:var(--wine) }
   .reality .s-lbl { font-family:var(--mono); font-size:11px; fill:var(--muted) } .reality .s-lbl.strong { fill:var(--ink); font-size:12px }
+  /* slide 2: claims */
+  .cards.why .card h3 { font-size:clamp(1.05rem,1.45vw,1.5rem); line-height:1.15 }
+  .cards.why .card p { font-size:clamp(.82rem,.95vw,.96rem) }
+  .card .ans { color:var(--ink); font-size:clamp(.84rem,.98vw,1rem); border-top:1px solid var(--hair); padding-top:10px; padding-left:1.1em; text-indent:-1.1em }
+  .card .ans::before { content:"→ "; color:var(--wine); font-family:var(--mono) }
+  /* slide 3: the brief as a document */
+  .artefact.brief .inner { padding:16px 20px; display:grid; gap:8px; align-content:start }
+  .artefact.brief .b-intro { margin:0 0 6px; font-size:clamp(.88rem,1vw,1rem); line-height:1.5; color:var(--text) }
+  .artefact.brief .b-line { padding:8px 12px; border-radius:8px; font-size:clamp(.84rem,.96vw,.98rem); line-height:1.4 }
+  .artefact.brief .b-line.hi { background:var(--wine-soft); color:var(--ink); border-left:3px solid var(--wine) }
+  .artefact.brief .b-line.dim { color:var(--muted); font-size:.8rem; padding:2px 12px }
+  .artefact.brief .b-line.more { font-family:var(--mono); font-size:.72rem }
+  .artefact .bar .stamp { margin-left:auto; color:var(--wine) }
+  /* slide 3b: the words as nested boxes */
+  .vocab .v { border:1.5px solid var(--hair); border-radius:14px; padding:14px 16px; background:rgba(255,255,255,.55) }
+  .vocab .v.phase { border-color:var(--wine) } .vocab .v.arc { border-color:var(--teal); margin-top:12px; background:#fff }
+  .vocab .vh { display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:baseline }
+  .vocab .vh b { font-family:var(--display); font-size:clamp(1.1rem,1.5vw,1.5rem); font-weight:500; color:var(--ink) }
+  .vocab .vh span { font-size:clamp(.84rem,.98vw,1rem); color:var(--text) } .vocab .vh span i { font-style:normal; color:var(--wine); font-weight:600 }
+  .vocab .v-row { display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:12px; margin-top:12px }
+  .vocab .v.session { border-style:dashed; background:var(--ground-2) } .vocab .v.session .vh, .vocab .v.umbrella .vh { grid-template-columns:1fr; gap:6px }
+  .vocab .v.umbrella { border-color:var(--wine); background:#fff }
+  .vocab .waves { display:grid; gap:6px; margin-top:10px } .vocab .wave { display:flex; gap:6px; align-items:center; font-family:var(--mono); font-size:.72rem } .vocab .wave i { font-style:normal; color:var(--muted); width:52px } .vocab .wave em { font-style:normal; background:var(--wine-soft); color:var(--wine-deep); border-radius:6px; padding:2px 8px }
+  .vocab .note { margin-top:10px; font-family:var(--mono); font-size:.7rem; color:var(--muted) }
+  .meta.lead { grid-template-columns:repeat(5, minmax(0,1fr)); margin-top:0 } .meta.lead b { font-size:clamp(1.5rem,2.4vw,2.2rem) }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -208,12 +233,13 @@
 </section>
 
 <!-- 2 · why -->
-<section class="slide" data-title="The problem" data-steps="3">
-  <div class="head"><div class="eyebrow"><span class="n">01</span>why a framework</div><h2>Agents write code fast. Three other things break.</h2></div>
-  <div class="cards">
-    <div class="card" data-step="1"><div class="tag">memory</div><h3>Decisions vanish in chat</h3><p>Two weeks later nobody knows why the money is an integer. The chat is gone; the code only shows <em>what</em>.</p><div class="ends">→ every decision is a row in the docs, with the rejected alternatives</div></div>
-    <div class="card" data-step="2"><div class="tag">scope</div><h3>The agent builds its guess</h3><p>An open question at prompt time becomes a silent assumption in the diff. Reviews then argue about the assumption, not the code.</p><div class="ends">→ the issue is the whole contract; thinking ends before building starts</div></div>
-    <div class="card" data-step="3"><div class="tag">trust</div><h3>Who reviewed that?</h3><p>Green CI is not a review. A PR needs evidence a person can read: suites, mutations, deviations, a verdict.</p><div class="ends">→ reviewer agents with a verdict line; a fix loop; a trail per issue</div></div>
+<section class="slide" data-title="The problem" data-steps="4">
+  <div class="head"><div class="eyebrow"><span class="n">01</span>why a framework</div><h2>Agents write code fast. Four other things break.</h2></div>
+  <div class="cards four why">
+    <div class="card" data-step="1"><div class="tag">memory</div><h3>“Why is the money an integer?” Nobody remembers.</h3><p>The chat is gone. The code only shows <em>what</em>.</p><div class="ans">Every decision is a row in the docs, with the rejected alternatives.</div></div>
+    <div class="card" data-step="2"><div class="tag">scope</div><h3>The agent builds its guess.</h3><p>An open question at prompt time becomes a silent assumption in the diff.</p><div class="ans">The issue is the whole contract. Thinking ends before building starts.</div></div>
+    <div class="card" data-step="3"><div class="tag">trust</div><h3>Green CI is not a review.</h3><p>A PR needs evidence a person can read: suites run, mutations tried, deviations named.</p><div class="ans">Reviewer agents with a verdict line, a fix loop, a human gate on risk.</div></div>
+    <div class="card" data-step="4"><div class="tag">cost</div><h3>What did that feature cost?</h3><p>Nobody knows which stage ate the budget, or whether the next one will.</p><div class="ans">A trail per issue: stage × model × outcome × tokens.</div></div>
   </div>
 </section>
 
@@ -224,15 +250,31 @@
     <div class="role">
       <p class="lede">Buyers draft, an approval rule matches, an approver decides with a reason, the order goes to the merchant. Many organisations on one instance; money that is never a float; an audit line on every state change.</p>
       <div class="row first" data-step="1"><b>why this</b><span>Small enough to read in an afternoon, real enough to have authority, tenancy and money — the things that go wrong.</span></div>
-      <div class="row" data-step="2"><b>how far</b><span>One phase, two arcs. Arc 1 (the v1 flow) was built end to end by the framework; every artefact in this talk comes from it.</span></div>
+      <div class="row" data-step="2"><b>how far</b><span>Phase 1, arc 1: the v1 flow, built end to end by the framework. Every artefact in this talk comes from it.</span></div>
     </div>
-    <div class="artefact"><div class="bar"><b>docs/00-brief.md</b><span>the whole input</span></div><div class="inner" id="briefBox"></div></div>
+    <div class="artefact brief"><div class="bar"><b>docs/00-brief.md</b><span>the whole input</span><span class="stamp" id="briefStamp"></span></div><div class="inner" id="briefBox"></div></div>
+  </div>
+</section>
+
+<!-- 3b · the words -->
+<section class="slide" data-title="The words" data-steps="5">
+  <div class="head"><div class="eyebrow"><span class="n">03</span>five words</div><h2>A phase holds arcs. An arc is one rumble and one pipeline run.</h2></div>
+  <div class="vocab">
+    <div class="v phase" data-step="1"><div class="vh"><b>phase</b><span>a product stage with an exit criterion — Requisit: phase 1, the v1 flow</span></div>
+      <div class="v arc" data-step="2"><div class="vh"><b>arc</b><span>one rumble, one task-out, one pipeline run — arc 1: four issues, one afternoon</span></div>
+        <div class="v-row">
+          <div class="v session" data-step="3"><div class="vh"><b>rumble session</b><span>a person and the model think, decide and write rows. It ends at <code>/task-out</code>.</span></div></div>
+          <div class="v umbrella" data-step="4"><div class="vh"><b>umbrella issue</b><span>the run order in <i>waves</i>; each <i>split</i> is one task issue of about 3 k lines</span></div><div class="waves" id="vocabWaves"></div><div class="note">at most 3 builders per wave · <code>Depends on:</code> decides the order</div></div>
+          <div class="v session" data-step="5"><div class="vh"><b>pipeline session</b><span>a fresh session runs <code>/pipeline</code> on the umbrella; it orchestrates, never reads code, and retires when the umbrella closes.</span></div></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- 4 · the schema (hub) -->
 <section class="slide" data-title="The schema" data-kind="reality">
-  <div class="head"><div class="eyebrow"><span class="n">03</span>the whole framework on one page</div><h2>Two sessions, one GitHub, the repository underneath.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">04</span>the whole framework on one page</div><h2>Two sessions, one GitHub, the repository underneath.</h2></div>
   <div class="reality figs"><svg id="reality" class="schema" viewBox="0 0 1300 600" aria-hidden="true"></svg></div>
 </section>
 
@@ -387,21 +429,22 @@
 
 <!-- product -->
 <section class="slide" data-title="The product" data-kind="product">
-  <div class="head"><div class="eyebrow"><span class="n">04</span>what came out</div><h2>Requisit, running.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">05</span>what came out</div><h2>Requisit, running.</h2></div>
   <iframe class="live" id="live" src="about:blank" title="Requisit live"></iframe>
   <p class="mono" id="liveNote">start the service (README quickstart) and press <kbd>L</kbd> to load it here · buyer drafts → rule matches → approver rejects with a reason → the audit shows it → the merchant polls the order</p>
 </section>
 
 <!-- cost -->
 <section class="slide" data-title="Cost" data-kind="cost">
-  <div class="head"><div class="eyebrow"><span class="n">05</span>the ledger</div><h2>What the arc cost, by stage and model.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">06</span>the ledger</div><h2>What a feature costs, by stage.</h2></div>
+  <div class="meta lead" id="costLead"></div>
   <table class="cost" id="costTable"></table>
   <p class="mono" id="costNote"></p>
 </section>
 
 <!-- existing project -->
 <section class="slide" data-title="Existing project" data-steps="4">
-  <div class="head"><div class="eyebrow"><span class="n">06</span>bring it to a project that already exists</div><h2>You already have most of it under other names.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">07</span>bring it to a project that already exists</div><h2>You already have most of it under other names.</h2></div>
   <div class="map">
     <div class="l" data-step="1">docs/adr/0001-….md — one file per ADR</div><div class="a" data-step="1">→</div><div class="r" data-step="1"><code>docs.decisions</code> → the ADR index; a D-row per ADR, numbers kept</div>
     <div class="l" data-step="2">CONTRIBUTING.md, the security policy</div><div class="a" data-step="2">→</div><div class="r" data-step="2">project sections appended to the core standards — yours win on safety</div>
@@ -412,7 +455,7 @@
 
 <!-- teams -->
 <section class="slide" data-title="Teams" data-steps="4">
-  <div class="head"><div class="eyebrow"><span class="n">07</span>several people</div><h2>The issue is the contract, so the author does not matter.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">08</span>several people</div><h2>The issue is the contract, so the author does not matter.</h2></div>
   <div class="cards four">
     <div class="card" data-step="1"><div class="tag">rumble</div><p>Everyone rumbles. Rows and issues come as a PR and are reviewed like code. Reserved numbers avoid collisions.</p></div>
     <div class="card" data-step="2"><div class="tag">orchestrate</div><p>One person per arc runs the pipeline. State is on GitHub, so the next wave can be taken over in a new session by someone else.</p></div>
@@ -423,7 +466,7 @@
 
 <!-- intershop -->
 <section class="slide" data-title="Here" data-steps="3">
-  <div class="head"><div class="eyebrow"><span class="n">08</span>where this fits</div><h2>Agent features are decisions plus contracts plus reviewed PRs.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">09</span>where this fits</div><h2>Agent features are decisions plus contracts plus reviewed PRs.</h2></div>
   <div class="cards">
     <div class="card" data-step="1"><div class="tag">buyer · merchant agents</div><p>What an agent may do is a D-row and a risk label before it is code. Requisit's drafting agent never approves — decided in the rumble, enforced in review.</p></div>
     <div class="card" data-step="2"><div class="tag">pwa · commerce core</div><p>One framework repo, one <code>framework.json</code> per codebase: its own areas, implementers, verify board and risk:high list.</p></div>
@@ -433,7 +476,7 @@
 
 <!-- close -->
 <section class="slide close" data-title="Close" data-steps="3">
-  <div class="head"><div class="eyebrow"><span class="n">09</span>the loop</div><h1>Think. <em>Contract.</em> Build. Remember.</h1></div>
+  <div class="head"><div class="eyebrow"><span class="n">10</span>the loop</div><h1>Think. <em>Contract.</em> Build. Remember.</h1></div>
   <ul class="plain">
     <li data-step="1">Rumble in a session that ends with issues, never with code.</li>
     <li data-step="2">Build in a session that never reads code, from agents that each do one job.</li>
@@ -500,7 +543,17 @@
     document.getElementById('mFind').textContent = C && C.findings != null ? C.findings : '—';
     document.getElementById('mHuman').textContent = C && C.humanMinutes ? `${C.humanMinutes} min` : '—';
     // the example
-    document.getElementById('briefBox').innerHTML = D.brief ? md(D.brief.replace(/^# .*\n/, '').replace(/^\*[^\n]*\n(?:[^\n]+\n)*\n/, '').replace(/\n(?![\n-])/g, ' ')).replace(/\n- /g, '\n• ').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>') : '';
+    // the brief: the opening paragraph in full, the lines that became decisions highlighted, the rest folded
+    if (D.brief) {
+      const body = D.brief.replace(/^# .*\n/, '').replace(/^\*[^\n]*\n(?:[^\n]+\n)*\n/, '');
+      const paras = body.split(/\n\n+/), intro = paras.find(x => !/^[-*]/.test(x.trim())) || '';
+      const bullets = []; for (const l of body.split('\n')) { if (/^- /.test(l)) bullets.push(l.slice(2)); else if (/^\s+\S/.test(l) && bullets.length) bullets[bullets.length - 1] += ' ' + l.trim(); }
+      const HI = /money must be right|many organisations|honest:|approval rules/i;
+      const hi = bullets.filter(b => HI.test(b)), rest = bullets.filter(b => !HI.test(b));
+      document.getElementById('briefBox').innerHTML = `<p class="b-intro">${md(intro.replace(/\n/g, ' '))}</p>` + hi.map(b => `<div class="b-line hi">${md(b)}</div>`).join('') + rest.slice(0, 3).map(b => `<div class="b-line dim">${esc(b.replace(/\*\*/g, '').slice(0, 78))}…</div>`).join('') + (rest.length > 3 ? `<div class="b-line dim more">+ ${rest.length - 3} more lines</div>` : '');
+      document.getElementById('briefStamp').textContent = `1 page · ${D.brief.split(/\s+/).length} words`;
+    }
+    document.getElementById('vocabWaves').innerHTML = (D.waves || []).map((w, i) => `<div class="wave"><i>wave ${i + 1}</i>${w.map(x => `<em>${esc(x)}</em>`).join('')}</div>`).join('');
     // rumble
     const pick = [...D.decisions.slice(0, 6).map(r => ({ ...r, k: 'd' })), ...D.gaps.slice(0, 2).map(r => ({ ...r, k: 'g' })), ...D.measurements.slice(6, 7).map(r => ({ ...r, k: 'm' }))];
     document.getElementById('rows').innerHTML = pick.map(r => `<div class="drow"><span class="id ${r.k}">${esc(r.id)}</span><span>${md((r.title || '').slice(0, 150))}${(r.title || '').length > 150 ? '…' : ''}${r.rationale ? `<br><span class="r">${md(r.rationale.slice(0, 120))}…</span>` : ''}</span></div>`).join('');
@@ -585,6 +638,8 @@
       for (const r of C.rows) { const k = groupOf(r.stage); byIssue[r.issue] = (byIssue[r.issue] || 0) + (r.tokens || 0); if (!k) continue; g[k] = (g[k] || 0) + (r.tokens || 0); (models[k] = models[k] || new Set()).add(r.model.trim()); }
       const max = Math.max(...order.map(k => g[k] || 0));
       t.innerHTML = `<tr><th>stage</th><th>model</th><th style="text-align:right">tokens</th><th style="text-align:right">share</th><th></th></tr>` + order.filter(k => g[k]).map(k => `<tr><td>${k}</td><td class="mono">${[...models[k]].join(' · ')}</td><td class="n">${num(g[k])}</td><td class="n">${Math.round(g[k] / C.total * 100)} %</td><td style="width:30%"><div class="bar-fill" data-w="${Math.round(g[k] / max * 100)}%"></div></td></tr>`).join('') + `<tr class="total"><td colspan="2">the arc — ${Object.keys(byIssue).length} issues, ${C.prs || Object.keys(byIssue).length} PRs</td><td class="n">${num(C.total)}</td><td></td><td></td></tr>`;
+      const RUMBLE = 111974, n = Object.keys(byIssue).length, pct = k => Math.round((g[k] || 0) / C.total * 100) + ' %';
+      document.getElementById('costLead').innerHTML = [[Math.round(C.total / n / 1000) + ' k', `tokens per feature, average of ${n}`], [pct('implement'), 'building'], [Math.round(((g.reviews || 0) + (g['re-reviews'] || 0)) / C.total * 100) + ' %', 'reviewing, first pass and re-review'], [pct('fix rounds'), 'fixing what the reviews found'], [Math.round(RUMBLE / (C.total + RUMBLE) * 100) + ' %', 'the rumble itself — thinking is the cheap part']].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join('');
       document.getElementById('costNote').textContent = 'per issue: ' + Object.entries(byIssue).map(([i, v]) => `${i} ${num(v)}`).join(' · ') + ' · the rumble itself: 111,974 (M-008)' + (C.note ? ' — ' + C.note : '');
     } else t.innerHTML = '<tr><td class="mono">the trails feed this table (data/cost.js) — pending</td></tr>';
     // minimaps
