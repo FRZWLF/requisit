@@ -13,6 +13,18 @@ export type RefusalCode =
   | 'validation_failed'
   | 'unauthenticated';
 
+/** The same members as `RefusalCode`, as a value — the status table is keyed by it (D-016). */
+export const REFUSAL_CODES = [
+  'not_authorised',
+  'wrong_state',
+  'no_rule_matched',
+  'idempotency_key_reuse',
+  'conflict',
+  'not_found',
+  'validation_failed',
+  'unauthenticated',
+] as const satisfies readonly RefusalCode[];
+
 export interface Refusal {
   readonly refused: true;
   readonly code: RefusalCode;

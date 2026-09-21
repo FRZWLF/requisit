@@ -34,6 +34,7 @@ export function rulesRepo(db: DatabaseSync, scope: OrgScope) {
   const selectBySeq = db.prepare(
     `SELECT ${COLUMNS} FROM approval_rules WHERE org_id = ? ORDER BY seq`,
   );
+  const selectById = db.prepare(`SELECT ${COLUMNS} FROM approval_rules WHERE org_id = ? AND id = ?`);
   const insertRow = db.prepare(`INSERT INTO approval_rules (${COLUMNS}) VALUES (?, ?, ?, ?, ?, ?)`);
 
   return {
@@ -79,6 +80,16 @@ export function rulesRepo(db: DatabaseSync, scope: OrgScope) {
         rule.ruleCode,
       );
       return rule;
+    },
+
+    /**
+     * The row a submitted requisition stored. Approve and reject re-read *this*, never
+     * re-match against the total, so an admin's later edit of the rule table cannot change
+     * who may decide a requisition that is already in flight (D-008 addendum).
+     */
+    byId(id: string): Result<ApprovalRule> {
+      const row = selectById.get(scope.orgId, id) as ApprovalRuleRow | undefined;
+      return row === undefined ? refuse('not_found', 'approval rule') : toRule(row);
     },
 
     listBySeq(): ApprovalRule[] {
