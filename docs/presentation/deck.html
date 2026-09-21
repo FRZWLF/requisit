@@ -33,6 +33,8 @@
   .slide { position:absolute; inset:0; padding:var(--pad); display:grid; align-content:center; gap:clamp(14px,2.2vh,28px); opacity:0; visibility:hidden; will-change:transform,opacity }
   .slide.is-current { opacity:1; visibility:visible }
   .slide .head { display:grid; gap:clamp(6px,1vh,12px); max-width:1000px }
+  .slide.chapter { align-content:start; padding-top:118px; padding-bottom:80px; grid-template-rows:auto minmax(0,1fr) }
+  .slide.chapter .two { min-height:0; height:100% } .slide.chapter .artefact { max-height:100% }
   [data-step] { opacity:0; transform:translateY(18px); transition:opacity .55s var(--ease),transform .55s var(--ease) }
   [data-step].on { opacity:1; transform:none }
   .hud { position:fixed; left:0; right:0; bottom:0; height:3px; background:var(--mist); z-index:20 }
@@ -177,10 +179,10 @@
 
   /* chapter */
   .chapter { grid-template-rows:auto auto 1fr; align-content:start; padding-top:max(72px, calc(var(--pad) * .9)) }
-  .minimap { display:flex; gap:6px; flex-wrap:wrap; align-items:center }
-  .minimap span { font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; padding:4px 10px; border-radius:99px; border:1px solid var(--hair); color:var(--muted); background:#fff }
+  .minimap { position:fixed; top:74px; left:var(--pad); right:var(--pad); z-index:30; display:flex; gap:6px; flex-wrap:wrap; align-items:center; opacity:0; transition:opacity .4s; pointer-events:none } body.in-chapter .minimap { opacity:1 }
+  .minimap span { font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; padding:4px 10px; border-radius:99px; border:1px solid var(--hair); color:var(--muted); background:#fff; transition:background .45s var(--ease), color .45s var(--ease), border-color .45s var(--ease), transform .45s var(--ease) }
   .minimap span.done { border-color:var(--teal); color:var(--teal) }
-  .minimap span.now { background:var(--wine); border-color:var(--wine); color:#fff }
+  .minimap span.now { background:var(--wine); border-color:var(--wine); color:#fff; transform:scale(1.06) }
   .minimap i { width:14px; height:1px; background:var(--hair); display:inline-block }
   .two { display:grid; grid-template-columns:.9fr 1.25fr; gap:clamp(18px,2.6vw,44px); align-items:start; min-height:0 }
   .role { display:grid; gap:12px; align-content:start }
@@ -312,7 +314,6 @@
 
 <!-- chapters: data-node names the schema node; role left, artefact right -->
 <section class="slide chapter" data-title="Rumble" data-node="rumble" data-kind="chapter">
-  <div class="minimap"></div>
   <div class="head"><div class="eyebrow"><span class="n">stage 1</span>rumble</div><h2>Think and decide — with the model, before anyone builds.</h2></div>
   <div class="two">
     <div class="role">
@@ -328,7 +329,6 @@
 </section>
 
 <section class="slide chapter" data-title="Task-out" data-node="taskout" data-kind="chapter">
-  <div class="minimap"></div>
   <div class="head"><div class="eyebrow"><span class="n">stage 2</span>task-out</div><h2>The issue is the whole contract — written for an agent with zero context.</h2></div>
   <div class="two">
     <div class="role">
@@ -344,7 +344,6 @@
 </section>
 
 <section class="slide chapter" data-title="Triage" data-node="triage" data-kind="chapter">
-  <div class="minimap"></div>
   <div class="head"><div class="eyebrow"><span class="n">stage 3</span>triage</div><h2>The cheapest model stamps what the rest of the pipeline reads.</h2></div>
   <div class="two">
     <div class="role">
@@ -362,7 +361,6 @@
 </section>
 
 <section class="slide chapter" data-title="Architect" data-node="architect" data-kind="chapter">
-  <div class="minimap"></div>
   <div class="head"><div class="eyebrow"><span class="n">stage 4</span>architect</div><h2>Only for the big ones: a design inside the decided rows.</h2></div>
   <div class="two">
     <div class="role">
@@ -377,7 +375,6 @@
 </section>
 
 <section class="slide chapter" data-title="Implement" data-node="implement" data-kind="chapter">
-  <div class="minimap"></div>
   <div class="head"><div class="eyebrow"><span class="n">stage 5</span>implement</div><h2>One agent, one worktree, one draft PR with evidence.</h2></div>
   <div class="two">
     <div class="role">
@@ -392,7 +389,6 @@
 </section>
 
 <section class="slide chapter" data-title="Review" data-node="review" data-kind="chapter">
-  <div class="minimap"></div>
   <div class="head"><div class="eyebrow"><span class="n">stage 6</span>review</div><h2>Two lenses, one verdict line — readable by someone who was not there.</h2></div>
   <div class="two">
     <div class="role">
@@ -407,7 +403,6 @@
 </section>
 
 <section class="slide chapter" data-title="Fix loop" data-node="fix" data-kind="chapter">
-  <div class="minimap"></div>
   <div class="head"><div class="eyebrow"><span class="n">stage 7</span>fix loop</div><h2>At most two rounds. Then a person.</h2></div>
   <div class="two">
     <div class="role">
@@ -422,7 +417,6 @@
 </section>
 
 <section class="slide chapter" data-title="Gate & trail" data-node="gate" data-kind="chapter">
-  <div class="minimap"></div>
   <div class="head"><div class="eyebrow"><span class="n">stage 8</span>gate &amp; trail</div><h2>Merge, prove main is green, write down what it cost.</h2></div>
   <div class="two">
     <div class="role">
@@ -438,7 +432,6 @@
 </section>
 
 <section class="slide chapter" data-title="Docs memory" data-node="docs" data-kind="chapter">
-  <div class="minimap"></div>
   <div class="head"><div class="eyebrow"><span class="n">stage 9</span>the docs</div><h2>The memory — and a check that keeps it honest.</h2></div>
   <div class="two">
     <div class="role">
@@ -523,6 +516,7 @@
 <div class="hud"><i id="hud"></i></div>
 <div class="brandbar"><span class="mark">rumble</span><span class="sep"></span><span>framework · requisit</span><span class="counter" id="counter"></span></div>
 <div class="dots" id="dots"></div>
+<div class="minimap" id="minimap" aria-hidden="true"></div>
 <div class="hint" id="hint"><kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> schema · <kbd>F</kbd> fullscreen</div>
 <button class="edge left" id="edgeL" aria-label="previous"></button>
 <button class="edge right" id="edgeR" aria-label="next"></button>
@@ -709,8 +703,8 @@
       document.getElementById('costLead').innerHTML = [[Math.round(C.total / n / 1000) + ' k', `tokens per feature, average of ${n}`], [pct('implement'), 'building'], [Math.round(((g.reviews || 0) + (g['re-reviews'] || 0)) / C.total * 100) + ' %', 'reviewing, first pass and re-review'], [pct('fix rounds'), 'fixing what the reviews found'], [Math.round(RUMBLE / (C.total + RUMBLE) * 100) + ' %', 'the rumble itself — thinking is the cheap part']].map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join('');
       document.getElementById('costNote').textContent = 'per issue: ' + Object.entries(byIssue).map(([i, v]) => `${i} ${num(v)}`).join(' · ') + ' · the rumble itself: 111,974 (M-008)' + (C.note ? ' — ' + C.note : '');
     } else t.innerHTML = '<tr><td class="mono">the trails feed this table (data/cost.js) — pending</td></tr>';
-    // minimaps
-    document.querySelectorAll('section.chapter').forEach(s => { const k = s.dataset.node; s.querySelector('.minimap').innerHTML = NODES.map((n, i) => `<span class="${n.key === k ? 'now' : chapterKeys.indexOf(k) > i ? 'done' : ''}">${n.label}</span>${i < NODES.length - 1 ? '<i></i>' : ''}`).join(''); });
+    // the one minimap: fixed under the brand bar, visible on chapter slides, the active pill changes in place
+    document.getElementById('minimap').innerHTML = NODES.map((n, i) => `<span data-key="${n.key}">${n.label}</span>${i < NODES.length - 1 ? '<i></i>' : ''}`).join('');
   }
 
   // ---------- the figures: one robot bust, one human bust, shared by the title scene and the schema ----------
@@ -997,6 +991,7 @@
     if (!animate || !G || reduce) { els.forEach(el => el.classList.add('on')); return; }
     els.forEach((el, i) => setTimeout(() => el.classList.add('on'), 350 + i * 260));
   }
+  const setChapter = s => { const mk = s.dataset.node; document.body.classList.toggle('in-chapter', !!mk); if (mk) document.querySelectorAll('#minimap span').forEach(sp => { const j = chapterKeys.indexOf(sp.dataset.key), k = chapterKeys.indexOf(mk); sp.classList.toggle('now', j === k); sp.classList.toggle('done', j < k); }); };
   let cur = 0, busy = false;
   const pad = n => String(n).padStart(2, '0');
   const dotsBox = document.getElementById('dots');
@@ -1010,6 +1005,7 @@
     const from = slides[cur], to = slides[i];
     leave(from.dataset.kind || (cur === 0 ? 'hero' : ''));
     cur = i; reveal(to, true); to.classList.add('is-current'); updateHud();
+    setChapter(to);
     const kind = to.dataset.kind || (i === 0 ? 'hero' : ''); const start = () => { if (enter[kind]) enter[kind](to); };
     if (!G || reduce) { from.classList.remove('is-current'); start(); return; }
     busy = true;
@@ -1037,7 +1033,7 @@
 
   fill();
   const want = parseInt((location.hash || '#1').slice(1), 10);
-  if (want > 1 && want <= slides.length) { slides[0].classList.remove('is-current'); cur = want - 1; slides[cur].classList.add('is-current'); reveal(slides[cur], false); const k = slides[cur].dataset.kind; if (enter[k]) enter[k](slides[cur]); }
+  if (want > 1 && want <= slides.length) { slides[0].classList.remove('is-current'); cur = want - 1; slides[cur].classList.add('is-current'); reveal(slides[cur], false); setChapter(slides[cur]); const k = slides[cur].dataset.kind; if (enter[k]) enter[k](slides[cur]); }
   else { reveal(slides[0], false); enter.hero(slides[0]); }
   updateHud();
 })();
