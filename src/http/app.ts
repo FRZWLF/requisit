@@ -19,6 +19,7 @@ import {
 } from './idempotency.ts';
 import { internalErrorBody, JSON_CONTENT_TYPE, problemBody, PROBLEM_CONTENT_TYPE, statusFor } from './problem.ts';
 import { matchRoute } from './router.ts';
+import { OUTBOX_ROUTES } from './routes/outbox.ts';
 import { REQUISITION_ROUTES } from './routes/requisitions.ts';
 import { RULE_ROUTES } from './routes/rules.ts';
 import type { HandlerOutcome, HttpRequest, HttpResponse, RequestContext, Route } from './types.ts';
@@ -30,7 +31,7 @@ import type { HandlerOutcome, HttpRequest, HttpResponse, RequestContext, Route }
  * the `node:http` adapter, which happens before `dispatch` is called.
  */
 
-export const ROUTES: readonly Route[] = [...REQUISITION_ROUTES, ...RULE_ROUTES];
+export const ROUTES: readonly Route[] = [...REQUISITION_ROUTES, ...RULE_ROUTES, ...OUTBOX_ROUTES];
 
 export interface App {
   readonly db: DatabaseSync;

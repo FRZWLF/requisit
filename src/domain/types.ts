@@ -1,7 +1,12 @@
 /** The row shapes the whole service shares. Columns are `snake_case`; fields are `camelCase`. */
 
-export type Role = 'buyer' | 'approver' | 'finance' | 'admin';
-export const ROLES: readonly Role[] = ['buyer', 'approver', 'finance', 'admin'];
+/**
+ * `merchant` is the order-feed integration of one organisation (D-006 addendum, D-011
+ * addendum, migration `0003`). It is a role and not a second credential format because
+ * D-005 knows one kind of token and the audit has to be able to name who acknowledged.
+ */
+export type Role = 'buyer' | 'approver' | 'finance' | 'admin' | 'merchant';
+export const ROLES: readonly Role[] = ['buyer', 'approver', 'finance', 'admin', 'merchant'];
 
 export type ActorKind = 'user' | 'agent' | 'system';
 export const ACTOR_KINDS: readonly ActorKind[] = ['user', 'agent', 'system'];

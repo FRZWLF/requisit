@@ -12,7 +12,9 @@ import {
   type DraftLineInput,
   type ListFilter,
 } from '../db/repos/requisitions.ts';
+import { outboxRepo } from '../db/repos/outbox.ts';
 import { lineTotal, sumMoney, type Money } from '../domain/money.ts';
+import { orderPayload } from '../domain/order.ts';
 import { matchRule, resolveApprover } from '../domain/rules.ts';
 import {
   allowedActions,
@@ -136,6 +138,7 @@ interface Repos {
   readonly rules: ReturnType<typeof rulesRepo>;
   readonly costCentres: ReturnType<typeof costCentresRepo>;
   readonly audit: ReturnType<typeof auditRepo>;
+  readonly outbox: ReturnType<typeof outboxRepo>;
 }
 
 /**
@@ -157,6 +160,7 @@ function repos(ctx: ServiceContext): Repos {
     rules: rulesRepo(ctx.db, ctx.scope),
     costCentres: costCentresRepo(ctx.db, ctx.scope, ctx.clock),
     audit: auditRepo(ctx.db, ctx.scope, ctx.clock),
+    outbox: outboxRepo(ctx.db, ctx.scope, ctx.clock),
   };
   REPO_CACHE.set(ctx, built);
   return built;
@@ -411,9 +415,24 @@ function writeLine(ctx: ServiceContext, tx: Tx, requisitionId: string, facts: Au
 }
 
 /**
+ * A refused payload or outbox row after the state change is the D-011 failure the outbox
+ * pattern exists to prevent: an approval committed without the order it owes. `prepareLines`
+ * has already proved this line set can be totalled, and the requisition was loaded through
+ * this very scope, so both refusals are broken invariants — they throw, the transaction rolls
+ * back and the caller gets a 500 (compare `mustAudit`, `mustTotal`).
+ */
+function mustOrder<T>(written: Result<T>, what: string): T {
+  if (isRefusal(written)) {
+    throw new Error(`${what} refused: ${written.code} ${written.detail ?? ''}`.trimEnd());
+  }
+  return written;
+}
+
+/**
  * The single function that writes `approved` — the automatic self-rule approval and the
- * manual one both come through here, so split 04 adds the outbox row in exactly one place
- * (D-011). The version guard has already been compared by the caller inside this `Tx`.
+ * manual one both come through here, so the outbox row is written in exactly one place, in
+ * the approving transaction (D-011). The version guard has already been compared by the
+ * caller inside this `Tx`.
  */
 export function recordApproval(
   ctx: ServiceContext,
@@ -443,6 +462,16 @@ export function recordApproval(
     reason: null,
     bySystem: options.bySystem,
   });
+  // The order, in the same transaction as the state change and the audit line (D-011). The
+  // payload is built from `after` — the rows as they stand *approved* — and its total is
+  // recomputed from the lines, never copied from `total` (D-003).
+  mustOrder(
+    repo.outbox.append(tx, {
+      requisitionId: requisition.id,
+      payloadJson: JSON.stringify(mustOrder(orderPayload(after), 'order payload')),
+    }),
+    'order outbox row',
+  );
   return after;
 }
 

@@ -69,6 +69,21 @@ export function instanceFindOrg(db: DatabaseSync, id: string): Result<Org> {
  * housekeeping, not a request — so it lives here and says so in its name (D-022). Never
  * called inside a request; `main.ts` runs it at startup and daily.
  */
+/**
+ * An organisation by name, across the instance — the seed script's idempotency check
+ * (D-018): a second run must find the organisation it created rather than make another.
+ * Names are not unique by constraint, so this returns the *first* match by creation order
+ * and is a development convenience, never a request path.
+ */
+export function instanceFindOrgByName(db: DatabaseSync, name: string): Result<Org> {
+  const row = db
+    .prepare(
+      'SELECT id, name, currency, requisition_seq, created_at FROM orgs WHERE name = ? ORDER BY created_at, id LIMIT 1',
+    )
+    .get(name) as OrgRow | undefined;
+  return row === undefined ? refuse('not_found', 'org') : toOrg(row);
+}
+
 export function instanceSweepIdempotencyKeys(tx: Tx, olderThan: string): number {
   const changed = tx.db
     .prepare('DELETE FROM idempotency_keys WHERE created_at < ?')

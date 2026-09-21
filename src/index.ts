@@ -35,6 +35,7 @@ export { MIGRATIONS } from './db/migrations/index.ts';
 export {
   instanceCreateOrg,
   instanceFindOrg,
+  instanceFindOrgByName,
   instanceSweepIdempotencyKeys,
 } from './db/instance.ts';
 
@@ -59,6 +60,13 @@ export {
   idempotencyKeysRepo,
 } from './db/repos/idempotency.ts';
 export { type AuditRepo, type AuditInput, auditRepo } from './db/repos/audit.ts';
+export {
+  type OutboxRepo,
+  type OutboxRow,
+  DEFAULT_POLL_LIMIT,
+  MAX_POLL_LIMIT,
+  outboxRepo,
+} from './db/repos/outbox.ts';
 
 export {
   type TokenClaims,
@@ -91,6 +99,23 @@ export {
   mayDecide,
   relationOf,
 } from './domain/lifecycle.ts';
+
+export {
+  type OrderPayload,
+  type OrderPayloadLine,
+  ORDER_PAYLOAD_VERSION,
+  orderPayload,
+} from './domain/order.ts';
+
+export {
+  type AckInput,
+  type AckResult,
+  type OutboxFeed,
+  type OutboxItemView,
+  type PollInput,
+  acknowledge,
+  poll,
+} from './app/outbox.ts';
 
 export {
   type AwaitingView,

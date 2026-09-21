@@ -57,6 +57,8 @@ export interface LifecycleOrg {
   readonly finance: Person;
   /** Holds `buyer` only — a member of the organisation with no authority over these rows. */
   readonly stranger: Person;
+  /** Holds `merchant` only — the order-feed integration of this organisation (D-011). */
+  readonly merchant: Person;
   readonly costCentre: CostCentre;
   /** seq 10 `self` ≤ 10 000 · seq 20 `cost_centre_owner` ≤ 500 000 · seq 30 `finance` unbounded. */
   readonly rules: readonly ApprovalRule[];
@@ -96,6 +98,11 @@ export function seedLifecycleOrg(
       people.insert(tx, { name: 'Sam Stranger', email: `sam-${slug}@example.test` }),
     );
     must(people.grantRole(tx, stranger.id, 'buyer'));
+
+    const merchant = must(
+      people.insert(tx, { name: 'Morgan Merchant', email: `morgan-${slug}@example.test` }),
+    );
+    must(people.grantRole(tx, merchant.id, 'merchant'));
 
     const costCentre = must(
       costCentresRepo(db, bootstrap, clock).insert(tx, {
@@ -144,6 +151,7 @@ export function seedLifecycleOrg(
       owner,
       finance,
       stranger,
+      merchant,
       costCentre,
       rules,
     };
