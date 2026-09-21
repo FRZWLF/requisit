@@ -328,7 +328,7 @@
   const esc = s => String(s ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const md = s => esc(s).replace(/```[\s\S]*?```/g, m => m).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
   const num = n => n == null ? '—' : Number(n).toLocaleString('en');
-  const vclass = v => !v ? '' : /🔴|\bRED\b|[1-9]\d* red/i.test(v) ? 'red' : /🟡|\bYELLOW\b|[1-9]\d* nit/i.test(v) ? 'yellow' : 'clean';
+  const vclass = v => !v ? '' : /🔴|\bRED\b|[1-9]\d* red/.test(v) ? 'red' : /🟡|\bYELLOW\b|[1-9]\d* nit/.test(v) ? 'yellow' : 'clean';
   let cur = 0, step = 0, busy = false;
   const stepsOf = s => +(s.dataset.steps || 0), pad = n => String(n).padStart(2, '0');
   const ev = k => T ? T.events.filter(e => e.kind === k) : [];
@@ -370,7 +370,9 @@
       const fixes = ev('fix-round'); document.getElementById('pFix').innerHTML = fixes.map(f => `<p>${md(f.text.replace(/<!--.*?-->/g, ''))}</p>`).join('') || '<p class="mono">no fix round needed</p>';
       const trail = ev('trail')[0]; document.getElementById('pTrail').textContent = trail ? trail.text.slice(0, 2200) : 'trail pending';
       // findings slide
-      const red = reviews.find(r => vclass(r.verdict) === 'red'), redBlock = red ? (red.text.match(/🔴[\s\S]*?(?=\n\n🔴|\n\n🟡|\n\n##|\n\nVERDICT|$)/) || [red.text])[0] : '';
+      const red = reviews.find(r => vclass(r.verdict) === 'red');
+      let redBlock = '';
+      if (red) { const h = red.text.search(/^#{1,4}[^\n]*🔴|^🔴\s*\*\*|^\*\*🔴/m); const start = h >= 0 ? h : red.text.indexOf('🔴'); const rest = red.text.slice(start).replace(/^[^\n]*\n/, ''); redBlock = rest.split(/\n(?=#{1,4}\s|---|VERDICT:)/)[0].replace(/```[a-z]*\n?/g, '').trim(); }
       document.getElementById('findingRed').textContent = redBlock ? redBlock.slice(0, 900) : (reviews.length ? 'No red finding on this issue — the first review came back clean.' : 'reviews pending');
       const afterFix = red ? reviews.filter(r => r.at > red.at && r.pr === red.pr) : [];
       const fixCommit = red ? ev('commit').find(c => c.at > red.at) : null;

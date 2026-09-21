@@ -53,8 +53,8 @@ window.DECISIONS = {
    "struck": false,
    "date": "2026-09-21",
    "title": "**Audit: an append-only `audit_log` row written in the same transaction as every state change.** Columns: `id`, `org_id`, `requisition_id`, `actor_person_id`, `actor_kind` (`user` | `agent` | `system`), `action`, `from_state`, `to_state`, `rule_id`, `total_minor`, `currency`, `reason`, `at` (UTC ISO-8601), `request_id`. No `UPDATE` or `DELETE` is ever issued against it (asserted by a test that greps the repository layer). Reads of a requisition render its audit as a history.",
-   "rationale": "\"If it says approved by Anna under rule R2 at 14:02, that is exactly what happened\" is only true if the line and the state move commit or fail together; a log file written after the commit can be lost, and one written before can describe a change that rolled back. Recording the total and the matched rule *at that moment* is what makes a later rule-table edit non-retroactive. *Rejected:* structured logging to stdout as the audit (not queryable, not transactional); event sourcing as the primary model (a bigger machine than one approval step deserves — the audit is a faithful side record, the state column stays the truth).",
-   "status": "decided (rumble, 2026-09-21)"
+   "rationale": "\"If it says approved by Anna under rule R2 at 14:02, that is exactly what happened\" is only true if the line and the state move commit or fail together; a log file written after the commit can be lost, and one written before can describe a change that rolled back. Recording the total and the matched rule *at that moment* is what makes a later rule-table edit non-retroactive. *Rejected:* structured logging to stdout as the audit (not queryable, not transactional); event sourcing as the primary model (a bigger machine than one approval step deserves — the audit is a faithful side record, the state column stays the truth). **Addendum (#2 review, 2026-09-21):** `writeAudit` validates that `requisition_id` and `actor_person_id` belong to the writing scope's organisation and returns `not_found` otherwise. The table's foreign keys are by id alone, so without that check the one append-only table was the one write path able to record another organisation's ids under this organisation — and the `BEFORE UPDATE`/`BEFORE DELETE` triggers (D-020) would then make the wrong line permanent. The leak suite pins it (D-004, D-014).",
+   "status": "decided (rumble, 2026-09-21) · addendum #2"
   },
   {
    "id": "D-008",
@@ -125,24 +125,56 @@ window.DECISIONS = {
    "struck": false,
    "date": "2026-09-21",
    "title": "**Errors: one typed refusal type in the domain, mapped once to an RFC 9457-shaped JSON body.** `{ type, title, status, code, detail, requisition_id?, rule?, request_id }` with a stable `code` string (`not_authorised`, `wrong_state`, `no_rule_matched`, `idempotency_key_reuse`, `conflict`, `not_found`, `validation_failed`). Handlers `return` refusals; only bugs `throw`, and a bug is a `500` with the `request_id` and nothing else. A refusal never reveals whether an id exists in another organisation — cross-org is always `not_found` (D-004).",
-   "rationale": "Stable codes are what the UI, the merchant and the tests assert on; a shared shape means one place to make sure an internal message never leaks. The cross-org `not_found` rule closes the id-probing oracle that a `403` would open. *Rejected:* HTTP status codes alone (too coarse for `wrong_state` vs `not_authorised`); exceptions as flow control (the typed return is what makes the refusals exhaustive in TypeScript).",
-   "status": "decided (rumble, 2026-09-21)"
+   "rationale": "Stable codes are what the UI, the merchant and the tests assert on; a shared shape means one place to make sure an internal message never leaks. The cross-org `not_found` rule closes the id-probing oracle that a `403` would open. *Rejected:* HTTP status codes alone (too coarse for `wrong_state` vs `not_authorised`); exceptions as flow control (the typed return is what makes the refusals exhaustive in TypeScript). **Addendum (#2, 2026-09-21):** an eighth code, `unauthenticated`, was added for \"no identity at all\" — a missing, malformed, expired or badly signed token (D-021). It is distinct from `not_authorised`, which is a known identity without the authority for this act; one code for both would leave the UI unable to tell \"log in again\" from \"not your call\".",
+   "status": "decided (rumble, 2026-09-21) · addendum #2"
   },
   {
    "id": "D-017",
    "struck": false,
    "date": "2026-09-21",
    "title": "**Ids and time: `crypto.randomUUID()` for business ids, a per-org monotonic `INTEGER` for the outbox cursor, UTC ISO-8601 strings for timestamps, one `Clock` interface injected everywhere.** No `Date.now()` outside the clock; tests use a fixed clock. Human-facing numbers (`REQ-2026-000123`) are a separate per-org counter, display only, never a key.",
-   "rationale": "Random ids remove a cross-org enumeration oracle (D-004, D-016) while the outbox needs an ordered cursor, so it gets its own integer key (D-011). A single injected clock is what makes \"approved at 14:02\" testable rather than flaky. *Rejected:* auto-increment primary keys for business rows (enumerable, and they leak volume between tenants); Unix epoch integers (unreadable in the audit, which people will read); a time library.",
-   "status": "decided (rumble, 2026-09-21)"
+   "rationale": "Random ids remove a cross-org enumeration oracle (D-004, D-016) while the outbox needs an ordered cursor, so it gets its own integer key (D-011). A single injected clock is what makes \"approved at 14:02\" testable rather than flaky. *Rejected:* auto-increment primary keys for business rows (enumerable, and they leak volume between tenants); Unix epoch integers (unreadable in the audit, which people will read); a time library. **Addendum (#2, 2026-09-21):** `audit_log.id` and `order_outbox.id` are `INTEGER PRIMARY KEY` for the same reason the outbox cursor is — both are read in insertion order — and neither is ever a URL parameter, so the enumeration argument does not apply to them. The human-facing `requisitions.number` is `REQ-<yyyy>-<000123>`, taken from the per-organisation `orgs.requisition_seq` and incremented inside the inserting transaction. Token timestamps are the one exception to \"ISO-8601 everywhere\": `iat`/`exp` are integer Unix seconds so that nothing parses an attacker-controlled date string (D-021).",
+   "status": "decided (rumble, 2026-09-21) · addendum #2"
   },
   {
    "id": "D-018",
    "struck": false,
    "date": "2026-09-21",
    "title": "**Configuration and secrets: environment variables only, validated once at startup into a frozen typed config; the process refuses to start on a missing or malformed value.** `REQUISIT_TOKEN_SECRET` (≥ 32 bytes), `REQUISIT_DB_PATH`, `PORT`, `NODE_ENV`, `REQUISIT_LOG_LEVEL`. `.env` is gitignored and read only by the dev seed script, never by the service. Tokens, secrets and `Authorization` headers are redacted by the one log function; no secret ever appears in an error body, an audit line or the HTML.",
-   "rationale": "Failing loudly at startup beats a service that runs with a default signing key — the single worst outcome in the threat model (`docs/08-security.md`). *Rejected:* a config file (one more thing to ship a secret in); defaults for the secret (never); a secrets manager (an external dependency for a single-container v1).",
-   "status": "decided (rumble, 2026-09-21)"
+   "rationale": "Failing loudly at startup beats a service that runs with a default signing key — the single worst outcome in the threat model (`docs/08-security.md`). *Rejected:* a config file (one more thing to ship a secret in); defaults for the secret (never); a secrets manager (an external dependency for a single-container v1). **Addendum (#2 review, 2026-09-21):** two holes in \"frozen\" and \"redacted\" as the code first read them. (a) `Object.freeze` does not freeze a `Map`, so `tokenKeys` is handed out as a frozen read-only view with no `set`/`delete`/`clear` — `ReadonlyMap` is a type and types are gone in `dist/`. (b) Redaction walks the whole field tree, not only its top level (request context arrives nested), covers `bearer`/`authHeader`/`credential` as well, and redacts any *value* shaped like a personal token (`v<n>.<b64url>.<b64url>`) whatever its field is called.",
+   "status": "decided (rumble, 2026-09-21) · addendum #2"
+  },
+  {
+   "id": "D-019",
+   "struck": false,
+   "date": "2026-09-21",
+   "title": "**Build and lint pipeline: the source runs unbuilt through Node's type stripping; `tsc` emits `dist/` for `npm start` only; eslint's core rules run over the emitted JavaScript.** Relative imports carry the `.ts` extension (`allowImportingTsExtensions` + `rewriteRelativeImportExtensions`), `erasableSyntaxOnly` bans enums, namespaces and parameter properties, `verbatimModuleSyntax` keeps the import shape honest. `npm test` and the CLI run `.ts` directly; `npm run lint` builds first and then lints `dist/**/*.js` plus the repository's own `.js`/`.mjs` files.",
+   "rationale": "Tests with no transpile step and no watcher is the whole point of D-001 and D-014, and the TypeScript-only checks are exactly what `tsc`'s strict flags already do — `npm run typecheck` is its own board step. eslint cannot parse TypeScript without `typescript-eslint`, which would be a fourth devDependency that D-001 does not allow, so lint covers the JavaScript `tsc` produced, which is also the code that ships in `dist/`. *Rejected:* adding `typescript-eslint` (a dependency the stack decision rules out); `tsx`/`ts-node` (a runtime dependency just to run our own source); dropping eslint (then nothing checks `eqeqeq`, `no-throw-literal` or `no-self-compare`). What this misses is genuinely open — G-016 holds the question with its trigger. **Addendum (#2 review, 2026-09-21):** `scripts/**/*.ts` was covered by `tsc` alone — `tsconfig.build.json` includes `src/` only, so the one token issuer was linted by nothing. `npm run lint` now also emits `src/` + `scripts/` through `tsconfig.lint.json` into the gitignored `dist-lint/` and lints `dist-lint/scripts/**/*.js` (`dist-lint/src/` is the same code as `dist/` and is not linted twice). The mechanism is unchanged; only its coverage is.",
+   "status": "decided (#2, 2026-09-21) · addendum #2"
+  },
+  {
+   "id": "D-020",
+   "struck": false,
+   "date": "2026-09-21",
+   "title": "**Migration runner: TypeScript modules `{ id, name, sql }` in an explicit registry, a `schema_migrations` table with a sha256 checksum, contiguous ids from 1, one transaction per migration, forward only.** Every checksum is verified before the first new migration runs, so a migration edited after it shipped aborts the whole run instead of being discovered halfway through a later one. `applied_at` comes from the injected `Clock`. The append-only `audit_log` (D-007) is additionally enforced in the schema by `BEFORE UPDATE` and `BEFORE DELETE` triggers that `RAISE(ABORT)`.",
+   "rationale": "An explicit registry survives both `tsc`'s emit into `dist/` and Node's type stripping of `src/` without a directory to scan or a path to resolve at runtime. The checksum turns \"someone edited `0001` after it shipped\" from a silent divergence into a start-up failure. The triggers make \"the audit is append-only\" a guarantee of the engine and not of the code review — the source scan and the trigger fail independently. *Rejected:* `.sql` files read from disk at runtime (a path that differs between `src/`, `dist/` and the test runner); a `down` direction (never run in anger, therefore never tested, therefore not a rollback).",
+   "status": "decided (#2, 2026-09-21)"
+  },
+  {
+   "id": "D-021",
+   "struck": false,
+   "date": "2026-09-21",
+   "title": "**Token wire details (extends D-005).** `v1.<base64url(payload)>.<base64url(hmac)>`, where the MAC is computed over the exact string `v1.<payloadB64>` — the version sits inside the signature and cannot be swapped. The payload is exactly `{ sub, org, iat, exp, kid }`; `iat`/`exp` are integer Unix seconds; `kid` `'1'` is `REQUISIT_TOKEN_SECRET`, so a second key is a configuration change and not a code change. Verification, in order: length ≤ 4096 and three base64url parts → JSON parse and exact field shape → `kid` lookup (an unknown one still pays for one HMAC) → `crypto.timingSafeEqual` on the signature → `exp > now` and `iat ≤ now + 60 s`. Every failure returns `refuse('unauthenticated', …)`; nothing on this path throws.",
+   "rationale": "Binding the version into the MAC is what makes \"v1\" a claim an attacker cannot edit. Integer seconds mean no attacker-controlled string ever reaches a date parser. The equal cost for an unknown `kid` keeps the key set out of the response time. The single refusal code is the D-016 addendum: no identity is a different thing from no authority, and the UI has to tell them apart. *Rejected:* ISO timestamps in the payload (parsing hostile strings); JWT (a library, an algorithm-negotiation field and a spec surface v1 does not need); reusing `not_authorised` for an invalid token. **Addendum (#2 review, 2026-09-21):** verification additionally requires the signature to be spelled *canonically* — `signatureB64 === expected.toString('base64url')` after the `timingSafeEqual`. base64url ignores the two unused bits of the last character of a 32-byte MAC, so four strings decode to the same bytes; a revocation denylist keyed on the token string (G-013) would have been bypassable four times over. The issuer additionally caps `--ttl` at 90 days, because until G-013 lands a mistyped TTL can only be undone by rotating the organisation's secret.",
+   "status": "decided (#2, 2026-09-21) · addendum #2"
+  },
+  {
+   "id": "D-022",
+   "struck": false,
+   "date": "2026-09-21",
+   "title": "**The repository seam.** Factories `xRepo(db, scope, clock?)`; `OrgScope` is branded and built only by `orgScope()`; every write takes the `Tx` that `withTransaction` (`BEGIN IMMEDIATE`, no nesting, no savepoints) hands it, so an audit line cannot be written outside the transaction that changed the state; every statement binds `scope.orgId` first; a read of an id belonging to another organisation is `not_found` / `[]`, never a different error. The one module that touches data without a scope is `src/db/instance.ts`, and every export in it is prefixed `instance`. `src/db/` is synchronous throughout — a `Promise` there would hold the single write lock across the event loop.",
+   "rationale": "The failure mode D-004 defends against is a forgotten `WHERE org_id = ?`; the defence that works is a shape in which the query cannot be written without one, plus the leak suite that runs forever. Requiring a `Tx` in the type turns D-007 into a compile error rather than a review comment. The `instance` prefix means one grep finds every cross-organisation call site. *Rejected:* a base-repository class (the only thing to share is the organisation filter, which the factory shape already forces); savepoints for nested transactions (no caller in Arc 1 needs one — a nested call is a bug, and the runner says so).",
+   "status": "decided (#2, 2026-09-21)"
   }
  ],
  "gaps": [
@@ -265,6 +297,14 @@ window.DECISIONS = {
    "title": "**Retention, export and deletion.** How long do requisitions and audit lines live, and what happens when an organisation leaves?",
    "rationale": "The audit is append-only by design (D-007), which collides with \"delete my data\". A B2B customer will ask for both an export and a deletion path.",
    "status": "The first offboarding, a legal review, or a database that outgrows its disk."
+  },
+  {
+   "id": "G-016",
+   "struck": false,
+   "date": "**Linting without a TypeScript parser.** Does linting the emitted JavaScript (D-019) miss findings that a type-aware rule would have caught?",
+   "title": "**Linting without a TypeScript parser.** Does linting the emitted JavaScript (D-019) miss findings that a type-aware rule would have caught?",
+   "rationale": "`npm run lint` builds `dist/` and lints that, because `typescript-eslint` would be a fourth devDependency and D-001 names three. The emitted JavaScript has no types left, so rules about `any`, floating promises, unsafe narrowing or unused type-only imports never run — `tsc --noEmit` covers some of that ground, but not all of it. *(#2 review, 2026-09-21: the coverage hole under this question is closed — `scripts/**` is emitted into `dist-lint/` and linted too, D-019 addendum. The type-aware question itself stays open.)*",
+   "status": "The first review finding that only a TypeScript-aware rule would have caught, or a second lint-shaped 🟡 in one arc."
   }
  ],
  "measurements": [
@@ -309,10 +349,10 @@ window.DECISIONS = {
    "title": "M-010 · Database size per 10 000 requisitions"
   }
  ],
- "measured": 0,
- "addenda": 1,
+ "measured": 1,
+ "addenda": 14,
  "research": 6,
- "anchors": "anchors: 18 D · 15 G · 10 M rows, every reference resolves",
+ "anchors": "anchors: 22 D · 16 G · 10 M rows, every reference resolves",
  "waves": [
   [
    "#2"
@@ -326,5 +366,5 @@ window.DECISIONS = {
   ]
  ],
  "brief": "# Requisit — the brief (the rumble's input)\n\n*What a person types or pastes at the start of the rumble session: everything they know\nabout the wish. The rumble turns it into a vision, decisions, gaps, a roadmap and issues.*\n\nOur customers' buyers order on account, and above a certain amount someone has to approve\nbefore the order goes out. Today that lives in e-mail threads and a spreadsheet of \"who may\napprove how much\". I want a small, honest service for that — a purchase-requisition and\napproval flow that a B2B shop can sit in front of.\n\n- A **buyer** in an organisation creates a requisition: line items from a catalogue\n  (SKU, quantity, unit price), a cost centre, a note. They can save a draft and submit it.\n- **Approval rules** per organisation: up to X the buyer's own authority; up to Y the cost\n  centre owner; above that a named finance approver. The rule that matched is visible on the\n  requisition. An approver approves or rejects **with a reason the buyer sees**.\n- On approval the requisition becomes an **order** for the merchant side — for v1 that is a\n  webhook or an outbox the shop polls; the real commerce backend comes later.\n- An **agent for the buyer**: \"order 20 more of the blue ones like last month\" → a draft\n  requisition the buyer reviews and submits. The agent never submits or approves on its own.\n- Later: a merchant-side agent that answers \"why is this stuck?\", reorder suggestions,\n  SSO, multi-currency, a PWA for approvers on the phone.\n\nConstraints and taste:\n\n- One container, one database (SQLite is fine for v1, the design must allow Postgres).\n- Roles for v1 via signed personal tokens; SSO later — the design must not paint us in.\n- Many organisations on one instance from day one; an organisation must never see\n  another's data — that is the one thing that would end the project.\n- Money must be right: no floats, one rounding rule, a currency on every amount.\n- Honest: if it says \"approved by Anna under rule R2 at 14:02\", that is exactly what happened.\n- Team: three developers and a product person; decisions written down where the next person\n  finds them; every PR reviewed; the docs are the memory, not the chat.\n",
- "built": "2026-09-21T14:31:59.543Z"
+ "built": "2026-09-21T15:10:05.155Z"
 };
