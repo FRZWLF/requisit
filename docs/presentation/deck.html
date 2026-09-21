@@ -376,7 +376,7 @@
       document.getElementById('findingRed').innerHTML = redBlock ? md(redBlock.slice(0, 900)) : (reviews.length ? 'No red finding on this issue — the first review came back clean.' : 'reviews pending');
       const afterFix = red ? reviews.filter(r => r.at > red.at && r.pr === red.pr) : [];
       const fixCommit = red ? ev('commit').find(c => c.at > red.at) : null;
-      document.getElementById('findingFix').innerHTML = fixCommit ? esc(''),document.getElementById('findingFix').textContent = fixCommit ? `${fixCommit.sha} ${fixCommit.text}` + (afterFix[0] ? `\n\nre-review: ${afterFix[0].verdict}` : '') : (red ? 'fix pending' : '—');
+      document.getElementById('findingFix').textContent = fixCommit ? `${fixCommit.sha} ${fixCommit.text}` + (afterFix[0] ? `\n\nre-review: ${afterFix[0].verdict}` : '') : (red ? 'fix pending' : '—');
       document.getElementById('findingMeta').textContent = red ? `${fixes.length} fix round(s) · re-review by the reviewer that held the red` : '';
     }
     // docs
