@@ -381,16 +381,21 @@
     }
     // docs
     document.getElementById('dCount').textContent = D.decisions.length || '—';
-    document.getElementById('dAddenda').textContent = D.addenda != null ? `${D.addenda} addenda written by PRs` : '';
+    document.getElementById('dAddenda').textContent = D.addenda != null ? `${D.addenda} of them extended by PR addenda` : '';
     document.getElementById('gCount').textContent = (D.gaps.length || '—') + ' · ' + (D.measurements.length || '—');
     document.getElementById('mCount').textContent = D.measured != null ? `${D.measured} of ${D.measurements.length} measured, the rest read “pending”` : '';
     document.getElementById('anchorLine').textContent = D.anchors || 'check-anchors: pending';
     // cost
     const t = document.getElementById('costTable');
     if (C && C.rows && C.rows.length) {
-      const max = Math.max(...C.rows.map(r => r.tokens || 0));
-      t.innerHTML = `<tr><th>issue</th><th>stage</th><th>model</th><th style="text-align:right">tokens</th><th></th></tr>` + C.rows.map(r => `<tr><td>${esc(r.issue)}</td><td>${esc(r.stage)}</td><td class="mono">${esc(r.model)}</td><td class="n">${num(r.tokens)}</td><td style="width:26%"><div class="bar" data-w="${Math.round((r.tokens || 0) / max * 100)}%"></div></td></tr>`).join('') + `<tr class="total"><td colspan="3">total</td><td class="n">${num(C.total)}</td><td></td></tr>`;
-      document.getElementById('costNote').textContent = C.note || '';
+      const groupOf = st => /^triage|^re-triage/i.test(st) ? 'triage' : /architect/i.test(st) ? 'architect' : /implement/i.test(st) ? 'implement' : /^re-review/i.test(st) ? 're-reviews' : /review/i.test(st) ? 'reviews' : /fix/i.test(st) ? 'fix rounds' : null;
+      const order = ['triage', 'architect', 'implement', 'reviews', 'fix rounds', 're-reviews'];
+      const g = {}; const models = {};
+      for (const r of C.rows) { const k = groupOf(r.stage); if (!k) continue; g[k] = (g[k] || 0) + (r.tokens || 0); (models[k] = models[k] || new Set()).add(r.model.trim()); }
+      const max = Math.max(...order.map(k => g[k] || 0));
+      const byIssue = {}; for (const r of C.rows) byIssue[r.issue] = (byIssue[r.issue] || 0) + (r.tokens || 0);
+      t.innerHTML = `<tr><th>stage</th><th>model</th><th style="text-align:right">tokens</th><th style="text-align:right">share</th><th></th></tr>` + order.filter(k => g[k]).map(k => `<tr><td>${k}</td><td class="mono">${[...models[k]].join(' · ')}</td><td class="n">${num(g[k])}</td><td class="n">${Math.round(g[k] / C.total * 100)} %</td><td style="width:30%"><div class="bar" data-w="${Math.round(g[k] / max * 100)}%"></div></td></tr>`).join('') + `<tr class="total"><td colspan="2">the arc — ${Object.keys(byIssue).length} issues, ${C.prs || Object.keys(byIssue).length} PRs</td><td class="n">${num(C.total)}</td><td></td><td></td></tr>`;
+      document.getElementById('costNote').textContent = 'per issue: ' + Object.entries(byIssue).map(([i, v]) => `${i} ${num(v)}`).join(' · ') + (C.note ? ' — ' + C.note : '');
     } else t.innerHTML = '<tr><td class="mono">the trails feed this table (data/cost.js) — pending</td></tr>';
   }
 

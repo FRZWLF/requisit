@@ -1,6 +1,6 @@
 # The talk: "From a conversation to main" — the rumble framework on Requisit
 
-Audience: Intershop engineering and product (B2B commerce; agents on the merchant and buyer
+Audience: Intershop engineering and product (see README.md here for where every artefact lives; Arc 1 ran on 2026-09-21) (B2B commerce; agents on the merchant and buyer
 side, the PWA, the new commerce core). Length: 30–40 min + demo + Q&A. Everything shown is
 real: this repo was built, live or recorded, by the process the talk describes.
 
@@ -27,8 +27,9 @@ real: this repo was built, live or recorded, by the process the talk describes.
    The architect (only on size:L) posts a 🏛 Design. Implementers in isolated worktrees,
    three at a time, background. Reviewers, verdict lines, a fix round, the gate, the 📋 trail
    with the cost per stage.
-   *Replay: `site/replay.html?data=replays/issue-N.json` — the animated trail of one real
-   issue exported by `scripts/replay-from-gh.mjs`.*
+   *Replay: `rumble-framework/site/replay.html?data=replays/requisit-issue-3.json` — the animated
+   trail of issue #3 (two reds, a fixer cut off mid-round, both re-reviews) exported by
+   `scripts/replay-from-gh.mjs`; `deck.html` slide 6 shows issue #2's trail inline.*
 6. **What a review finds.** One PR with a 🔴 and a 🟡: the finding text, the fix commit,
    the re-review. The reviewer reused the PR's evidence instead of re-running everything.
    *Live: the PR conversation tab.*

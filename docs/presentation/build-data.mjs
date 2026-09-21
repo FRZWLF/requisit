@@ -21,7 +21,7 @@ const dec = doc('docs/02-decisions.md'), gaps = doc('docs/14-gap-analysis.md'), 
 const decisions = rows(dec, 'D'), gapRows = rows(gaps, 'G').map(r => ({ ...r, title: r.date, rationale: r.title })); // gaps: Id | Question | Why | ...
 const mrows = [...meas.matchAll(/^(?:#{2,4}\s+|\|\s*|\*\*)(M-\d+)\b[^\n]*/gm)].map(m => ({ id: m[1], title: m[0].replace(/^[#|* ]+/, '').replace(/\*\*/g, '').trim().slice(0, 120) }));
 const measured = mrows.filter(r => !/pending|steht aus/i.test(meas.slice(meas.indexOf(r.id), meas.indexOf(r.id) + 600))).length;
-const addenda = (dec.match(/addend/gi) || []).length;
+const addenda = decisions.filter(r => /addend/i.test(r.title + ' ' + r.rationale + ' ' + r.status)).length;   // rows a PR extended
 const research = (doc('docs/15-research-log.md').match(/^## /gm) || []).length;
 let anchors = ''; try { anchors = sh('node', [join(FW, 'scripts/check-anchors.mjs'), '.']).trim().split('\n').pop(); } catch (e) { anchors = String(e.stdout || '').trim().split('\n').pop(); }
 let waves = [];
@@ -39,12 +39,12 @@ if (umbrella) {
   for (const n of nums) {
     const cs = JSON.parse(sh('gh', ['api', '--paginate', `repos/${REPO}/issues/${n}/comments`]));
     for (const c of cs) {
-      if (!/📋/.test(c.body || '')) continue;
+      if (!/📋 Pipeline/.test(c.body || '')) continue;
       for (const l of c.body.split('\n')) { const m = l.match(/^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([\d.,]+)\s*k?\s*\|/i); if (m && !/^stage/i.test(m[1]) && !/^-+$/.test(m[1])) { let t = Number(m[4].replace(/,/g, '')); if (/k\s*\|/.test(l)) t *= 1000; costRows.push({ issue: '#' + n, stage: m[1], model: m[2], outcome: m[3], tokens: Math.round(t) }); } }
-      const pm = c.body.match(/PRs?:?\s*(\d+)/i); if (pm) prs += +pm[1];
-      const fm = c.body.match(/(\d+)\s+(?:red|🔴)/i); if (fm) findings += +fm[1];
+      prs += 1;   // one trail = one merged PR (stacked PRs would list more; count the "PR #" mentions then)
+      for (const l of c.body.split('\n')) { if (/^\|\s*(quality|security) review[^|]*\|/i.test(l)) { const m = l.match(/\((\d+) red, (\d+) nits?\)/); if (m) findings += +m[1] + +m[2]; } }
     }
   }
 }
-writeFileSync(join(HERE, 'data/cost.js'), 'window.COST = ' + JSON.stringify({ rows: costRows, total: costRows.reduce((s, r) => s + r.tokens, 0), prs: prs || null, findings: findings || null, note: costRows.length ? `from the 📋 trail comments of umbrella #${umbrella}; tokens as the runtime reported them` : '', liveUrl: 'http://localhost:3000/' }, null, 1) + ';\n');
+writeFileSync(join(HERE, 'data/cost.js'), 'window.COST = ' + JSON.stringify({ rows: costRows, total: costRows.reduce((s, r) => s + r.tokens, 0), prs: prs || null, findings: findings || null, note: costRows.length ? `from the 📋 trail comments of umbrella #${umbrella}; tokens as the runtime reported them` : '', liveUrl: process.env.REQUISIT_LIVE_URL || 'http://localhost:3000/' }, null, 1) + ';\n');
 console.log(`decisions ${decisions.length} · gaps ${gapRows.length} · measurements ${mrows.length} (${measured} measured) · research ${research} · waves ${waves.length} · trail ${issue ? 'issue #' + issue : 'skipped'} · cost rows ${costRows.length}`);

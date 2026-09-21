@@ -2,7 +2,7 @@ window.TRAIL = {
  "repo": "FRZWLF/requisit",
  "issue": 2,
  "title": "Project scaffold, domain model, storage with audit, and token authentication",
- "exported": "2026-09-21T15:10:08.315Z",
+ "exported": "2026-09-21T18:00:25.156Z",
  "events": [
   {
    "at": "2026-09-21T14:17:33Z",
