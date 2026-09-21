@@ -476,7 +476,7 @@
 
 <!-- cost -->
 <section class="slide" data-title="Cost" data-kind="cost">
-  <div class="head"><div class="eyebrow"><span class="n">07</span>the ledger</div><h2>What a feature costs, by stage.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">07</span>the ledger</div><h2>What a feature costs, by stage.</h2><p class="lede">Nobody can say whether this is a lot, because without a trail nobody measures their own. What the framework promises is not cheap: it is a number per stage, and a dial for each.</p></div>
   <div class="meta lead" id="costLead"></div>
   <table class="cost" id="costTable"></table>
   <p class="mono" id="costNote"></p>
@@ -497,12 +497,12 @@
 
 <!-- teams -->
 <section class="slide" data-title="Teams" data-steps="4">
-  <div class="head"><div class="eyebrow"><span class="n">09</span>several people</div><h2>The issue is the contract, so the author does not matter.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">09</span>several people, not all of them on it</div><h2>Nothing runs on its own. A colleague without the framework never meets it.</h2></div>
   <div class="cards four">
-    <div class="card" data-step="1"><div class="tag">rumble</div><p>Everyone rumbles. Rows and issues come as a PR and are reviewed like code. Reserved numbers avoid collisions.</p></div>
-    <div class="card" data-step="2"><div class="tag">orchestrate</div><p>One person per arc runs the pipeline. State is on GitHub, so the next wave can be taken over in a new session by someone else.</p></div>
-    <div class="card" data-step="3"><div class="tag">review</div><p>Verdicts, evidence and trails are written for a person who was not there. Disagree in a review comment — the fix loop treats it like a finding.</p></div>
-    <div class="card" data-step="4"><div class="tag">merge</div><p><code>gate.merge: human</code> and the gate stops at "ready for review". CODEOWNERS per area decide who the inbox is.</p></div>
+    <div class="card" data-step="1"><div class="tag">what it touches</div><h3>Only issues you triaged.</h3><p>The pipeline starts when a person runs <code>/pipeline</code> on an umbrella. It reads issues carrying <code>pipeline:build</code>, which only triage sets. Everything else on the repo is invisible to it.</p></div>
+    <div class="card" data-step="2"><div class="tag">labels</div><h3>Yours are named in the config.</h3><p><code>pipeline:build</code>, <code>area:*</code>, <code>size:*</code>, <code>risk:*</code> come from <code>framework.json</code>. A colleague's tool uses <code>size:L</code> too? Rename, re-render, done.</p></div>
+    <div class="card" data-step="3"><div class="tag">branches · PRs</div><h3>Nobody's agent takes your PR.</h3><p>Agents work in <code>feat/issue-N</code> worktrees on the issues they were given; the fix loop is addressed to the implementer of that PR. The shared ground is <code>main</code>, and there the rules are the human ones: PR, review, board.</p></div>
+    <div class="card" data-step="4"><div class="tag">the one agreement</div><h3>Decisions get a row.</h3><p>Whatever tool made the change. The anchor check catches dangling references, not silent drift — so the team rule is one sentence. Everyone on it: rows and issues come as PRs, <code>gate.merge: human</code> if a person should merge.</p></div>
   </div>
 </section>
 

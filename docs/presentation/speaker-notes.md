@@ -148,7 +148,7 @@ Jede Chapter-Folie ist gleich gebaut: links die Rolle (wer, Input, was, Output, 
 
 ## Kosten (75s)
 
-> Ehrliche Zahlen aus den Trails, oben pro Feature: 848 Tausend Tokens im Schnitt. Implementierung ist ein knappes Drittel, Reviews ein Viertel, Fix-Runden ein Sechstel. Die zwei risk-high-Issues mit einem Rot kosteten das Zwei- bis Dreifache des einen ohne. Und der Rumble selbst: 112 Tausend, 13 Prozent eines Issues. Das Denken ist der billige Teil, und was es gekauft hat, sieht man an den Fix-Runden: die drehten sich um Dinge, die der Rumble nicht entschieden hatte, nie um entschiedene Zeilen.
+> Erst der Rahmen: ob das viel ist, kann niemand sagen, weil ohne Trail niemand die eigenen Zahlen kennt. Das Framework verspricht nicht billig, es verspricht eine Zahl pro Station und einen Regler dafür. Jetzt die Zahlen aus den Trails, oben pro Feature: 848 Tausend Tokens im Schnitt. Implementierung ist ein knappes Drittel, Reviews ein Viertel, Fix-Runden ein Sechstel. Die zwei risk-high-Issues mit einem Rot kosteten das Zwei- bis Dreifache des einen ohne. Und der Rumble selbst: 112 Tausend, 13 Prozent eines Issues. Das Denken ist der billige Teil, und was es gekauft hat, sieht man an den Fix-Runden: die drehten sich um Dinge, die der Rumble nicht entschieden hatte, nie um entschiedene Zeilen.
 
 ## Bestehendes Projekt (60s)
 
@@ -156,7 +156,7 @@ Jede Chapter-Folie ist gleich gebaut: links die Rolle (wer, Input, was, Output, 
 
 ## Teams (60s)
 
-> Das Issue ist der Vertrag, also ist der Autor egal. Alle rumbeln, die Zeilen kommen als PR und werden geprüft wie Code. Ein Mensch pro Arc orchestriert, der Zustand liegt auf GitHub, die nächste Welle kann jemand anderes übernehmen. Verdicts und Trails sind für jemanden geschrieben, der nicht dabei war. Und wer mergt, ist Konfiguration: gate.merge human, und das Gate stoppt bei „ready for review".
+> Die Frage, die immer kommt: was, wenn die Kollegin das Framework nicht nutzt, oder ein anderes? Antwort: nichts läuft von allein. Die Pipeline startet, wenn ein Mensch pipeline auf ein Umbrella ruft, und liest nur Issues mit pipeline-build, das nur Triage setzt. Alles andere im Repo sieht sie nicht. Labels kommen aus der Config; kollidiert size-L mit einem anderen Tool, umbenennen, neu rendern, fertig. Agenten arbeiten in ihren eigenen Worktrees an den Issues, die sie bekommen haben; niemandes Agent nimmt sich einen fremden PR. Gemeinsam ist nur main, und da gelten die Regeln für Menschen. Die eine Vereinbarung, die zählt: Entscheidungen bekommen eine Zeile, egal mit welchem Werkzeug. Der Anker-Check fängt hängende Referenzen, nicht stilles Abdriften.
 
 ## Hier (60s)
 
@@ -169,6 +169,10 @@ Jede Chapter-Folie ist gleich gebaut: links die Rolle (wer, Input, was, Output, 
 ---
 
 ## Q&A-Karten
+
+**„Ist 3,4 Millionen viel?“** — Gegenfrage: verglichen womit? Ohne Trail hat niemand die Zahl für die eigene Arbeit. Das Rote ist das Teure: ein Finding kostet eine Fix-Runde plus Re-Review auf Opus. Ein billigeres Modell, das ein Rot mehr produziert, ist am Ende teurer. Darum messen statt raten: Sonnet für size-M ist ein Regler in der Binding, der nächste Arc zeigt in Tokens und Rot-Findings, ob er hält.
+
+**„Meine Kollegin nutzt ein anderes Tool.“** — Die Pipeline sieht nur Issues mit pipeline-build, das nur Triage setzt, und Triage läuft nur, wenn ich pipeline starte. Labels kommen aus der Config, Kollisionen werden umbenannt. Die eine Vereinbarung: Entscheidungen bekommen eine Zeile.
 
 **„Entscheidet der Agent die Architektur?"**
 Nein. Der Rumble entscheidet, mit dem Menschen. Der Architekt entwirft innerhalb entschiedener Zeilen und schlägt neue vor, die ein Mensch sehen kann, bevor gebaut wird.
