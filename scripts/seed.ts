@@ -13,7 +13,7 @@ import { costCentresRepo } from '../src/db/repos/cost-centres.ts';
 import { catalogueRepo } from '../src/db/repos/catalogue.ts';
 import { rulesRepo } from '../src/db/repos/rules.ts';
 import { mintToken } from '../src/auth/token.ts';
-import type { Org, Person, Role } from '../src/domain/types.ts';
+import type { CostCentre, Org, Person, Role } from '../src/domain/types.ts';
 import type { DatabaseSync } from 'node:sqlite';
 
 /**
@@ -47,7 +47,7 @@ export interface SeededPerson {
 
 export interface SeededOrganisation {
   readonly org: Org;
-  readonly costCentreCode: string;
+  readonly costCentre: CostCentre;
   readonly created: boolean;
   readonly people: readonly SeededPerson[];
 }
@@ -267,9 +267,15 @@ export function seed(
     const existing = instanceFindOrgByName(db, spec.name);
     const created = isRefusal(existing);
     const org = created ? buildOrganisation(db, clock, spec) : existing;
+    const centre = costCentresRepo(db, bootstrapScope(org.id), clock)
+      .list()
+      .find((row) => row.code === spec.costCentre.code);
+    if (centre === undefined) {
+      throw new SeedError(`${spec.name}: cost centre ${spec.costCentre.code} is missing`);
+    }
     organisations.push({
       org,
-      costCentreCode: spec.costCentre.code,
+      costCentre: centre,
       created,
       people: peopleOf(db, org, clock, spec, mint),
     });
@@ -285,7 +291,7 @@ function render(result: SeedResult, port: number): string {
       `${entry.org.name} · ${entry.org.currency} · ${entry.created ? 'seeded' : 'already present'}`,
     );
     lines.push(`  organisation  ${entry.org.id}`);
-    lines.push(`  cost centre   ${entry.costCentreCode}`);
+    lines.push(`  cost centre   ${entry.costCentre.code}  ${entry.costCentre.id}`);
     for (const who of entry.people) {
       lines.push(`  ${who.label.padEnd(13)} ${who.person.name}`);
       lines.push(`  ${' '.repeat(13)} ${who.token}`);

@@ -59,8 +59,9 @@ export interface AckInput {
 
 export interface AckResult {
   readonly throughId: number;
+  /** The cursor after this call: the highest delivered id. It only ever moves forward. */
   readonly cursor: number;
-  /** Every requisition this acknowledgement covers, in feed order — not only the ones it moved. */
+  /** The requisitions *this* call moved to `ordered`, in feed order; empty on a no-op. */
   readonly ordered: readonly string[];
 }
 
@@ -143,10 +144,15 @@ function totalOf(requisition: RequisitionWithLines): Result<Money> {
  * covers that is not already there, stamps its outbox row with `delivered_at`/`ack_by`, and
  * writes one audit line each (D-007) — all in the caller's transaction.
  *
- * Idempotent in both directions (D-010): a `through_id` at or below the cursor stamps
- * nothing, a repeat of the same `through_id` finds every row already delivered, and the
- * answer is the same either way because it is computed from the rows the cursor covers
- * rather than from the work this call happened to do.
+ * Idempotent in both directions (D-010). A `through_id` at or below the cursor covers an
+ * empty window, so it stamps nothing, orders nothing and is not an error; a genuine retry
+ * carries the same `Idempotency-Key` and is answered with the first call's bytes by the
+ * pipeline, `Idempotent-Replayed: true` and all. A *fresh* acknowledgement of an already
+ * acknowledged cursor therefore answers `ordered: []` with the cursor unchanged: the work is
+ * the no-op the criterion asks for, and the answer says honestly that this call moved
+ * nothing. `ordered` lists what this call moved rather than everything the cursor covers,
+ * because the latter is a response — and a scan — that grows with the organisation's whole
+ * order history.
  */
 export function acknowledge(
   ctx: ServiceContext,
@@ -170,11 +176,8 @@ export function acknowledge(
 
   const requisitions = requisitionsRepo(ctx.db, ctx.scope, ctx.clock);
   const audit = auditRepo(ctx.db, ctx.scope, ctx.clock);
-  const covered = repo.listThrough(throughId);
-  for (const row of covered) {
-    if (row.deliveredAt !== null) {
-      continue;
-    }
+  const ordered: string[] = [];
+  for (const row of repo.listPending(repo.cursor(), throughId)) {
     const requisition = requisitions.byId(row.requisitionId);
     if (isRefusal(requisition)) {
       throw new Error(`outbox row ${String(row.id)} points at no requisition of this organisation`);
@@ -222,11 +225,8 @@ export function acknowledge(
     if (!repo.markDelivered(tx, row.id, ctx.scope.actor.personId)) {
       throw new Error(`outbox row ${String(row.id)} was already delivered inside this transaction`);
     }
+    ordered.push(requisition.id);
   }
 
-  return {
-    throughId,
-    cursor: repo.cursor(),
-    ordered: covered.map((row) => row.requisitionId),
-  };
+  return { throughId, cursor: repo.cursor(), ordered };
 }

@@ -69,10 +69,36 @@ id because they all share one date.
 - **Setup:** the seed script plus a loop that polls `GET /api/v1/outbox` at 1 s, 5 s and 30 s
   intervals while approvals are generated; measure the two intervals separately (approval →
   row visible, row visible → ack committed).
-- **Result:** pending.
-- **What it changes:** the evidence for or against G-006 (a webhook). If our own side is
-  sub-millisecond and the wait is the poll interval, the honest answer is "poll faster", not
-  "build a webhook".
+- **Result:** **half measured (#5, 2026-09-21), half pending.** The *approval → row visible*
+  interval is zero by construction and not a number: the outbox row is written in the
+  approving transaction (D-011), so the row is visible the instant the approval is. What was
+  measured is the other half of "how much of that is our side": the two server-side
+  transactions, in-process through the real route table (`dispatch`, no listening port),
+  against a temp-file database with the D-002 pragmas, on the implementer's machine
+  (MacBook, Apple silicon), Node v25.2.1, one run, `n = 1 000` approve/poll/ack cycles on a
+  freshly seeded organisation.
+
+  | Transaction | p50 | p95 | max |
+  |---|---|---|---|
+  | approve — state change + audit line + outbox row, one commit | 0.297 ms | 0.380 ms | 14.0 ms |
+  | acknowledge — state change + audit line + stamp, one commit | 0.232 ms | 0.291 ms | 6.7 ms |
+
+  The maxima are single outliers (the first commits after the WAL is created). **Not
+  measured:** the poll interval itself, a real HTTP round trip over a socket, and any
+  concurrency — the loop is one merchant polling one organisation with nothing else writing.
+  The 1 s / 5 s / 30 s poll-interval sweep the setup above asks for is still pending, and it
+  is the half that dominates the end-to-end wait.
+
+  One number came out of the build rather than out of the benchmark: an earlier version of
+  the acknowledgement scanned every outbox row up to `through_id`, and its p95 was 1.85 ms at
+  `n = 300` and rising with the history. Bounding the work window to `cursor < id ≤
+  through_id` made it 0.29 ms at `n = 1 000` and flat. That is the D-011 addendum's reason
+  for what `ordered` contains, measured rather than asserted.
+- **What it changes:** the evidence for or against G-006 (a webhook). Our own side is
+  ~0.5 ms for both halves together, which is three to four orders of magnitude under any
+  plausible poll interval — so on this evidence the honest answer to "the handoff is too
+  slow" is "poll faster", not "build a webhook". G-006's trigger stays the consumer that
+  *cannot* poll; the pending half of this row is what would change that.
 
 ### M-005 · Test coverage of the domain layer
 

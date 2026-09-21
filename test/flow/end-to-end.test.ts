@@ -6,11 +6,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { openDatabase, closeDatabase } from '../../src/db/open.ts';
 import { migrate } from '../../src/db/migrate.ts';
-import { orgScope } from '../../src/db/scope.ts';
-import { costCentresRepo } from '../../src/db/repos/cost-centres.ts';
 import { mintToken } from '../../src/auth/token.ts';
 import { createApp, dispatch, type App } from '../../src/http/app.ts';
-import type { Org } from '../../src/domain/types.ts';
 import { seed, type SeededOrganisation } from '../../scripts/seed.ts';
 import { TEST_CLOCK } from '../support/seed.ts';
 import { ACTIVE_KID, TEST_SECRET } from '../support/http.ts';
@@ -29,7 +26,6 @@ import { ACTIVE_KID, TEST_SECRET } from '../support/http.ts';
 interface Demo {
   readonly app: App;
   readonly organisations: readonly SeededOrganisation[];
-  readonly costCentreOf: (org: Org) => string;
 }
 
 function startDemo(t: { after: (fn: () => void) => void }): Demo {
@@ -54,12 +50,6 @@ function startDemo(t: { after: (fn: () => void) => void }): Demo {
   return {
     app: createApp({ db, tokenKeys: new Map([[ACTIVE_KID, secret]]), clock: TEST_CLOCK }),
     organisations: result.organisations,
-    costCentreOf: (org) => {
-      const scope = orgScope(org.id, { personId: null, kind: 'system', roles: new Set() });
-      const centre = costCentresRepo(db, scope, TEST_CLOCK).list()[0];
-      assert.ok(centre !== undefined, 'the seed made a cost centre');
-      return centre.id;
-    },
   };
 }
 
@@ -115,7 +105,7 @@ test('the README walkthrough, end to end, against a seeded database', (t) => {
   const buyer = tokenOf(acme, 'buyer');
   const approver = tokenOf(acme, 'approver');
   const merchant = tokenOf(acme, 'merchant');
-  const costCentreId = demo.costCentreOf(acme.org);
+  const costCentreId = acme.costCentre.id;
 
   // 1 · the buyer drafts two laptops: 2 × 1 299,00 EUR = 2 598,00 EUR (D-003, minor units).
   const draft = api(demo, 'POST', '/api/v1/requisitions', buyer, {
@@ -209,7 +199,7 @@ test('the JPY organisation orders a self-approved requisition end to end', (t) =
   const merchant = tokenOf(kabuki, 'merchant');
 
   const draft = api(demo, 'POST', '/api/v1/requisitions', buyer, {
-    costCentreId: demo.costCentreOf(kabuki.org),
+    costCentreId: kabuki.costCentre.id,
     lines: [{ description: 'Gloves, 500', quantity: 2, unitPriceMinor: 3_500 }],
   });
   assert.equal(draft.status, 201, draft.body);

@@ -55,6 +55,12 @@ function toRow(row: OutboxDbRow): OutboxRow {
   };
 }
 
+/** Just enough of a row to order it: the acknowledgement never needs the payload back. */
+export interface PendingRow {
+  readonly id: number;
+  readonly requisitionId: string;
+}
+
 const COLUMNS = 'id, org_id, requisition_id, payload_json, created_at, delivered_at, ack_by';
 
 /** The hard ceiling on one drain, whatever `limit` the caller asks for (D-023). */
@@ -69,8 +75,14 @@ export function outboxRepo(db: DatabaseSync, scope: OrgScope, clock: Clock = sys
   const selectAfter = db.prepare(
     `SELECT ${COLUMNS} FROM order_outbox WHERE org_id = ? AND id > ? ORDER BY id LIMIT ?`,
   );
-  const selectThrough = db.prepare(
-    `SELECT ${COLUMNS} FROM order_outbox WHERE org_id = ? AND id <= ? ORDER BY id`,
+  // The acknowledgement's work list. It starts at the cursor rather than at the first row
+  // ever written: every row at or below the cursor is delivered by construction (ids are
+  // `AUTOINCREMENT`, so a later row can never land below one), and scanning the whole history
+  // on every acknowledgement would make each one cost what the organisation has ever ordered.
+  const selectPending = db.prepare(
+    `SELECT id, requisition_id FROM order_outbox
+      WHERE org_id = ? AND id > ? AND id <= ? AND delivered_at IS NULL
+      ORDER BY id`,
   );
   const selectById = db.prepare(`SELECT ${COLUMNS} FROM order_outbox WHERE org_id = ? AND id = ?`);
   const selectMaxId = db.prepare('SELECT MAX(id) AS value FROM order_outbox WHERE org_id = ?');
@@ -128,9 +140,14 @@ export function outboxRepo(db: DatabaseSync, scope: OrgScope, clock: Clock = sys
       return rows<OutboxDbRow>(selectAfter.all(scope.orgId, after, capped)).map(toRow);
     },
 
-    /** Every row up to and including `throughId` — what one acknowledgement covers. */
-    listThrough(throughId: number): OutboxRow[] {
-      return rows<OutboxDbRow>(selectThrough.all(scope.orgId, throughId)).map(toRow);
+    /**
+     * The undelivered rows one acknowledgement has to move: `afterId < id <= throughId`.
+     * Bounded by the backlog the merchant is draining, never by the whole history.
+     */
+    listPending(afterId: number, throughId: number): PendingRow[] {
+      return rows<{ id: number; requisition_id: string }>(
+        selectPending.all(scope.orgId, afterId, throughId),
+      ).map((row) => ({ id: row.id, requisitionId: row.requisition_id }));
     },
 
     byId(id: number): Result<OutboxRow> {

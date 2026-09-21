@@ -207,22 +207,46 @@ test('the acknowledgement moves every covered requisition to ordered and stamps 
   assert.ok(stamped?.deliveredAt !== null);
 });
 
-test('a second identical acknowledgement is a no-op with the same response', () => {
+/**
+ * The two halves of "acking twice changes nothing": a genuine retry carries the same key and
+ * is answered with the first call's bytes (D-010), and a *fresh* acknowledgement of an
+ * already acknowledged cursor is a no-op that says so.
+ */
+test('a retry of an acknowledgement replays the first answer byte for byte', () => {
+  const fixture = setUp();
+  approvedRequisition(fixture);
+  const throughId = itemsOf(pollFeed(fixture)).at(-1)?.id ?? 0;
+  const key = nextKey();
+
+  const first = ack(fixture, throughId, key);
+  const retry = ack(fixture, throughId, key);
+  assert.equal(retry.status, first.status);
+  assert.equal(retry.body, first.body);
+  assert.equal(retry.headers['Idempotent-Replayed'], 'true');
+});
+
+test('a fresh acknowledgement of an already acknowledged cursor moves and changes nothing', () => {
   const fixture = setUp();
   approvedRequisition(fixture);
   const throughId = itemsOf(pollFeed(fixture)).at(-1)?.id ?? 0;
 
   const first = ack(fixture, throughId);
+  assert.equal((first.json['ordered'] as string[]).length, 1);
+  const stampedAt = itemsOf(pollFeed(fixture))[0]?.deliveredAt;
+  assert.ok(stampedAt !== null);
+
   // A *different* idempotency key, so this is the endpoint's own idempotence and not the
-  // stored-response replay of D-010 — both must hold, and only one of them is being tested.
+  // stored-response replay above — both must hold, and they are tested separately.
   const second = ack(fixture, throughId);
   assert.equal(second.status, 200, second.body);
   assert.equal(second.headers['Idempotent-Replayed'], undefined);
-  assert.deepEqual(second.json['ordered'], first.json['ordered']);
+  assert.deepEqual(second.json['ordered'], [], 'the second ack ordered something again');
   assert.equal(second.json['cursor'], first.json['cursor']);
-
-  const stamps = itemsOf(pollFeed(fixture)).map((item) => item.deliveredAt);
-  assert.equal(new Set(stamps).size, 1, 'the second ack rewrote delivered_at');
+  assert.equal(
+    itemsOf(pollFeed(fixture))[0]?.deliveredAt,
+    stampedAt,
+    'the second ack rewrote delivered_at',
+  );
 });
 
 test('a through_id below the cursor is a no-op, not an error, and never moves it back', () => {
@@ -237,7 +261,7 @@ test('a through_id below the cursor is a no-op, not an error, and never moves it
   const backwards = ack(fixture, low);
   assert.equal(backwards.status, 200, backwards.body);
   assert.equal(backwards.json['cursor'], high, 'the cursor moved backwards');
-  assert.deepEqual(backwards.json['ordered'], [itemsOf(pollFeed(fixture))[0]?.requisitionId]);
+  assert.deepEqual(backwards.json['ordered'], [], 'a backwards ack ordered something');
 
   // through_id 0 covers nothing and is still not an error.
   const zero = ack(fixture, 0);

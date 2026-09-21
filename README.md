@@ -53,6 +53,85 @@ npm run mint-token -- --org <org-uuid> --person <person-uuid> [--ttl 86400]
 It exits `2` when that person is not a member of that organisation, and `1` on a bad
 configuration or bad usage.
 
+## Quickstart
+
+From a clean clone, offline apart from `npm ci` — install, seed, start:
+
+```
+npm ci
+printf 'REQUISIT_TOKEN_SECRET=%s\n' "$(node -e 'console.log(crypto.randomBytes(32).toString("hex"))')" > .env
+npm run seed
+npm start
+```
+
+`npm run seed` (D-018) builds two demo organisations — **Acme GmbH** in EUR and **Kabuki KK**
+in JPY, so the exponent-0 case is in the demo and not only in a test (D-003) — each with a
+cost centre and its owner, a buyer, a finance approver, a merchant integration, a short
+catalogue and the three-row rule table D-008 requires. It prints every token **once** and
+writes none of them to a file; a second run finds what the first one made and adds nothing.
+`npm start` then serves on <http://127.0.0.1:3000>.
+
+Export the three Acme tokens the seed printed, and the cost centre's id:
+
+```
+BUYER=v1....        # Bea Buyer
+APPROVER=v1....     # Otto Owner, who owns CC-OPS
+MERCHANT=v1....     # Acme Order Feed
+CC=...               # the cost centre id the seed printed next to CC-OPS
+API=http://127.0.0.1:3000/api/v1
+```
+
+The walkthrough — draft, submit, reject, copy forward, approve, poll, acknowledge:
+
+```
+# 1 · a draft: 2 × 1 299,00 EUR, as integer minor units (D-003)
+curl -s -X POST $API/requisitions -H "Authorization: Bearer $BUYER" \
+  -H 'Content-Type: application/json' -H 'Idempotency-Key: q-1' \
+  -d '{"costCentreId":"'"$CC"'","lines":[{"description":"Laptop 13\"","quantity":2,"unitPriceMinor":129900}]}'
+# → 201, with "id", "total": { "amountMinor": 259800, "currency": "EUR" } and "actions"
+
+# 2 · submit it; 2 598,00 EUR is over the self threshold, so CC-OPS's owner decides (D-008)
+curl -s -X POST $API/requisitions/$REQ/submit -H "Authorization: Bearer $BUYER" \
+  -H 'Content-Type: application/json' -H 'Idempotency-Key: q-2' -d '{}'
+# → 200, "state": "submitted", "rule": { "ruleCode": "R2-owner-to-5000" }
+
+# 3 · the approver rejects, with a reason the buyer sees verbatim (D-009)
+curl -s -X POST $API/requisitions/$REQ/reject -H "Authorization: Bearer $APPROVER" \
+  -H 'Content-Type: application/json' -H 'Idempotency-Key: q-3' \
+  -d '{"version":2,"reason":"Use the standard 14\" model"}'
+
+# 4 · the buyer copies it forward — a new draft; the rejected row keeps its history
+curl -s -X POST $API/requisitions/$REQ/copy -H "Authorization: Bearer $BUYER" \
+  -H 'Idempotency-Key: q-4'
+
+# 5 · submit the copy, 6 · and this time the approver approves
+curl -s -X POST $API/requisitions/$COPY/submit -H "Authorization: Bearer $BUYER" \
+  -H 'Content-Type: application/json' -H 'Idempotency-Key: q-5' -d '{}'
+curl -s -X POST $API/requisitions/$COPY/approve -H "Authorization: Bearer $APPROVER" \
+  -H 'Content-Type: application/json' -H 'Idempotency-Key: q-6' -d '{"version":2}'
+# → 200, "state": "approved" — and one order_outbox row, in that same transaction (D-011)
+
+# 7 · the merchant polls the feed from its cursor
+curl -s "$API/outbox?after=0" -H "Authorization: Bearer $MERCHANT"
+# → { "items": [ { "id": 1, "requisitionId": "...", "payload": { "totalMinor": 259800, … } } ],
+#     "nextAfter": 1, "cursor": 0 }
+
+# 8 · and acknowledges through that id, which is what orders the requisition (D-009)
+curl -s -X POST $API/outbox/ack -H "Authorization: Bearer $MERCHANT" \
+  -H 'Content-Type: application/json' -H 'Idempotency-Key: q-7' -d '{"through_id":1}'
+# → { "throughId": 1, "cursor": 1, "ordered": ["<the requisition this call ordered>"] }
+#   a repeat with the same Idempotency-Key replays these bytes; a fresh one at or below the
+#   cursor is a no-op that answers "ordered": [] with the cursor unchanged (D-010)
+
+# 9 · the buyer sees the end of the story, and the whole audit behind it
+curl -s $API/requisitions/$COPY -H "Authorization: Bearer $BUYER"
+# → "state": "ordered", with history draft.copied · submit · approve · order
+```
+
+`$REQ` and `$COPY` are the `id` fields the answers to steps 1 and 4 carry.
+`test/flow/end-to-end.test.ts` executes this same walkthrough against a seeded database, so
+if the walkthrough is wrong, the board is red.
+
 ## The HTTP API
 
 `npm start` binds `127.0.0.1:$PORT` (D-012). Every route is under `/api/v1`, takes
@@ -72,7 +151,18 @@ configuration or bad usage.
 | `POST /requisitions/:id/cancel` | the buyer withdraws a draft or a submitted requisition |
 | `POST /requisitions/:id/copy` | a rejected requisition forward into a new draft |
 | `GET /rules` | the organisation's approval rule table, read-only in v1 |
+| `GET /outbox?after=&limit=` | the order feed from a cursor — a **merchant** token only (D-011) |
+| `POST /outbox/ack` | acknowledge through a cursor: the only path into `ordered` (D-009) |
 
 Who may do what comes from the matched rule, not from a role name (D-006, D-024): the
 detail's `actions` is computed by the same functions the write routes use, so a UI renders
 buttons instead of re-implementing authority.
+
+The order handoff is an outbox plus a poll, and deliberately **no webhook** (D-011; G-006
+holds the trigger for the first consumer that cannot poll). Approving writes one
+`order_outbox` row in the approving transaction, so an order can neither be lost nor emitted
+for a change that rolled back. The merchant reads the feed from an integer cursor and
+acknowledges through it; delivery is at-least-once and the merchant deduplicates on `id`.
+Acknowledged rows are stamped, never deleted, so an older cursor replays the same rows with
+the same payloads. The two routes need the `merchant` role — a buyer or approver token is
+`not_authorised`, and a merchant token of one organisation sees nothing of another (D-004).
