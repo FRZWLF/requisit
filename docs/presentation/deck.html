@@ -495,31 +495,9 @@
   <p class="mono">the rendered files are the proof: <code>node render.mjs . --check</code> fails on a hand edit, the way a generated token file fails <code>tokens:check</code></p>
 </section>
 
-<!-- teams -->
-<section class="slide" data-title="Teams" data-steps="4">
-  <div class="head"><div class="eyebrow"><span class="n">09</span>several people, not all of them on it</div><h2>Nothing runs on its own. A colleague without the framework never meets it.</h2></div>
-  <div class="cards four">
-    <div class="card" data-step="1"><div class="tag">what it touches</div><h3>Only issues you triaged.</h3><p>The pipeline starts when a person runs <code>/pipeline</code> on an umbrella. It reads issues carrying <code>pipeline:build</code>, which only triage sets. Everything else on the repo is invisible to it.</p></div>
-    <div class="card" data-step="2"><div class="tag">labels</div><h3>Yours are named in the config.</h3><p><code>pipeline:build</code>, <code>area:*</code>, <code>size:*</code>, <code>risk:*</code> come from <code>framework.json</code>. A colleague's tool uses <code>size:L</code> too? Rename, re-render, done.</p></div>
-    <div class="card" data-step="3"><div class="tag">branches · PRs</div><h3>Nobody's agent takes your PR.</h3><p>Agents work in <code>feat/issue-N</code> worktrees on the issues they were given; the fix loop is addressed to the implementer of that PR. The shared ground is <code>main</code>, and there the rules are the human ones: PR, review, board.</p></div>
-    <div class="card" data-step="4"><div class="tag">the one agreement</div><h3>Decisions get a row.</h3><p>Whatever tool made the change. The anchor check catches dangling references, not silent drift — so the team rule is one sentence. Everyone on it: rows and issues come as PRs, <code>gate.merge: human</code> if a person should merge.</p></div>
-  </div>
-</section>
-
-<!-- intershop -->
-<section class="slide" data-title="Here" data-steps="3">
-  <div class="head"><div class="eyebrow"><span class="n">10</span>where this fits</div><h2>Agent features are decisions plus contracts plus reviewed PRs.</h2></div>
-  <div class="cards">
-    <div class="card" data-step="1"><div class="tag">buyer · merchant agents</div><h3>What an agent may do is a row before it is code.</h3><p>Requisit's drafting agent never approves — decided in the rumble, a <code>risk:high</code> label on every PR that touches it, enforced in review.</p><div class="ans">first step: a rumble on the agent's authority — the D-rows, the risk:high list, the refusals</div></div>
-    <div class="card" data-step="2"><div class="tag">pwa</div><h3>One <code>framework.json</code>, the CI you have.</h3><p>Areas, implementers, the verify board and the risk:high list are the project's; the process and the agents are rendered in.</p><div class="ans">first step: render, run <code>--check</code> in CI, one size:S issue through the pipeline</div></div>
-    <div class="card" data-step="3"><div class="tag">new commerce core</div><h3>The ADRs are the memory already.</h3><p>Decisions keep their numbers; gaps get triggers; the numbers nobody wrote down get an M-row that reads "pending".</p><div class="ans">first step: a reading rumble over the ADRs, then the smallest real change as arc 1</div></div>
-  </div>
-  <p class="mono">both runtimes from the same source — Claude Code and Codex; the model per stage is a binding, not a habit</p>
-</section>
-
 <!-- close -->
 <section class="slide close" data-title="Close" data-steps="3">
-  <div class="head"><div class="eyebrow"><span class="n">11</span>the loop</div><h1>Think. <em>Contract.</em> Build. Remember.</h1></div>
+  <div class="head"><div class="eyebrow"><span class="n">09</span>the loop</div><h1>Think. <em>Contract.</em> Build. Remember.</h1></div>
   <ul class="plain">
     <li data-step="1">Rumble in a session that ends with issues, never with code.</li>
     <li data-step="2">Build in a session that never reads code, from agents that each do one job.</li>

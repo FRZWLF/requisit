@@ -154,14 +154,6 @@ Jede Chapter-Folie ist gleich gebaut: links die Rolle (wer, Input, was, Output, 
 
 > Die meisten haben das schon, unter anderen Namen. ADRs: die Config zeigt auf den ADR-Index, eine D-Zeile pro ADR, Nummern bleiben. CONTRIBUTING und Security-Policy: werden als Projekt-Abschnitte an den Standards-Kern gehängt, bei Sicherheit gewinnen sie. Die CI bleibt; dazu kommen render check und check-anchors. Backlog, Wiki-Zahlen, offene Fragen: der erste Rumble ist ein lesender Rumble, erst Gaps, dann die kleinste echte Änderung. Und wer nicht auf GitHub ist: der Prozess braucht vier Objekte, Issues, Labels, Branches, PR-Kommentare. Heute GitHub; ein anderer Host ist ein Binding, das man schreibt, keine Prozessänderung.
 
-## Teams (60s)
-
-> Die Frage, die immer kommt: was, wenn die Kollegin das Framework nicht nutzt, oder ein anderes? Antwort: nichts läuft von allein. Die Pipeline startet, wenn ein Mensch pipeline auf ein Umbrella ruft, und liest nur Issues mit pipeline-build, das nur Triage setzt. Alles andere im Repo sieht sie nicht. Labels kommen aus der Config; kollidiert size-L mit einem anderen Tool, umbenennen, neu rendern, fertig. Agenten arbeiten in ihren eigenen Worktrees an den Issues, die sie bekommen haben; niemandes Agent nimmt sich einen fremden PR. Gemeinsam ist nur main, und da gelten die Regeln für Menschen. Die eine Vereinbarung, die zählt: Entscheidungen bekommen eine Zeile, egal mit welchem Werkzeug. Der Anker-Check fängt hängende Referenzen, nicht stilles Abdriften.
-
-## Hier (60s)
-
-> Wo das bei uns hingehört. Agenten auf Einkäufer- und Händlerseite: was ein Agent darf, ist eine Zeile, bevor es Code ist; in Requisit genehmigt der Entwurfsagent nie, im Rumble entschieden, risk-high auf jedem PR, der ihn berührt, im Review durchgesetzt. Erster Schritt wäre ein Rumble über die Befugnisse. PWA: eine framework.json, die CI, die wir haben; erster Schritt: rendern, check in die CI, ein kleines Issue durch die Pipeline. Neuer Commerce-Core: die ADRs sind das Gedächtnis schon; erster Schritt ein lesender Rumble darüber, dann die kleinste echte Änderung als Arc 1. Und beides läuft aus einer Quelle: Claude Code und Codex.
-
 ## Schluss (20s)
 
 > Denken. Vertrag. Bauen. Erinnern. Rumbeln in einer Session, die mit Issues endet, nie mit Code. Bauen in einer Session, die nie Code liest. Das Gedächtnis in den Docs, vom Board geprüft, damit die nächste Unterhaltung da beginnt, wo diese aufgehört hat.
@@ -169,6 +161,8 @@ Jede Chapter-Folie ist gleich gebaut: links die Rolle (wer, Input, was, Output, 
 ---
 
 ## Q&A-Karten
+
+**„Wo passt das bei uns hin?“** — Wo das bei uns hingehört. Agenten auf Einkäufer- und Händlerseite: was ein Agent darf, ist eine Zeile, bevor es Code ist; in Requisit genehmigt der Entwurfsagent nie, im Rumble entschieden, risk-high auf jedem PR, der ihn berührt, im Review durchgesetzt. Erster Schritt wäre ein Rumble über die Befugnisse. PWA: eine framework.json, die CI, die wir haben; erster Schritt: rendern, check in die CI, ein kleines Issue durch die Pipeline. Neuer Commerce-Core: die ADRs sind das Gedächtnis schon; erster Schritt ein lesender Rumble darüber, dann die kleinste echte Änderung als Arc 1. Und beides läuft aus einer Quelle: Claude Code und Codex.
 
 **„Ist 3,4 Millionen viel?“** — Gegenfrage: verglichen womit? Ohne Trail hat niemand die Zahl für die eigene Arbeit. Das Rote ist das Teure: ein Finding kostet eine Fix-Runde plus Re-Review auf Opus. Ein billigeres Modell, das ein Rot mehr produziert, ist am Ende teurer. Darum messen statt raten: Sonnet für size-M ist ein Regler in der Binding, der nächste Arc zeigt in Tokens und Rot-Findings, ob er hält.
 
