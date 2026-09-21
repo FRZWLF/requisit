@@ -10,6 +10,7 @@
 <script src="data/decisions.js"></script>
 <script src="data/trail.js"></script>
 <script src="data/cost.js"></script>
+<script src="data/timeline.js"></script>
 <style>
   :root {
     --ground:#FBF9F7; --ground-2:#F4F0ED; --ink:#1F1A1C; --text:#3E3639; --muted:#6F6669; --mist:#ECE6E3; --hair:#DED6D2;
@@ -61,27 +62,30 @@
   .deck { z-index:1 }
   kbd { font-family:var(--mono); border:1px solid var(--hair); border-bottom-width:2px; border-radius:5px; padding:0 5px; background:#fff }
 
-  /* title */
-  .title-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(28px,4vw,72px); align-items:center }
-  .title-grid h1 { font-size:clamp(2.8rem,6.6vw,6.2rem); line-height:.95; font-variation-settings:"opsz" 144,"SOFT" 60 }
-  .title-grid h1 em { font-style:italic; color:var(--wine); font-variation-settings:"opsz" 144,"SOFT" 100 }
-  .kicker { display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:.76rem; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin-bottom:18px }
-  .kicker i { width:28px; height:1px; background:var(--teal); display:inline-block }
-  .meta { display:flex; gap:28px; flex-wrap:wrap; margin-top:clamp(18px,3vh,34px); font-family:var(--mono); font-size:.76rem; color:var(--muted) }
-  .meta b { display:block; color:var(--ink); font-family:var(--display); font-size:clamp(1.5rem,2.4vw,2.1rem); font-weight:500; line-height:1.1; font-variant-numeric:tabular-nums }
-  .motif { width:100%; height:auto; max-height:70vh; display:block; overflow:visible }
-  .motif .m-main { fill:none; stroke:var(--hair); stroke-width:3; stroke-linecap:round }
-  .motif .m-lbl { font-family:var(--mono); font-size:12px; fill:var(--muted) }
-  .motif .m-branch { fill:none; stroke:var(--wine); stroke-width:2.5; stroke-linecap:round }
-  .motif .m-chat rect { fill:#fff; stroke:var(--hair); stroke-width:1.2 } .motif .m-chat rect.me { fill:var(--teal-soft); stroke:none }
-  .motif .m-chat text { font-family:var(--body); font-size:14px; fill:var(--text) } .motif .m-chat text.me { fill:var(--teal-deep) }
-  .motif .m-card rect { fill:#fff; stroke:var(--hair); stroke-width:1.2; filter:drop-shadow(0 18px 30px rgba(74,18,32,.14)) }
-  .motif .m-card text { font-family:var(--body); font-size:14px; font-weight:600; fill:var(--ink) } .motif .m-card .id { font-family:var(--mono); fill:var(--wine) } .motif .m-card .sub { font-weight:400; font-size:12px; fill:var(--muted) }
-  .motif .m-card line { stroke:var(--mist); stroke-width:1 }
-  .motif .m-commit circle { fill:var(--ground); stroke:var(--wine); stroke-width:2.5 } .motif .m-commit text { font-family:var(--mono); font-size:12px; fill:var(--ink) }
-  .motif .m-dot { fill:var(--wine) } .motif .m-merge { fill:var(--teal) }
-  .motif .m-chat, .motif .m-card, .motif .m-commit, .motif .m-dot, .motif .m-merge { opacity:0 }
-  .title-grid h1 .line { display:block; overflow:hidden } .title-grid h1 .line > span { display:block }
+  /* title: headline over the day graph */
+  .slide.hero { display:block; padding-top:max(80px, calc(var(--pad) * .9)) }
+  .hero-top { max-width:min(880px, 62vw) }
+  .hero-top h1 { font-size:clamp(2.6rem,5.8vw,5.4rem); line-height:.96; font-variation-settings:"opsz" 144,"SOFT" 60 }
+  .hero-top h1 em { font-style:italic; color:var(--wine); font-variation-settings:"opsz" 144,"SOFT" 100 }
+  .hero-top h1 .line { display:block; overflow:hidden } .hero-top h1 .line > span { display:block }
+  .hero-top .lede { margin-top:18px; max-width:60ch }
+  .meta { display:flex; gap:28px; flex-wrap:wrap; margin-top:clamp(14px,2.4vh,26px); font-family:var(--mono); font-size:.74rem; color:var(--muted) }
+  .meta b { display:block; color:var(--ink); font-family:var(--display); font-size:clamp(1.4rem,2.2vw,2rem); font-weight:500; line-height:1.1; font-variant-numeric:tabular-nums }
+  .daygraph { position:absolute; left:0; right:0; bottom:0; height:44vh; padding:0 var(--pad) 34px }
+  .daygraph svg { width:100%; height:100%; display:block; overflow:visible }
+  .daygraph .g-main { fill:none; stroke:var(--ink); stroke-width:2.5; stroke-linecap:round; opacity:.55 }
+  .daygraph .g-branch { fill:none; stroke:var(--wine); stroke-width:2; stroke-linecap:round; opacity:.85 }
+  .daygraph .g-commit { fill:var(--ground); stroke:var(--wine); stroke-width:2 }
+  .daygraph .g-review { fill:none; stroke:var(--teal); stroke-width:2.2 } .daygraph .g-review.red { stroke:var(--red) }
+  .daygraph .g-fix { fill:var(--gold); stroke:none }
+  .daygraph .g-design { fill:#fff; stroke:var(--teal); stroke-width:1.8 }
+  .daygraph .g-triage { stroke:var(--ink); stroke-width:2; opacity:.5 }
+  .daygraph .g-merge { fill:var(--teal); opacity:0 }
+  .daygraph .g-lbl { font-family:var(--mono); font-size:11px; fill:var(--muted) }
+  .daygraph .g-lbl.strong { fill:var(--ink); font-size:12px }
+  .daygraph .g-head { stroke:var(--wine); stroke-width:1; opacity:.5; stroke-dasharray:3 4 }
+  .dayhud { position:absolute; right:var(--pad); top:-6px; display:flex; gap:22px; font-family:var(--mono); font-size:.74rem; color:var(--muted); font-variant-numeric:tabular-nums }
+  .dayhud #dayClock { color:var(--wine); font-weight:600; font-size:.9rem } .dayhud #dayTests { color:var(--teal-deep) }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -178,42 +182,14 @@
 <div class="deck" id="deck">
 
 <!-- 1 · title -->
-<section class="slide is-current" data-title="Start">
-  <div class="title-grid">
-    <div>
-      <div class="kicker"><i></i>rumble framework · requisit</div>
-      <h1>From a<br><em>conversation</em><br>to main.</h1>
-      <p class="lede" style="margin-top:22px">A design talk becomes decisions. Decisions become issues. Agents build, review and merge — and the docs remember. Every example in this talk is one real project, built this way from an empty repository.</p>
-      <div class="meta"><div><b id="mD">—</b>decisions</div><div><b id="mPR">—</b>pull requests</div><div><b id="mFind">—</b>review findings</div><div><b id="mTok">—</b>tokens</div></div>
-    </div>
-    <svg class="motif" id="motif" viewBox="0 0 560 440" aria-hidden="true">
-      <!-- main line -->
-      <path class="m-main" d="M60 380 H 500"/>
-      <text class="m-lbl" x="500" y="404" text-anchor="end">main</text>
-      <!-- the branch that merges -->
-      <path class="m-branch" id="mBranch" d="M300 250 C 300 310, 330 380, 400 380"/>
-      <!-- 1 · the conversation -->
-      <g class="m-chat" id="mChat">
-        <rect x="40" y="40" width="250" height="52" rx="16"/><text x="60" y="72">what if approvals were honest?</text>
-        <rect class="me" x="150" y="106" width="200" height="46" rx="16"/><text class="me" x="170" y="135">money as minor units, then.</text>
-        <rect x="40" y="166" width="220" height="46" rx="16"/><text x="60" y="195">and a rule that is visible.</text>
-      </g>
-      <!-- 2 · the row / the issue -->
-      <g class="m-card" id="mCard">
-        <rect x="150" y="120" width="300" height="118" rx="14"/>
-        <text class="id" x="172" y="150">D-003</text><text x="238" y="150">Money: integer minor units</text>
-        <text class="sub" x="172" y="176">rationale · rejected: floats, a money library</text>
-        <line x1="172" y1="194" x2="428" y2="194"/>
-        <text class="id" x="172" y="220">#2</text><text x="206" y="220">Goal · Context · Acceptance · Out of scope</text>
-      </g>
-      <!-- 3 · the commit -->
-      <g class="m-commit" id="mCommit">
-        <circle cx="300" cy="250" r="9"/>
-        <text x="318" y="255">feat(api): scaffold, audit, tokens (#2)</text>
-      </g>
-      <circle class="m-dot" id="mDot" r="6" cx="300" cy="250"/>
-      <circle class="m-merge" id="mMerge" r="0" cx="400" cy="380"/>
-    </svg>
+<section class="slide hero is-current" data-title="Start">
+  <div class="hero-top">
+    <h1>From a<br><em>conversation</em><br>to main.</h1>
+    <p class="lede">A design talk becomes decisions. Decisions become issues. Agents build, review and merge — and the docs remember. Below: one real project, one afternoon, every commit, review and merge as it happened.</p>
+    <div class="meta"><div><b id="mD">—</b>decisions</div><div><b id="mPR">—</b>pull requests</div><div><b id="mFind">—</b>review findings</div><div><b id="mTok">—</b>tokens</div></div>
+  </div>
+  <div class="daygraph"><svg id="dayGraph" viewBox="0 0 1400 400" preserveAspectRatio="xMidYMax meet" aria-hidden="true"></svg>
+    <div class="dayhud"><span id="dayClock">—</span><span id="dayTests"></span><span id="dayNote"></span></div>
   </div>
 </section>
 
@@ -619,37 +595,66 @@
     document.querySelectorAll('section.chapter').forEach(s => { const k = s.dataset.node; s.querySelector('.minimap').innerHTML = NODES.map((n, i) => `<span class="${n.key === k ? 'now' : chapterKeys.indexOf(k) > i ? 'done' : ''}">${n.label}</span>${i < NODES.length - 1 ? '<i></i>' : ''}`).join(''); });
   }
 
+  // ---------- the day as a git graph (title) ----------
+  function dayGraph(s) {
+    const svg = s.querySelector('#dayGraph'), clock = s.querySelector('#dayClock'), testsEl = s.querySelector('#dayTests'), note = s.querySelector('#dayNote');
+    const TL = window.TIMELINE; if (!TL || !TL.lanes.length || svg.dataset.built) return; svg.dataset.built = '1';
+    const lanes = TL.lanes.map(l => ({ ...l, ev: l.events.map(e => ({ ...e, ms: Date.parse(e.at) })).sort((a, b) => a.ms - b.ms) })).sort((a, b) => (a.ev.find(e => e.kind === 'merged') || a.ev.at(-1)).ms - (b.ev.find(e => e.kind === 'merged') || b.ev.at(-1)).ms);
+    const t0 = Math.min(...lanes.map(l => l.ev[0].ms)), t1 = Math.max(...lanes.map(l => l.ev.at(-1).ms));
+    const W = 1400, H = 400, X0 = 90, X1 = 1330, YM = 352, GAP = 66;
+    const x = ms => X0 + (ms - t0) / (t1 - t0) * (X1 - X0);
+    const hhmm = ms => new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    let out = `<defs><clipPath id="sweep"><rect id="sweepRect" x="0" y="0" width="0" height="${H}"/></clipPath></defs>`;
+    out += `<g clip-path="url(#sweep)">`;
+    out += `<path class="g-main" d="M${X0 - 30} ${YM} H ${X1 + 30}"/>`;
+    const merges = [];
+    lanes.forEach((l, i) => {
+      const y = YM - GAP * (i + 1);
+      const first = l.ev.find(e => e.kind !== 'labeled') || l.ev[0], merged = l.ev.find(e => e.kind === 'merged');
+      const R = 52;   // horizontal room for the fork and the merge curves
+      const xf = x(first.ms) - 14, xm = merged ? x(merged.ms) : X1;
+      out += `<path class="g-branch" d="M${xf - R} ${YM} C ${xf - R * .35} ${YM}, ${xf - R * .65} ${y}, ${xf} ${y} L ${xm - R} ${y} C ${xm - R * .35} ${y}, ${xm - R * .65} ${YM}, ${xm} ${YM}"/>`;
+      out += `<text class="g-lbl strong" x="${xf + 6}" y="${y - 12}">#${l.issue}</text><text class="g-lbl" x="${xf + 34}" y="${y - 12}">${esc(l.title.slice(0, 44))}${l.title.length > 44 ? '…' : ''}</text>`;
+      const tri = l.ev.find(e => e.kind === 'labeled'); if (tri) out += `<line class="g-triage" x1="${x(tri.ms)}" y1="${YM - 7}" x2="${x(tri.ms)}" y2="${YM + 7}"/>`;
+      for (const e of l.ev) {
+        const ex = x(e.ms);
+        if (e.kind === 'commit') out += `<circle class="g-commit" cx="${ex}" cy="${y}" r="5"><title>${esc(e.sha || '')} ${esc(e.text)}</title></circle>`;
+        else if (e.kind === 'review') out += `<circle class="g-review ${e.red ? 'red' : ''}" cx="${ex}" cy="${y}" r="7"><title>${esc(e.text)}</title></circle>`;
+        else if (e.kind === 'fix-round') out += `<rect class="g-fix" x="${ex - 4}" y="${y - 4}" width="8" height="8" transform="rotate(45 ${ex} ${y})"/>`;
+        else if (e.kind === 'design') out += `<rect class="g-design" x="${ex - 5}" y="${y - 5}" width="10" height="10" rx="2"/>`;
+      }
+      if (merged) merges.push({ ms: merged.ms, x: xm, tests: l.tests, issue: l.issue });
+    });
+    out += `<text class="g-lbl" x="${X0 - 30}" y="${YM + 24}">${hhmm(t0)} · the first triage</text><text class="g-lbl" x="${X1 + 30}" y="${YM + 24}" text-anchor="end">${hhmm(t1)} · Arc 1 on main</text><text class="g-lbl strong" x="${X1 + 30}" y="${YM - 12}" text-anchor="end">main</text>`;
+    out += `</g>`;
+    out += `<line class="g-head" id="playhead" x1="0" y1="20" x2="0" y2="${YM + 8}"/>`;
+    merges.forEach((m, i) => { out += `<circle class="g-merge" id="merge${i}" cx="${m.x}" cy="${YM}" r="0"/>`; });
+    svg.innerHTML = out;
+    const rect = svg.querySelector('#sweepRect'), head = svg.querySelector('#playhead');
+    const D = 16;
+    const setAt = p => { rect.setAttribute('width', p * W); head.setAttribute('x1', p * W); head.setAttribute('x2', p * W); clock.textContent = hhmm(t0 + p * (t1 - t0)); const done = merges.filter(m => m.ms <= t0 + p * (t1 - t0)); testsEl.textContent = done.length ? `${done.at(-1).tests} tests on main` : 'the day begins'; note.textContent = done.length ? `${done.length} of ${merges.length} merged` : ''; };
+    if (!G || reduce) { setAt(1); return; }
+    const o = { p: 0 };
+    const tl = G.timeline({ repeat: -1, repeatDelay: 3, delay: 1.2 });
+    tl.to(o, { p: 1, duration: D, ease: 'none', onUpdate() { setAt(o.p); } }, 0);
+    merges.forEach((m, i) => { const at = D * (m.ms - t0) / (t1 - t0); tl.fromTo(svg.querySelector('#merge' + i), { attr: { r: 0 }, opacity: 1 }, { attr: { r: 26 }, opacity: 0, duration: 1.1, ease: 'power2.out' }, at); });
+    tl.to({}, { duration: .1 });
+    (running.hero = running.hero || []).push(tl);
+  }
+
   // ---------- behaviours ----------
   const running = {};
   const enter = {
     hero(s) {
-      if (!G || reduce) { s.querySelectorAll('#mCard, #mCommit').forEach(el => el.style.opacity = 1); return; }
       const h1 = s.querySelector('h1');
-      if (window.SplitText && !h1.dataset.split) { h1.dataset.split = '1'; const sp = new SplitText(h1, { type: 'lines', linesClass: 'line' }); sp.lines.forEach(l => { const w = document.createElement('span'); w.innerHTML = l.innerHTML; l.innerHTML = ''; l.appendChild(w); }); }
-      const tl = G.timeline();
-      tl.from(s.querySelectorAll('.kicker'), { opacity: 0, x: -12, duration: .6, ease: 'power3.out' }, 0)
-        .from(s.querySelectorAll('h1 .line > span'), { yPercent: 110, duration: .9, ease: 'power4.out', stagger: .12 }, .1)
-        .from(s.querySelectorAll('.lede, .meta > div'), { y: 18, opacity: 0, duration: .7, ease: 'power3.out', stagger: .08 }, .6);
-      // the motif: conversation → row/issue → commit → merge
-      const chat = s.querySelector('#mChat'), card = s.querySelector('#mCard'), commit = s.querySelector('#mCommit'), dot = s.querySelector('#mDot'), merge = s.querySelector('#mMerge'), branch = s.querySelector('#mBranch');
-      const bl = branch.getTotalLength(); branch.style.strokeDasharray = bl; branch.style.strokeDashoffset = bl;
-      const m = G.timeline({ repeat: -1, repeatDelay: 2.2, delay: .8 });
-      m.set([chat, card, commit, dot, merge], { opacity: 0 }).set(branch, { strokeDashoffset: bl })
-        .fromTo(chat.querySelectorAll('rect, text'), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .5, ease: 'power3.out', stagger: .22 }, 0).set(chat, { opacity: 1 }, 0)
-        .to({}, { duration: .9 })
-        .to(chat, { opacity: 0, scale: .92, transformOrigin: '50% 50%', duration: .5, ease: 'power2.in' })
-        .fromTo(card, { opacity: 0, scale: .94, transformOrigin: '50% 50%' }, { opacity: 1, scale: 1, duration: .6, ease: 'power3.out' }, '-=.2')
-        .to({}, { duration: 1.2 })
-        .to(card, { opacity: 0, scale: .6, transformOrigin: '300px 250px', duration: .55, ease: 'power2.in' })
-        .fromTo(commit, { opacity: 0, scale: .6, transformOrigin: '300px 250px' }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, '-=.15')
-        .to({}, { duration: .6 })
-        .to(branch, { strokeDashoffset: 0, duration: .9, ease: 'power2.inOut' })
-        .set(dot, { opacity: 1 }, '<')
-        .to({ t: 0 }, { t: 1, duration: .9, ease: 'power2.inOut', onUpdate() { const p = branch.getPointAtLength(this.targets()[0].t * bl); dot.setAttribute('cx', p.x); dot.setAttribute('cy', p.y); } }, '<')
-        .set(dot, { opacity: 0 })
-        .fromTo(merge, { attr: { r: 0 }, opacity: 1 }, { attr: { r: 22 }, opacity: 0, duration: .9, ease: 'power2.out' })
-        .to(commit, { opacity: 0, duration: .4 }, '-=.6').to(branch, { opacity: 0, duration: .4 }, '<').set(branch, { opacity: 1, strokeDashoffset: bl });
-      running.hero = [tl, m];
+      if (G && !reduce && window.SplitText && !h1.dataset.split) { h1.dataset.split = '1'; const sp = new SplitText(h1, { type: 'lines', linesClass: 'line' }); sp.lines.forEach(l => { const w = document.createElement('span'); w.innerHTML = l.innerHTML; l.innerHTML = ''; l.appendChild(w); }); }
+      if (G && !reduce) {
+        const tl = G.timeline();
+        tl.from(s.querySelectorAll('h1 .line > span'), { yPercent: 110, duration: .9, ease: 'power4.out', stagger: .12 }, .1)
+          .from(s.querySelectorAll('.lede, .meta > div'), { y: 18, opacity: 0, duration: .7, ease: 'power3.out', stagger: .08 }, .6);
+        running.hero = [tl];
+      }
+      dayGraph(s);
     },
     hub(s) {
       const svg = s.querySelector('svg'); light(svg, null);

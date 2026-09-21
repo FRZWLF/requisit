@@ -31,6 +31,21 @@ let waves = [];
 if (umbrella) { const b = JSON.parse(sh('gh', ['issue', 'view', umbrella, '-R', REPO, '--json', 'body'])).body; waves = [...b.matchAll(/wave\s*\d+\s*[:=→-]+\s*\**\s*([^*·\n]+)/gi)].map(m => (m[1].match(/#?\d+/g) || []).map(x => '#' + x.replace('#', ''))); }
 writeFileSync(join(HERE, 'data/decisions.js'), 'window.DECISIONS = ' + JSON.stringify({ decisions, gaps: gapRows, measurements: mrows, measured, addenda, research, researchTitles, researchSources, anchors, waves, brief: doc('docs/00-brief.md'), built: new Date().toISOString() }, null, 1) + ';\n');
 
+// --- timeline.js: every issue of the umbrella as one lane — the day as data
+if (umbrella) {
+  const b = JSON.parse(sh('gh', ['issue', 'view', umbrella, '-R', REPO, '--json', 'body'])).body;
+  const nums = [...new Set((b.match(/#\d+/g) || []).map(s => s.slice(1)))].filter(n => n !== umbrella);
+  const lanes = [];
+  for (const n of nums) {
+    let d; try { d = JSON.parse(sh('node', [join(FW, 'scripts/replay-from-gh.mjs'), REPO, n])); } catch { continue; }
+    const ev = d.events;
+    if (!ev.some(e => e.kind === 'pr')) continue;
+    const tests = (ev.filter(e => e.kind === 'trail').map(e => (e.text.match(/(\d+)\/\1\b/) || [])[1]).find(Boolean)) || null;
+    lanes.push({ issue: Number(n), title: d.title, events: ev.filter(e => ['labeled', 'design', 'commit', 'pr', 'review', 'fix-round', 'merged'].includes(e.kind)).map(e => ({ at: e.at, kind: e.kind, text: (e.kind === 'review' ? e.verdict : e.text || '').slice(0, 90), red: e.kind === 'review' ? /[1-9]\d* red|🔴/.test(e.verdict || '') : undefined, sha: e.sha })), tests: tests ? Number(tests) : null });
+  }
+  writeFileSync(join(HERE, 'data/timeline.js'), 'window.TIMELINE = ' + JSON.stringify({ lanes, built: new Date().toISOString() }, null, 1) + ';\n');
+}
+
 // --- trail.js
 if (issue) writeFileSync(join(HERE, 'data/trail.js'), 'window.TRAIL = ' + sh('node', [join(FW, 'scripts/replay-from-gh.mjs'), REPO, issue]) + ';\n');
 
