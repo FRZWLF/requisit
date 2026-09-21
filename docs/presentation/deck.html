@@ -36,14 +36,29 @@
   [data-step].on { opacity:1; transform:none }
   .hud { position:fixed; left:0; right:0; bottom:0; height:3px; background:var(--mist); z-index:20 }
   .hud i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--teal),var(--wine)); transition:width .5s var(--ease) }
-  .counter-hud { position:fixed; right:clamp(18px,2.4vw,36px); bottom:16px; font-family:var(--mono); font-size:.72rem; color:var(--muted); z-index:20; letter-spacing:.06em }
-  .brand { position:fixed; left:clamp(18px,2.4vw,36px); bottom:16px; font-family:var(--mono); font-size:.7rem; color:var(--muted); z-index:20; letter-spacing:.1em; text-transform:uppercase; display:flex; gap:14px; align-items:center }
-  .brand i { width:22px; height:1px; background:var(--wine); display:inline-block }
-  .arrows { position:fixed; right:clamp(18px,2.4vw,36px); top:50%; transform:translateY(-50%); display:grid; gap:8px; z-index:20 }
-  .arrows button { width:38px; height:38px; border-radius:50%; border:1px solid var(--hair); background:#fff; color:var(--ink); cursor:pointer; display:grid; place-items:center; font-size:15px; transition:background .25s,transform .25s }
-  .arrows button:hover { background:var(--wine-soft); border-color:var(--wine); transform:scale(1.06) }
-  .hint { position:fixed; left:50%; bottom:16px; transform:translateX(-50%); font-family:var(--mono); font-size:.7rem; color:var(--muted); z-index:20; transition:opacity .6s }
-  .hint.gone { opacity:0 }
+  .brandbar { position:fixed; top:0; left:0; right:0; z-index:40; display:flex; align-items:center; gap:14px; padding:18px clamp(18px,2.4vw,36px); font-family:var(--mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); pointer-events:none }
+  .brandbar .mark { color:var(--wine); font-family:var(--display); font-size:1rem; letter-spacing:0; text-transform:none; font-weight:600 }
+  .brandbar .sep { width:1px; height:14px; background:var(--hair) }
+  .brandbar .counter { margin-left:auto; font-variant-numeric:tabular-nums }
+  .dots { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:40 }
+  .dots button { width:8px; height:8px; border-radius:50%; border:none; background:rgba(31,26,28,.16); cursor:pointer; padding:0; transition:background .25s,transform .25s }
+  .dots button.active { background:var(--wine); transform:scale(1.4) }
+  .dots button.chapter { border-radius:2px }
+  .edge { position:fixed; top:0; bottom:0; width:9vw; z-index:30; cursor:pointer; background:transparent; border:none }
+  .edge.left { left:0 } .edge.right { right:0 }
+  .hint { position:fixed; right:clamp(18px,2.4vw,36px); bottom:16px; font-family:var(--mono); font-size:.68rem; color:var(--muted); z-index:40; transition:opacity .6s }
+  .hint.gone { opacity:.55 }
+  .ornament { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden }
+  .ornament .mesh { position:absolute; inset:-20%; background:
+      radial-gradient(60rem 36rem at 12% 18%, rgba(107,29,44,.10), transparent 60%),
+      radial-gradient(56rem 40rem at 88% 86%, rgba(30,90,88,.12), transparent 60%),
+      radial-gradient(40rem 30rem at 70% 10%, rgba(184,134,43,.06), transparent 60%);
+    animation: drift 40s ease-in-out infinite alternate }
+  .ornament .grain { position:absolute; inset:0; opacity:.55; mix-blend-mode:multiply; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.10 0 0 0 0 0.11 0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") }
+  .ornament .rule { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, var(--hair) 20%, var(--hair) 80%, transparent); opacity:.7 }
+  .ornament .glyph { position:absolute; font-family:var(--display); font-style:italic; color:var(--wine); opacity:.045; font-size:34vw; line-height:1; letter-spacing:-.04em; user-select:none }
+  @keyframes drift { from { transform:translate3d(0,0,0) } to { transform:translate3d(2.5%,1.5%,0) } }
+  .deck { z-index:1 }
   kbd { font-family:var(--mono); border:1px solid var(--hair); border-bottom-width:2px; border-radius:5px; padding:0 5px; background:#fff }
 
   /* title */
@@ -54,12 +69,19 @@
   .kicker i { width:28px; height:1px; background:var(--teal); display:inline-block }
   .meta { display:flex; gap:28px; flex-wrap:wrap; margin-top:clamp(18px,3vh,34px); font-family:var(--mono); font-size:.76rem; color:var(--muted) }
   .meta b { display:block; color:var(--ink); font-family:var(--display); font-size:clamp(1.5rem,2.4vw,2.1rem); font-weight:500; line-height:1.1; font-variant-numeric:tabular-nums }
-  .flow { width:100%; height:auto; max-height:70vh; display:block }
-  .flow .lane { fill:none; stroke:var(--hair); stroke-width:2 }
-  .flow .ink-line { fill:none; stroke:var(--wine); stroke-width:2.5; stroke-linecap:round }
-  .flow .node { fill:var(--ground); stroke:var(--teal); stroke-width:2 } .flow .node.wine { stroke:var(--wine) } .flow .node.fill { fill:var(--teal) }
-  .flow text { font-family:var(--mono); font-size:11.5px; fill:var(--ink) } .flow .sub { fill:var(--muted); font-size:10px } .flow .pulse { fill:var(--wine) }
-
+  .motif { width:100%; height:auto; max-height:70vh; display:block; overflow:visible }
+  .motif .m-main { fill:none; stroke:var(--hair); stroke-width:3; stroke-linecap:round }
+  .motif .m-lbl { font-family:var(--mono); font-size:12px; fill:var(--muted) }
+  .motif .m-branch { fill:none; stroke:var(--wine); stroke-width:2.5; stroke-linecap:round }
+  .motif .m-chat rect { fill:#fff; stroke:var(--hair); stroke-width:1.2 } .motif .m-chat rect.me { fill:var(--teal-soft); stroke:none }
+  .motif .m-chat text { font-family:var(--body); font-size:14px; fill:var(--text) } .motif .m-chat text.me { fill:var(--teal-deep) }
+  .motif .m-card rect { fill:#fff; stroke:var(--hair); stroke-width:1.2; filter:drop-shadow(0 18px 30px rgba(74,18,32,.14)) }
+  .motif .m-card text { font-family:var(--body); font-size:14px; font-weight:600; fill:var(--ink) } .motif .m-card .id { font-family:var(--mono); fill:var(--wine) } .motif .m-card .sub { font-weight:400; font-size:12px; fill:var(--muted) }
+  .motif .m-card line { stroke:var(--mist); stroke-width:1 }
+  .motif .m-commit circle { fill:var(--ground); stroke:var(--wine); stroke-width:2.5 } .motif .m-commit text { font-family:var(--mono); font-size:12px; fill:var(--ink) }
+  .motif .m-dot { fill:var(--wine) } .motif .m-merge { fill:var(--teal) }
+  .motif .m-chat, .motif .m-card, .motif .m-commit, .motif .m-dot, .motif .m-merge { opacity:0 }
+  .title-grid h1 .line { display:block; overflow:hidden } .title-grid h1 .line > span { display:block }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -90,7 +112,7 @@
   #mapLabel { position:absolute; left:var(--pad); top:calc(var(--pad) - 6px); font-family:var(--mono); font-size:.76rem; letter-spacing:.1em; text-transform:uppercase; color:var(--wine) }
 
   /* chapter */
-  .chapter { grid-template-rows:auto auto 1fr; align-content:start; padding-top:calc(var(--pad) * .55) }
+  .chapter { grid-template-rows:auto auto 1fr; align-content:start; padding-top:max(72px, calc(var(--pad) * .9)) }
   .minimap { display:flex; gap:6px; flex-wrap:wrap; align-items:center }
   .minimap span { font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; padding:4px 10px; border-radius:99px; border:1px solid var(--hair); color:var(--muted); background:#fff }
   .minimap span.done { border-color:var(--teal); color:var(--teal) }
@@ -164,15 +186,33 @@
       <p class="lede" style="margin-top:22px">A design talk becomes decisions. Decisions become issues. Agents build, review and merge — and the docs remember. Every example in this talk is one real project, built this way from an empty repository.</p>
       <div class="meta"><div><b id="mD">—</b>decisions</div><div><b id="mPR">—</b>pull requests</div><div><b id="mFind">—</b>review findings</div><div><b id="mTok">—</b>tokens</div></div>
     </div>
-    <svg class="flow" viewBox="0 0 520 420" aria-hidden="true">
-      <path class="lane" d="M60 70 C 200 70, 200 200, 260 200 S 380 330, 460 330"/>
-      <path id="inkLine" class="ink-line" d="M60 70 C 200 70, 200 200, 260 200 S 380 330, 460 330"/>
-      <g class="nodes">
-        <g><circle class="node" cx="60" cy="70" r="26"/><text x="60" y="74" text-anchor="middle">rumble</text><text class="sub" x="60" y="112" text-anchor="middle">think · decide</text></g>
-        <g><circle class="node wine" cx="260" cy="200" r="26"/><text x="260" y="204" text-anchor="middle">issue</text><text class="sub" x="260" y="242" text-anchor="middle">the contract</text></g>
-        <g><circle class="node fill" cx="460" cy="330" r="26"/><text x="460" y="334" text-anchor="middle" style="fill:#fff">main</text><text class="sub" x="460" y="372" text-anchor="middle">built · reviewed</text></g>
+    <svg class="motif" id="motif" viewBox="0 0 560 440" aria-hidden="true">
+      <!-- main line -->
+      <path class="m-main" d="M60 380 H 500"/>
+      <text class="m-lbl" x="500" y="404" text-anchor="end">main</text>
+      <!-- the branch that merges -->
+      <path class="m-branch" id="mBranch" d="M300 250 C 300 310, 330 380, 400 380"/>
+      <!-- 1 · the conversation -->
+      <g class="m-chat" id="mChat">
+        <rect x="40" y="40" width="250" height="52" rx="16"/><text x="60" y="72">what if approvals were honest?</text>
+        <rect class="me" x="150" y="106" width="200" height="46" rx="16"/><text class="me" x="170" y="135">money as minor units, then.</text>
+        <rect x="40" y="166" width="220" height="46" rx="16"/><text x="60" y="195">and a rule that is visible.</text>
       </g>
-      <circle id="pulse" class="pulse" r="5" cx="60" cy="70"/>
+      <!-- 2 · the row / the issue -->
+      <g class="m-card" id="mCard">
+        <rect x="150" y="120" width="300" height="118" rx="14"/>
+        <text class="id" x="172" y="150">D-003</text><text x="238" y="150">Money: integer minor units</text>
+        <text class="sub" x="172" y="176">rationale · rejected: floats, a money library</text>
+        <line x1="172" y1="194" x2="428" y2="194"/>
+        <text class="id" x="172" y="220">#2</text><text x="206" y="220">Goal · Context · Acceptance · Out of scope</text>
+      </g>
+      <!-- 3 · the commit -->
+      <g class="m-commit" id="mCommit">
+        <circle cx="300" cy="250" r="9"/>
+        <text x="318" y="255">feat(api): scaffold, audit, tokens (#2)</text>
+      </g>
+      <circle class="m-dot" id="mDot" r="6" cx="300" cy="250"/>
+      <circle class="m-merge" id="mMerge" r="0" cx="400" cy="380"/>
     </svg>
   </div>
 </section>
@@ -201,7 +241,7 @@
 </section>
 
 <!-- 4 · the schema (hub) -->
-<section class="slide" data-title="The schema" data-kind="hub" data-steps="3">
+<section class="slide" data-title="The schema" data-kind="hub">
   <div class="head"><div class="eyebrow"><span class="n">03</span>the whole framework on one page</div><h2>Three sessions, nine stages, one repository.</h2></div>
   <div id="hubHost"></div>
   <p class="mono">Each stage is a role with an input and an output. GitHub is the only shared state; no stage reads the chat of another. We zoom into each one.</p>
@@ -415,13 +455,16 @@
 
 </div>
 <div id="mapOverlay"><div id="mapLabel"></div><div id="overlayHost"></div></div>
+<div class="ornament" aria-hidden="true"><div class="mesh"></div><div class="grain"></div><div class="rule" style="top:11%"></div><div class="rule" style="bottom:9%"></div><div class="glyph" id="glyph" style="right:-4vw;bottom:-8vw">R</div></div>
 <div class="hud"><i id="hud"></i></div>
-<div class="brand"><i></i>rumble framework</div>
-<div class="counter-hud" id="counter"></div>
-<div class="hint" id="hint"><kbd>→</kbd> next · <kbd>←</kbd> back · <kbd>M</kbd> the schema · click anywhere</div>
-<div class="arrows"><button id="prevBtn" aria-label="previous">↑</button><button id="nextBtn" aria-label="next">↓</button></div>
+<div class="brandbar"><span class="mark">rumble</span><span class="sep"></span><span>framework · requisit</span><span class="counter" id="counter"></span></div>
+<div class="dots" id="dots"></div>
+<div class="hint" id="hint"><kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> schema · <kbd>F</kbd> fullscreen</div>
+<button class="edge left" id="edgeL" aria-label="previous"></button>
+<button class="edge right" id="edgeR" aria-label="next"></button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
 <script>
 (function () {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).has('nomotion');
@@ -573,23 +616,40 @@
       document.getElementById('costNote').textContent = 'per issue: ' + Object.entries(byIssue).map(([i, v]) => `${i} ${num(v)}`).join(' · ') + ' · the rumble itself: 111,974 (M-008)' + (C.note ? ' — ' + C.note : '');
     } else t.innerHTML = '<tr><td class="mono">the trails feed this table (data/cost.js) — pending</td></tr>';
     // minimaps
-    document.querySelectorAll('.chapter').forEach(s => { const k = s.dataset.node; s.querySelector('.minimap').innerHTML = NODES.map((n, i) => `<span class="${n.key === k ? 'now' : chapterKeys.indexOf(k) > i ? 'done' : ''}">${n.label}</span>${i < NODES.length - 1 ? '<i></i>' : ''}`).join(''); });
+    document.querySelectorAll('section.chapter').forEach(s => { const k = s.dataset.node; s.querySelector('.minimap').innerHTML = NODES.map((n, i) => `<span class="${n.key === k ? 'now' : chapterKeys.indexOf(k) > i ? 'done' : ''}">${n.label}</span>${i < NODES.length - 1 ? '<i></i>' : ''}`).join(''); });
   }
 
   // ---------- behaviours ----------
   const running = {};
   const enter = {
     hero(s) {
-      const ink = s.querySelector('#inkLine'), pulse = s.querySelector('#pulse');
-      if (!G || reduce || !ink) return;
-      const len = ink.getTotalLength(); ink.style.strokeDasharray = len; ink.style.strokeDashoffset = len;
+      if (!G || reduce) { s.querySelectorAll('#mCard, #mCommit').forEach(el => el.style.opacity = 1); return; }
+      const h1 = s.querySelector('h1');
+      if (window.SplitText && !h1.dataset.split) { h1.dataset.split = '1'; const sp = new SplitText(h1, { type: 'lines', linesClass: 'line' }); sp.lines.forEach(l => { const w = document.createElement('span'); w.innerHTML = l.innerHTML; l.innerHTML = ''; l.appendChild(w); }); }
       const tl = G.timeline();
-      tl.to(ink, { strokeDashoffset: 0, duration: 2.4, ease: 'power2.inOut' }, .2)
-        .from(s.querySelectorAll('.nodes > g'), { scale: .4, opacity: 0, transformOrigin: 'center', duration: .6, ease: 'back.out(2)', stagger: .18 }, .3)
-        .from(s.querySelectorAll('h1, .lede, .meta > div'), { y: 26, opacity: 0, duration: .8, ease: 'power3.out', stagger: .12 }, 0);
-      const travel = { t: 0 };
-      const loop = G.to(travel, { t: 1, duration: 9, ease: 'none', repeat: -1, delay: 2.8, onUpdate() { const p = ink.getPointAtLength(travel.t * len); pulse.setAttribute('cx', p.x); pulse.setAttribute('cy', p.y); } });
-      running.hero = [tl, loop];
+      tl.from(s.querySelectorAll('.kicker'), { opacity: 0, x: -12, duration: .6, ease: 'power3.out' }, 0)
+        .from(s.querySelectorAll('h1 .line > span'), { yPercent: 110, duration: .9, ease: 'power4.out', stagger: .12 }, .1)
+        .from(s.querySelectorAll('.lede, .meta > div'), { y: 18, opacity: 0, duration: .7, ease: 'power3.out', stagger: .08 }, .6);
+      // the motif: conversation → row/issue → commit → merge
+      const chat = s.querySelector('#mChat'), card = s.querySelector('#mCard'), commit = s.querySelector('#mCommit'), dot = s.querySelector('#mDot'), merge = s.querySelector('#mMerge'), branch = s.querySelector('#mBranch');
+      const bl = branch.getTotalLength(); branch.style.strokeDasharray = bl; branch.style.strokeDashoffset = bl;
+      const m = G.timeline({ repeat: -1, repeatDelay: 2.2, delay: .8 });
+      m.set([chat, card, commit, dot, merge], { opacity: 0 }).set(branch, { strokeDashoffset: bl })
+        .fromTo(chat.querySelectorAll('rect, text'), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .5, ease: 'power3.out', stagger: .22 }, 0).set(chat, { opacity: 1 }, 0)
+        .to({}, { duration: .9 })
+        .to(chat, { opacity: 0, scale: .92, transformOrigin: '50% 50%', duration: .5, ease: 'power2.in' })
+        .fromTo(card, { opacity: 0, scale: .94, transformOrigin: '50% 50%' }, { opacity: 1, scale: 1, duration: .6, ease: 'power3.out' }, '-=.2')
+        .to({}, { duration: 1.2 })
+        .to(card, { opacity: 0, scale: .6, transformOrigin: '300px 250px', duration: .55, ease: 'power2.in' })
+        .fromTo(commit, { opacity: 0, scale: .6, transformOrigin: '300px 250px' }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, '-=.15')
+        .to({}, { duration: .6 })
+        .to(branch, { strokeDashoffset: 0, duration: .9, ease: 'power2.inOut' })
+        .set(dot, { opacity: 1 }, '<')
+        .to({ t: 0 }, { t: 1, duration: .9, ease: 'power2.inOut', onUpdate() { const p = branch.getPointAtLength(this.targets()[0].t * bl); dot.setAttribute('cx', p.x); dot.setAttribute('cy', p.y); } }, '<')
+        .set(dot, { opacity: 0 })
+        .fromTo(merge, { attr: { r: 0 }, opacity: 1 }, { attr: { r: 22 }, opacity: 0, duration: .9, ease: 'power2.out' })
+        .to(commit, { opacity: 0, duration: .4 }, '-=.6').to(branch, { opacity: 0, duration: .4 }, '<').set(branch, { opacity: 1, strokeDashoffset: bl });
+      running.hero = [tl, m];
     },
     hub(s) {
       const svg = s.querySelector('svg'); light(svg, null);
@@ -601,14 +661,20 @@
     cost(s) { setTimeout(() => s.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.w), 200); },
   };
   const leave = kind => { (running[kind] || []).forEach(t => t.kill()); delete running[kind]; };
-  function applySteps(s, n) {
-    s.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('on', +el.dataset.step <= n));
-    if (s.dataset.kind === 'hub') { const svg = s.querySelector('svg'); svg.querySelectorAll('.lane-bg').forEach((l, i) => l.style.opacity = n === 0 || i < n ? 1 : .25); }
+  // every reveal plays on entry — staggered, no clicks (data-step keeps the order)
+  function reveal(s, animate) {
+    const els = [...s.querySelectorAll('[data-step]')].sort((a, b) => +a.dataset.step - +b.dataset.step);
+    els.forEach(el => el.classList.remove('on'));
+    if (!animate || !G || reduce) { els.forEach(el => el.classList.add('on')); return; }
+    els.forEach((el, i) => setTimeout(() => el.classList.add('on'), 350 + i * 260));
+    if (s.dataset.kind === 'hub') { const svg = s.querySelector('svg'); svg.querySelectorAll('.lane-bg').forEach(l => l.style.opacity = 1); }
   }
-  let cur = 0, step = 0, busy = false;
-  const stepsOf = s => +(s.dataset.steps || 0), pad = n => String(n).padStart(2, '0');
-  function updateHud() { hud.style.width = ((cur + 1) / slides.length * 100) + '%'; counter.textContent = pad(cur + 1) + ' / ' + pad(slides.length); location.replace('#' + (cur + 1)); }
-
+  let cur = 0, busy = false;
+  const pad = n => String(n).padStart(2, '0');
+  const dotsBox = document.getElementById('dots');
+  slides.forEach((sl, i) => { const b = document.createElement('button'); b.className = sl.dataset.node ? 'chapter' : ''; b.title = sl.dataset.title; b.addEventListener('click', () => show(i, i > cur ? 1 : -1)); dotsBox.appendChild(b); });
+  const dots = [...dotsBox.children];
+  function updateHud() { hud.style.width = ((cur + 1) / slides.length * 100) + '%'; counter.textContent = pad(cur + 1) + ' / ' + pad(slides.length); dots.forEach((d, i) => d.classList.toggle('active', i === cur)); location.replace('#' + (cur + 1)); }
   // the zoom: from a chapter (or the hub) through the schema into the next chapter's node
   function zoomTo(from, to, done) {
     const fromKey = from.dataset.node || null, toKey = to.dataset.node;
@@ -627,7 +693,7 @@
     if (busy || i === cur || i < 0 || i >= slides.length) return;
     const from = slides[cur], to = slides[i];
     leave(from.dataset.kind || (cur === 0 ? 'hero' : ''));
-    cur = i; step = dir < 0 ? stepsOf(to) : 0; applySteps(to, step); to.classList.add('is-current'); updateHud();
+    cur = i; reveal(to, true); to.classList.add('is-current'); updateHud();
     const kind = to.dataset.kind || (i === 0 ? 'hero' : ''); const start = () => { if (enter[kind]) enter[kind](to); };
     if (!G || reduce) { from.classList.remove('is-current'); start(); return; }
     busy = true;
@@ -638,27 +704,26 @@
       .fromTo(to, { opacity: 0, scale: 1.02, y: 22 * dir }, { opacity: 1, scale: 1, y: 0, duration: .65, ease: 'power3.out', onStart: start }, .25)
       .fromTo(to.querySelectorAll('.head > *'), { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: .6, ease: 'power3.out', stagger: .08 }, .35);
   }
-  function next() { hint.classList.add('gone'); const s = slides[cur]; if (step < stepsOf(s)) { step++; applySteps(s, step); return; } show(cur + 1, 1); }
-  function prev() { const s = slides[cur]; if (step > 0) { step--; applySteps(s, step); return; } show(cur - 1, -1); }
+  function next() { hint.classList.add('gone'); show(cur + 1, 1); }
+  function prev() { show(cur - 1, -1); }
   document.addEventListener('keydown', e => {
     if (['ArrowRight', 'ArrowDown', ' ', 'PageDown', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
     else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
     else if (e.key === 'Home') show(0, -1); else if (e.key === 'End') show(slides.length - 1, 1);
+    else if (e.key === 'f' || e.key === 'F') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
     else if (e.key === 'm' || e.key === 'M') { const h = slides.findIndex(s => s.dataset.kind === 'hub'); show(h, h > cur ? 1 : -1); }
     else if (e.key === 'l' || e.key === 'L') { const f = document.getElementById('live'); f.src = (window.COST && COST.liveUrl) || 'http://localhost:3000/'; document.getElementById('liveNote').textContent = 'live: ' + f.src; }
   });
-  document.getElementById('nextBtn').addEventListener('click', next);
-  document.getElementById('prevBtn').addEventListener('click', prev);
-  document.getElementById('deck').addEventListener('click', e => { if (e.target.closest('a, button, iframe')) return; next(); });
+  document.getElementById('edgeR').addEventListener('click', next);
+  document.getElementById('edgeL').addEventListener('click', prev);
   let wheelLock = 0; document.addEventListener('wheel', e => { const t = Date.now(); if (t - wheelLock < 900 || Math.abs(e.deltaY) < 24) return; wheelLock = t; e.deltaY > 0 ? next() : prev(); }, { passive: true });
   let tx = 0, ty = 0; document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
   document.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return; (Math.abs(dx) > Math.abs(dy) ? dx : dy) < 0 ? next() : prev(); }, { passive: true });
 
   fill();
-  slides.forEach(s => applySteps(s, 0));
   const want = parseInt((location.hash || '#1').slice(1), 10);
-  if (want > 1 && want <= slides.length) { slides[0].classList.remove('is-current'); cur = want - 1; slides[cur].classList.add('is-current'); applySteps(slides[cur], stepsOf(slides[cur])); const k = slides[cur].dataset.kind; if (enter[k]) enter[k](slides[cur]); }
-  else enter.hero(slides[0]);
+  if (want > 1 && want <= slides.length) { slides[0].classList.remove('is-current'); cur = want - 1; slides[cur].classList.add('is-current'); reveal(slides[cur], false); const k = slides[cur].dataset.kind; if (enter[k]) enter[k](slides[cur]); }
+  else { reveal(slides[0], false); enter.hero(slides[0]); }
   updateHud();
 })();
 </script>
