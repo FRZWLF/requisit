@@ -142,6 +142,13 @@
   .dk p { font-size:clamp(.82rem,.95vw,.96rem); color:var(--text) }
   .dk .sample { font-family:var(--mono); font-size:.72rem; line-height:1.5; color:var(--ink); background:var(--ground-2); border-radius:8px; padding:9px 11px; border-left:3px solid var(--hair) } .dk .sample b { color:var(--wine) } .dk .sample .rej { color:var(--muted) }
   .docsfoot { max-width:none }
+  /* rendered comments and outlines */
+  .rendered p, .finding p { margin:0 0 8px; font-size:.86rem; line-height:1.5 } .rendered .mdh, .finding .mdh { font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--wine); margin:12px 0 6px; font-weight:600 }
+  .rendered .mdb, .finding .mdb { padding-left:1.1em; text-indent:-1.1em; font-size:.84rem; line-height:1.45; margin:2px 0 } .rendered .mdb::before, .finding .mdb::before { content:"· "; color:var(--muted) } .mdb.done::before { content:"☑ "; color:var(--green) } .mdb.todo::before { content:"☐ " }
+  table.mdt { border-collapse:collapse; font-size:.78rem; margin:6px 0; width:100% } table.mdt th, table.mdt td { border-bottom:1px solid var(--mist); padding:4px 8px; text-align:left; vertical-align:top } table.mdt th { font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:500 }
+  .outline .lead { margin:0 0 10px; font-size:.86rem; color:var(--text) } .outline .sec { display:grid; grid-template-columns:200px 1fr; gap:12px; padding:7px 0; border-top:1px solid var(--mist); font-size:.84rem } .outline .sec b { font-family:var(--mono); font-size:.74rem; color:var(--wine); font-weight:600 } .outline .sec span { color:var(--text) }
+  .causes { margin-top:16px; border-top:1px dashed var(--hair); padding-top:12px; display:grid; gap:6px } .causes .tag { font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin-bottom:4px } .causes div:not(.tag) { display:grid; grid-template-columns:110px 1fr; gap:10px; font-size:.86rem; color:var(--text) }
+  .lens { font-family:var(--mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); width:70px; display:inline-block }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -315,7 +322,7 @@
       <div class="row"><b>ends with</b><span><code>/task-out</code>. The session never builds, never orchestrates.</span></div>
       <div class="ex" id="rumbleEx"></div>
     </div>
-    <div class="artefact"><div class="bar"><b>docs/02-decisions.md · 14 · 16</b><span id="rumbleStats"></span></div><div class="inner" id="rows"></div></div>
+    <div class="artefact"><div class="bar"><b>docs/02-decisions.md</b><span>· 14-gap-analysis.md · 16-measurements.md</span><span id="rumbleStats" style="margin-left:auto"></span></div><div class="inner" id="rows"></div></div>
   </div>
 </section>
 
@@ -328,7 +335,7 @@
       <div class="row"><b>does</b><span>Cuts the arc into shippable splits of ~3k lines; pre-decides every choice an implementer would otherwise guess; declares dependencies.</span></div>
       <div class="row"><b>shape</b><span>Goal · Context (the D-rows to honor, what NOT to do) · Acceptance criteria · Test expectations · Out of scope · Depends on · Suggested routing.</span></div>
       <div class="row"><b>output</b><span>Task issues plus an umbrella with the run order in waves. The session ends here.</span></div>
-      <div class="ex">Requisit Arc 1: four issues, three waves, one umbrella — #2 · #3 · #4 + #5.</div>
+      <div class="ex">Requisit Arc 1: one umbrella (#6), four issues in three waves:</div>
       <div class="waves" id="waves"></div>
     </div>
     <div class="artefact" id="issueCard"></div>
@@ -364,7 +371,7 @@
       <div class="row"><b>output</b><span>A 🏛 Design comment on the issue. Never implements. A person can veto the D-rows before a line is written.</span></div>
       <div class="ex">Requisit: 2 of 4 issues were size:L — both got a design; both PRs then overran the design's size estimate (M-009).</div>
     </div>
-    <div class="artefact"><div class="bar"><b>🏛 Design</b><span id="designMeta"></span><a id="designLink" target="_blank" rel="noopener">open on GitHub ↗</a></div><div class="inner"><pre id="designBox"></pre></div></div>
+    <div class="artefact"><div class="bar"><b>🏛 Design</b><span id="designMeta"></span><a id="designLink" target="_blank" rel="noopener">open on GitHub ↗</a></div><div class="inner outline" id="designBox"></div></div>
   </div>
 </section>
 
@@ -379,7 +386,7 @@
       <div class="row"><b>output</b><span>A draft PR whose body is the reviewers' starting evidence.</span></div>
       <div class="ex" id="implEx"></div>
     </div>
-    <div class="artefact"><div class="bar"><b id="prTitle"></b><a id="prLink" target="_blank" rel="noopener">open on GitHub ↗</a></div><div class="inner"><div id="commits"></div><pre id="prBox" style="margin-top:8px"></pre></div></div>
+    <div class="artefact"><div class="bar"><b id="prTitle"></b><a id="prLink" target="_blank" rel="noopener">open on GitHub ↗</a></div><div class="inner"><div id="commits"></div><div id="prBox" class="rendered" style="margin-top:8px"></div></div></div>
   </div>
 </section>
 
@@ -422,6 +429,7 @@
       <div class="row"><b>does</b><span>Merges <code>main</code> into the branch itself (resolve → verify → commit, never one chained command); fixes one-liner nits; ready → squash-merge; the full board on <code>main</code> after every merge.</span></div>
       <div class="row"><b>then</b><span>Assigns <code>risk:medium|high</code> PRs to a person for review after the fact; unblocks dependants; posts the 📋 trail; ticks the umbrella.</span></div>
       <div class="row"><b>output</b><span>The trail: stages × model × outcome × tokens — the cost ledger the next rumble reads.</span></div>
+      <div class="row"><b>stops</b><span>Open dependency → <code>blocked</code> · a question → <code>needs-human</code> · a red after round two → <code>needs-human</code> · board red on <code>main</code> → fix before the next merge.</span></div>
       <div class="ex" id="gateEx"></div>
     </div>
     <div class="artefact"><div class="bar"><b>📋 Pipeline trail</b><span id="trailMeta"></span><a id="trailLink" target="_blank" rel="noopener">open on GitHub ↗</a></div><div class="inner" id="trailBox"></div></div>
@@ -433,7 +441,7 @@
   <div class="head"><div class="eyebrow"><span class="n">stage 9</span>the docs</div><h2>The memory — and a check that keeps it honest.</h2></div>
   <div class="two">
     <div class="role">
-      <div class="row first"><b>what</b><span>Decisions (append-only, addenda when a PR meets reality) · gaps with triggers · measurements that read "pending" until measured · a research log with sources.</span></div>
+      <div class="row first"><b>grew by</b><span>The rumble wrote 18 decisions; the four PRs added 7 more and extended 14 with addenda — where the design met reality (an actor in the idempotency key, a merchant scope).</span></div>
       <div class="row"><b>rule</b><span>A task that changes what a doc describes updates the doc in the same branch. A reference without a row is a red finding.</span></div>
       <div class="row"><b>check</b><span><code>check-anchors</code> and <code>render --check</code> run in the board: dangling D/G/M references or a hand-edited generated file fail it.</span></div>
       <div class="row"><b>loop</b><span>The next rumble starts by reading these — not the chat.</span></div>
@@ -532,6 +540,22 @@
   const esc = s => String(s ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const md = s => esc(s).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
   const num = n => n == null ? '—' : Number(n).toLocaleString('en');
+  // block markdown for comments and PR bodies: headings, bullets, tables, checkboxes, paragraphs
+  const mdBlock = (s, max = 1600) => {
+    const lines = s.replace(/<!--[\s\S]*?-->/g, '').replace(/```[a-z]*\n?/g, '').slice(0, max).split('\n');
+    let out = '', para = [], table = [];
+    const flushP = () => { if (para.length) { out += `<p>${md(para.join(' '))}</p>`; para = []; } };
+    const flushT = () => { if (table.length) { out += `<table class="mdt">${table.map((r, i) => `<tr>${r.map(c => i ? `<td>${md(c)}</td>` : `<th>${md(c)}</th>`).join('')}</tr>`).join('')}</table>`; table = []; } };
+    for (const raw of lines) {
+      const l = raw.trim();
+      if (/^\|/.test(l)) { flushP(); if (!/^\|\s*-+/.test(l)) table.push(l.split(/(?<!\\)\|/).slice(1, -1).map(c => c.trim())); continue; } else flushT();
+      if (!l) { flushP(); continue; }
+      const h = l.match(/^(#{1,4})\s+(.*)/); if (h) { flushP(); out += `<h4 class="mdh">${md(h[2])}</h4>`; continue; }
+      const b = l.match(/^[-*]\s+(?:\[( |x)\]\s+)?(.*)/); if (b) { flushP(); out += `<div class="mdb ${b[1] === 'x' ? 'done' : b[1] === ' ' ? 'todo' : ''}">${md(b[2])}</div>`; continue; }
+      para.push(l);
+    }
+    flushP(); flushT(); return out + (s.length > max ? '<p class="mono">…</p>' : '');
+  };
   const vclass = v => !v ? '' : /🔴|\bRED\b|[1-9]\d* red/.test(v) ? 'red' : /🟡|\bYELLOW\b|[1-9]\d* nit/.test(v) ? 'yellow' : 'clean';
   const ev = k => T ? T.events.filter(e => e.kind === k) : [];
   const section = (body, name) => { const m = (body || '').match(new RegExp(`## ${name}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`)); return m ? m[1].trim() : ''; };
@@ -586,7 +610,8 @@
     document.getElementById('vocabWaves').innerHTML = (D.waves || []).map((w, i) => `<div class="wave"><i>wave ${i + 1}</i>${w.map(x => `<em>${esc(x)}</em>`).join('')}</div>`).join('');
     // rumble
     const pick = [...D.decisions.slice(0, 6).map(r => ({ ...r, k: 'd' })), ...D.gaps.slice(0, 2).map(r => ({ ...r, k: 'g' })), ...D.measurements.slice(6, 7).map(r => ({ ...r, k: 'm' }))];
-    document.getElementById('rows').innerHTML = pick.map(r => `<div class="drow"><span class="id ${r.k}">${esc(r.id)}</span><span>${md((r.title || '').slice(0, 150))}${(r.title || '').length > 150 ? '…' : ''}${r.rationale ? `<br><span class="r">${md(r.rationale.slice(0, 120))}…</span>` : ''}</span></div>`).join('');
+    const first = s => { const m = (s || '').match(/^[\s\S]*?[.?!](?=\s|$)/); return m ? m[0] : (s || '').slice(0, 140); };
+    document.getElementById('rows').innerHTML = pick.map(r => `<div class="drow"><span class="id ${r.k}">${esc(r.id)}</span><span>${md(first(r.title))}${r.rationale && /Rejected:/.test(r.rationale) ? `<br><span class="r">rejected: ${md(first(r.rationale.split('Rejected:')[1].replace(/^\*\s*/, '')).slice(0, 170))}${first(r.rationale.split('Rejected:')[1]).length > 170 ? '…' : ''}</span>` : ''}</span></div>`).join('');
     document.getElementById('rumbleStats').textContent = `${D.decisions.length} D · ${D.gaps.length} G · ${D.measurements.length} M`;
     document.getElementById('rumbleEx').textContent = `Requisit: one session over a one-page brief — ${D.research || 0} web searches with ${D.researchSources || 0} sources, 18 decisions, 15 gaps, 10 measurements, the roadmap, the threat model, four issue drafts. 111,974 tokens (M-008).`;
     // task-out
@@ -604,10 +629,17 @@
       document.getElementById('triageTitle').textContent = `#${T.issue} · labels`;
       if (tri) document.getElementById('triageLink').href = tri.url;
       document.getElementById('triageBox').innerHTML = `<p>${labels.map(l => `<span class="pill big ${/risk:high|size:L/.test(l) ? 'wine' : 'teal'}">${esc(l)}</span> `).join('')}</p>` + (tri ? `<p style="margin-top:14px">${md(tri.text)}</p><p class="mono" style="margin-top:8px">${esc(tri.who)} · ${when(tri.at)}</p>` : '');
+      // what those labels caused on this issue, read from the trail
+      const tr0 = ev('trail')[0], trRows = tr0 ? tr0.text.split('\n').filter(l => /^\|/.test(l)).map(l => l.split('|').map(c => c.trim())) : [];
+      const modelOf = st => { const r = trRows.find(r => new RegExp('^' + st, 'i').test(r[1] || '')); return r ? r[2] : null; };
+      const causes = [['size:L', modelOf('architect') ? `the architect ran first (${modelOf('architect')})` : 'no architect'], ['size:L', modelOf('implement') ? `${modelOf('implement')} implemented` : ''], ['risk:high', modelOf('security') ? `a security review ran (${modelOf('security')})` : 'no security review'], ['risk:high', 'assigned to a person for review after the merge']].filter(c => c[1] && labels.includes(c[0]));
+      document.getElementById('triageBox').innerHTML += `<div class="causes"><div class="tag">what the labels caused on #${T.issue}</div>${causes.map(c => `<div><code>${c[0]}</code><span>→ ${esc(c[1])}</span></div>`).join('')}</div>`;
       // architect
       const des = ev('design')[0];
-      document.getElementById('designBox').textContent = des ? des.text.replace(/<!--[\s\S]*?-->/g, '').slice(0, 2300) + '\n…' : 'no architect stage on this issue (not size:L)';
-      document.getElementById('designMeta').textContent = des ? `${des.who} · ${when(des.at)} · ${num(des.text.length)} characters` : '';
+      if (des) { const body = des.text.replace(/<!--[\s\S]*?-->/g, ''); const secs = body.split(/\n(?=#{2,4}\s)/).slice(1);
+        document.getElementById('designBox').innerHTML = `<p class="lead">${md(body.split('\n').find(l => l && !/^#/.test(l)) || '')}</p>` + secs.slice(0, 7).map(sc => { const [h, ...rest] = sc.split('\n'); const firstLine = rest.map(l => l.trim()).find(l => l && !/^\|/.test(l) && !/^\*{1,2}[^*]+\*{1,2}:?$/.test(l)) || ''; return `<div class="sec"><b>${md(h.replace(/^#+\s*/, ''))}</b><span>${md(firstLine.replace(/^[-*]\s*/, '').slice(0, 150))}${firstLine.length > 150 ? '…' : ''}</span></div>`; }).join('') + `<p class="mono" style="margin-top:8px">${secs.length} sections · ${num(body.length)} characters</p>`; }
+      else document.getElementById('designBox').textContent = 'no architect stage on this issue (not size:L)';
+      document.getElementById('designMeta').textContent = des ? `${des.who} · ${when(des.at)} · the outline` : '';
       if (des) document.getElementById('designLink').href = des.url;
       // implement
       const pr = prs[0];
@@ -618,12 +650,13 @@
         document.getElementById('commits').innerHTML = commits.slice(0, 4).map(c => `<div class="commit"><b>${esc(c.sha)}</b> ${esc(c.text)}</div>`).join('');
         const body = pr.body || '';
         const evidence = section(body, 'Evidence for the reviewers') || section(body, 'Verification') || body;
-        document.getElementById('prBox').textContent = (section(body, 'Summary').slice(0, 500) + '\n\n## Evidence for the reviewers\n' + evidence.slice(0, 1400) + '\n…');
+        document.getElementById('prBox').innerHTML = mdBlock(section(body, 'Summary').slice(0, 420) + '\n\n## Evidence for the reviewers\n' + evidence, 1500);
         document.getElementById('implEx').textContent = `Requisit #${T.issue}: ${commits.length} commit(s) before review, draft PR #${pr.number}; the PR body lists the suites run, the mutations tried and the deviations from the design.`;
       }
       // review
       const firstPass = reviews.slice(0, firstRed ? Math.max(2, reviews.indexOf(firstRed) + 1) : 2);
-      document.getElementById('verdicts').innerHTML = firstPass.map(r => `<div><span class="verdict ${vclass(r.verdict)}">${esc(r.verdict)}</span><span class="mono">${esc(r.who)} · ${when(r.at)}</span></div>`).join('');
+      const lens = r => /security|injection|secret|policy|transport/i.test(r.text.slice(0, 400)) ? 'security' : 'quality';
+      document.getElementById('verdicts').innerHTML = firstPass.map(r => `<div><span class="lens">${lens(r)}</span><span class="verdict ${vclass(r.verdict)}">${esc(r.verdict)}</span><span class="mono">${when(r.at)}</span></div>`).join('');
       document.getElementById('reviewMeta').textContent = prs[0] ? `PR #${prs[0].number}` : '';
       let redBlock = '';
       if (firstRed) { const h = firstRed.text.search(/^#{1,4}[^\n]*🔴|^🔴\s*\*\*|^\*\*🔴/m); const start = h >= 0 ? h : firstRed.text.indexOf('🔴'); const rest = firstRed.text.slice(start).replace(/^[^\n]*\n/, ''); redBlock = rest.split(/\n(?=#{1,4}\s|---|VERDICT:)/)[0].replace(/```[a-z]*\n?/g, '').trim(); }
@@ -635,7 +668,7 @@
       const rere = firstRed ? reviews.filter(r => r.at > firstRed.at && !firstPass.includes(r)) : [];
       document.getElementById('fixCommits').innerHTML = after.slice(0, 4).map(c => `<div class="commit"><b>${esc(c.sha)}</b> ${esc(c.text)}</div>`).join('') || '<p class="mono">no fix round was needed</p>';
       const mapping = firstRed ? ev('comment').find(c => c.pr && c.at > firstRed.at && /🔴|fixed|→/.test(c.text)) : null;
-      document.getElementById('findingFix').innerHTML = mapping ? md(mapping.text.replace(/<!--[\s\S]*?-->/g, '').slice(0, 700)) + '…' : (after[0] ? esc(after[0].text) : '—');
+      document.getElementById('findingFix').innerHTML = mapping ? mdBlock(mapping.text, 900) : (after[0] ? esc(after[0].text) : '—');
       document.getElementById('reverdicts').innerHTML = rere.map(r => `<span class="verdict ${vclass(r.verdict)}">${esc(r.verdict)}</span><span class="mono">re-review · ${esc(r.who)}</span><br>`).join('');
       document.getElementById('fixMeta').textContent = `${fixes.length} round(s) · ${after.length} commit(s) · ${rere.length} re-review(s)`;
       document.getElementById('fixEx').textContent = firstRed ? `Requisit #${T.issue}: one round — every red and nit mapped to a commit or a reason; re-reviews: ${rere.map(r => r.verdict.replace('VERDICT: ', '')).join(' · ') || 'pending'}.` : 'Requisit: this issue needed none; two of the four did.';
