@@ -130,9 +130,18 @@
   .vocab .waves { display:grid; gap:6px; margin-top:10px } .vocab .wave { display:flex; gap:6px; align-items:center; font-family:var(--mono); font-size:.72rem } .vocab .wave i { font-style:normal; color:var(--muted); width:52px } .vocab .wave em { font-style:normal; background:var(--wine-soft); color:var(--wine-deep); border-radius:6px; padding:2px 8px }
   .vocab .note { margin-top:10px; font-family:var(--mono); font-size:.7rem; color:var(--muted) }
   .meta.lead { grid-template-columns:repeat(5, minmax(0,1fr)); margin-top:0 } .meta.lead b { font-size:clamp(1.5rem,2.4vw,2.2rem) }
+  .reality .s-merge { fill:none; stroke:var(--wine); stroke-width:1.5; opacity:.7 } .reality .s-dot { fill:var(--wine) } .reality .s-dot.base { fill:var(--ink); opacity:.6 }
   .reality .col-bg { fill:rgba(255,255,255,.55); stroke:var(--ink); stroke-width:1.2 } .reality .col-title { font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; fill:var(--ink) }
   .reality .umb { fill:#fff; stroke:var(--wine); stroke-width:1.2 } .reality .umb.docs { stroke:var(--teal) } .reality .c-t { font-family:var(--mono); font-size:11px; font-weight:600; fill:var(--ink) } .reality .c-l { font-family:var(--mono); font-size:10.5px; fill:var(--text) }
   .reality .ah { fill:var(--muted) } .reality .edge.arrow { stroke:var(--muted); stroke-width:1.6 } .reality .edge.back { stroke:var(--teal); stroke-width:1.5 }
+  /* slide 4b: the docs */
+  .docsgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(12px,1.4vw,20px) }
+  .dk { background:#fff; border:1px solid var(--hair); border-radius:14px; padding:clamp(14px,1.6vw,22px); display:grid; gap:10px; align-content:start }
+  .dk .dh { display:grid; grid-template-columns:auto 1fr; gap:4px 10px; align-items:center } .dk .dh b { font-family:var(--display); font-size:clamp(1.05rem,1.4vw,1.4rem); font-weight:500 } .dk .dh i { grid-column:2; font-style:normal; font-family:var(--mono); font-size:.66rem; color:var(--muted) }
+  .dk .id { display:inline-grid; place-items:center; width:34px; height:34px; border-radius:9px; font-family:var(--display); font-size:1.2rem; color:#fff; grid-row:span 2 } .dk .id.d { background:var(--wine) } .dk .id.g { background:var(--teal) } .dk .id.m { background:var(--gold) } .dk .id.r { background:var(--ink) }
+  .dk p { font-size:clamp(.82rem,.95vw,.96rem); color:var(--text) }
+  .dk .sample { font-family:var(--mono); font-size:.72rem; line-height:1.5; color:var(--ink); background:var(--ground-2); border-radius:8px; padding:9px 11px; border-left:3px solid var(--hair) } .dk .sample b { color:var(--wine) } .dk .sample .rej { color:var(--muted) }
+  .docsfoot { max-width:none }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -275,9 +284,21 @@
   </div>
 </section>
 
+<!-- 3c · the docs -->
+<section class="slide" data-title="The docs" data-steps="4">
+  <div class="head"><div class="eyebrow"><span class="n">04</span>the memory</div><h2>Four kinds of rows. Each one is an anchor a check can find.</h2></div>
+  <div class="docsgrid">
+    <div class="dk" data-step="1"><div class="dh"><span class="id d">D</span><b>decisions</b><i>docs/02-decisions.md</i></div><p>What was chosen, why, and what was <em>rejected</em>. Append-only; a PR that meets reality adds an addendum, never edits.</p><div class="sample" id="dsD"></div></div>
+    <div class="dk" data-step="2"><div class="dh"><span class="id g">G</span><b>gaps</b><i>docs/14-gap-analysis.md</i></div><p>An open question with the <em>trigger</em> that reopens it. Closed rows are struck through with the decision that closed them.</p><div class="sample" id="dsG"></div></div>
+    <div class="dk" data-step="3"><div class="dh"><span class="id m">M</span><b>measurements</b><i>docs/16-measurements.md</i></div><p>A number worth keeping. It reads <em>pending</em> until it was measured — never a target dressed as a result.</p><div class="sample" id="dsM"></div></div>
+    <div class="dk" data-step="4"><div class="dh"><span class="id r">R</span><b>research log</b><i>docs/15-research-log.md</i></div><p>Every search that changed a decision, with its sources. So the next rumble does not search again.</p><div class="sample" id="dsR"></div></div>
+  </div>
+  <p class="mono docsfoot">also in <code>docs/</code>: the brief · the vision · the roadmap of arcs · the threat model · the engineering standards. A reference without a row is a red finding; <code>check-anchors</code> runs in the board.</p>
+</section>
+
 <!-- 4 · the schema (hub) -->
 <section class="slide" data-title="The schema" data-kind="reality">
-  <div class="head"><div class="eyebrow"><span class="n">04</span>the whole framework on one page</div><h2>Two sessions. GitHub is the only thing they share.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">05</span>the whole framework on one page</div><h2>Two sessions. GitHub is the only thing they share.</h2></div>
   <div class="reality figs"><svg id="reality" class="schema" viewBox="0 0 1300 600" aria-hidden="true"></svg></div>
 </section>
 
@@ -432,14 +453,14 @@
 
 <!-- product -->
 <section class="slide" data-title="The product" data-kind="product">
-  <div class="head"><div class="eyebrow"><span class="n">05</span>what came out</div><h2>Requisit, running.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">06</span>what came out</div><h2>Requisit, running.</h2></div>
   <iframe class="live" id="live" src="about:blank" title="Requisit live"></iframe>
   <p class="mono" id="liveNote">start the service (README quickstart) and press <kbd>L</kbd> to load it here · buyer drafts → rule matches → approver rejects with a reason → the audit shows it → the merchant polls the order</p>
 </section>
 
 <!-- cost -->
 <section class="slide" data-title="Cost" data-kind="cost">
-  <div class="head"><div class="eyebrow"><span class="n">06</span>the ledger</div><h2>What a feature costs, by stage.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">07</span>the ledger</div><h2>What a feature costs, by stage.</h2></div>
   <div class="meta lead" id="costLead"></div>
   <table class="cost" id="costTable"></table>
   <p class="mono" id="costNote"></p>
@@ -447,7 +468,7 @@
 
 <!-- existing project -->
 <section class="slide" data-title="Existing project" data-steps="4">
-  <div class="head"><div class="eyebrow"><span class="n">07</span>bring it to a project that already exists</div><h2>You already have most of it under other names.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">08</span>bring it to a project that already exists</div><h2>You already have most of it under other names.</h2></div>
   <div class="map">
     <div class="l" data-step="1">docs/adr/0001-….md — one file per ADR</div><div class="a" data-step="1">→</div><div class="r" data-step="1"><code>docs.decisions</code> → the ADR index; a D-row per ADR, numbers kept</div>
     <div class="l" data-step="2">CONTRIBUTING.md, the security policy</div><div class="a" data-step="2">→</div><div class="r" data-step="2">project sections appended to the core standards — yours win on safety</div>
@@ -458,7 +479,7 @@
 
 <!-- teams -->
 <section class="slide" data-title="Teams" data-steps="4">
-  <div class="head"><div class="eyebrow"><span class="n">08</span>several people</div><h2>The issue is the contract, so the author does not matter.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">09</span>several people</div><h2>The issue is the contract, so the author does not matter.</h2></div>
   <div class="cards four">
     <div class="card" data-step="1"><div class="tag">rumble</div><p>Everyone rumbles. Rows and issues come as a PR and are reviewed like code. Reserved numbers avoid collisions.</p></div>
     <div class="card" data-step="2"><div class="tag">orchestrate</div><p>One person per arc runs the pipeline. State is on GitHub, so the next wave can be taken over in a new session by someone else.</p></div>
@@ -469,7 +490,7 @@
 
 <!-- intershop -->
 <section class="slide" data-title="Here" data-steps="3">
-  <div class="head"><div class="eyebrow"><span class="n">09</span>where this fits</div><h2>Agent features are decisions plus contracts plus reviewed PRs.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">10</span>where this fits</div><h2>Agent features are decisions plus contracts plus reviewed PRs.</h2></div>
   <div class="cards">
     <div class="card" data-step="1"><div class="tag">buyer · merchant agents</div><p>What an agent may do is a D-row and a risk label before it is code. Requisit's drafting agent never approves — decided in the rumble, enforced in review.</p></div>
     <div class="card" data-step="2"><div class="tag">pwa · commerce core</div><p>One framework repo, one <code>framework.json</code> per codebase: its own areas, implementers, verify board and risk:high list.</p></div>
@@ -479,7 +500,7 @@
 
 <!-- close -->
 <section class="slide close" data-title="Close" data-steps="3">
-  <div class="head"><div class="eyebrow"><span class="n">10</span>the loop</div><h1>Think. <em>Contract.</em> Build. Remember.</h1></div>
+  <div class="head"><div class="eyebrow"><span class="n">11</span>the loop</div><h1>Think. <em>Contract.</em> Build. Remember.</h1></div>
   <ul class="plain">
     <li data-step="1">Rumble in a session that ends with issues, never with code.</li>
     <li data-step="2">Build in a session that never reads code, from agents that each do one job.</li>
@@ -556,6 +577,12 @@
       document.getElementById('briefBox').innerHTML = `<p class="b-intro">${md(intro.replace(/\n/g, ' '))}</p>` + hi.map(b => `<div class="b-line hi">${md(b)}</div>`).join('') + rest.slice(0, 3).map(b => `<div class="b-line dim">${esc(b.replace(/\*\*/g, '').slice(0, 78))}…</div>`).join('') + (rest.length > 3 ? `<div class="b-line dim more">+ ${rest.length - 3} more lines</div>` : '');
       document.getElementById('briefStamp').textContent = `1 page · ${D.brief.split(/\s+/).length} words`;
     }
+    const strip = s => (s || '').replace(/\*\*/g, '').replace(/`/g, '');
+    const dD = D.decisions.find(r => r.id === 'D-003') || D.decisions[0], dG = D.gaps.find(r => r.id === 'G-004') || D.gaps[0], dM = D.measurements.find(r => r.id === 'M-006') || D.measurements[0];
+    if (dD) document.getElementById('dsD').innerHTML = `<b>${dD.id}</b> ${esc(strip(dD.title).split('.')[0])}.<br><span class="rej">rejected: ${esc(((strip(dD.rationale).match(/Rejected:\s*([^;]*)/) || ['', ''])[1].replace(/\s*\(.*$/, '').trim()) || '')} · floats · a global cents assumption</span>`;
+    if (dG) document.getElementById('dsG').innerHTML = `<b>${dG.id}</b> ${esc(strip(dG.title).split('?')[0])}?<br><span class="rej">reopens when: ${esc(strip(dG.status).slice(0, 90))}…</span>`;
+    if (dM) document.getElementById('dsM').innerHTML = `<b>${dM.id}</b> ${esc(dM.title.replace(/^M-\d+ · /, ''))}<br><span class="rej">pending — measured once real approvers use it</span>`;
+    document.getElementById('dsR').innerHTML = `<b>2026-09-21</b> ${esc((D.researchTitles[0] || '').replace(/^\d{4}-\d\d-\d\d · /, '').replace(/`/g, ''))}<br><span class="rej">${D.researchSources || 0} sources across ${D.research || 0} entries</span>`;
     document.getElementById('vocabWaves').innerHTML = (D.waves || []).map((w, i) => `<div class="wave"><i>wave ${i + 1}</i>${w.map(x => `<em>${esc(x)}</em>`).join('')}</div>`).join('');
     // rumble
     const pick = [...D.decisions.slice(0, 6).map(r => ({ ...r, k: 'd' })), ...D.gaps.slice(0, 2).map(r => ({ ...r, k: 'g' })), ...D.measurements.slice(6, 7).map(r => ({ ...r, k: 'm' }))];
@@ -707,35 +734,24 @@
       ${bot(440, 372, '', 'triage', {}, .55)}${bot(526, 372, '', 'architect', {}, .55)}${bot(612, 372, '', 'builder', {}, .55)}${bot(698, 372, '', 'quality', {}, .55)}${bot(784, 372, '', 'security', {}, .55)}
       <g class="st"><text class="s-lbl" x="612" y="300" text-anchor="middle">one wave · at most 3 builders · one job each, own worktree</text></g>
       ${edge('M836 340 L932 340', 'arrow')}
-      <g class="st"><text class="s-lbl strong" x="1200" y="252" text-anchor="middle">main</text><line class="s-main" x1="1200" y1="262" x2="1200" y2="392"/><circle id="rPulse" class="s-pulse" cx="1200" cy="327" r="0"/></g>
-      <g id="rPRs">${[7, 8, 9, 10].map((n, i) => `<g class="s-prcard" transform="translate(980 ${272 + i * 26})" opacity="0"><rect class="s-pr" x="0" y="-9" width="50" height="18" rx="5"/><text class="s-pr-t" x="25" y="4" text-anchor="middle">PR #${n}</text></g>`).join('')}</g>
+      <g class="st"><text class="s-lbl strong" x="1200" y="252" text-anchor="middle">main</text><line class="s-main" x1="1200" y1="262" x2="1200" y2="392"/>${[7, 8, 9, 10].map((n, i) => `<path class="s-merge" d="M1040 ${278 + i * 26} C 1120 ${278 + i * 26}, 1150 ${284 + i * 26}, 1200 ${284 + i * 26}"/><circle class="s-dot" cx="1200" cy="${284 + i * 26}" r="5"/><rect class="s-pr" x="985" y="${269 + i * 26}" width="56" height="18" rx="5"/><text class="s-pr-t" x="1013" y="${282 + i * 26}" text-anchor="middle">PR #${n}</text>`).join('')}<circle class="s-dot base" cx="1200" cy="262" r="4"/><circle class="s-dot base" cx="1200" cy="392" r="4"/></g>
       <g class="st"><text class="s-lbl" x="960" y="392">📋 a trail comment on each issue</text></g>
       ${gate(960, 404, 'risk:high → you review after the fact')}
       <!-- lane 3 / column bottom: the docs, and the way back -->
-      ${edge('M1200 392 L1200 470', 'arrow')}
+      ${edge('M1200 396 L1200 470', 'arrow')}
       <g class="st"><rect class="umb docs" x="960" y="476" width="300" height="70" rx="8"/><text class="c-t" x="972" y="498">docs memory</text><text class="c-l" x="972" y="516">D · G · M · research log</text><text class="c-l" x="972" y="531">append-only; PRs add addenda</text></g>
       ${edge('M952 522 L60 522', 'back')}
       <g class="st"><text class="s-cmd back" x="80" y="500">the next rumble starts here — from the docs, not the chat</text></g>`;
-    // entry: every .st group in order, edges drawn, PRs travel into main
-    const st = [...svg.querySelectorAll('.st')], edges = st.filter(e => e.classList.contains('edge')), prs = [...svg.querySelectorAll('.s-prcard')], lanes = svg.querySelectorAll('.lane-bg, .lane-title');
+    // entry: the lanes, then everything at once with a hair of stagger; the edges draw themselves
+    const st = [...svg.querySelectorAll('.st')], edges = st.filter(e => e.classList.contains('edge')), boxes = st.filter(e => !e.classList.contains('edge')), lanes = svg.querySelectorAll('.lane-bg, .lane-title, .col-bg');
     edges.forEach(e => { const l = e.getTotalLength(); e.style.strokeDasharray = e.classList.contains('back') ? '6 6' : l; e.style.strokeDashoffset = e.classList.contains('back') ? 0 : l; });
-    if (!G || reduce) { prs.forEach(p => p.setAttribute('opacity', 1)); edges.forEach(e => e.style.strokeDashoffset = 0); return; }
-    G.set(st.filter(e => !e.classList.contains('edge')), { opacity: 0, y: 10 }); G.set(lanes, { opacity: 0 }); G.set(svg.querySelectorAll('path.back'), { opacity: 0 });
-    const tl = G.timeline({ delay: .3 });
-    tl.to(lanes, { opacity: 1, duration: .5, stagger: .12 });
-    let t = .2;
-    for (const el of st) {
-      if (el.classList.contains('edge')) { if (el.classList.contains('back')) tl.to(el, { opacity: 1, duration: .6 }, t); else tl.to(el, { strokeDashoffset: 0, duration: .5, ease: 'power2.out' }, t); t += .22; }
-      else { tl.to(el, { opacity: 1, y: 0, duration: .45, ease: 'power3.out' }, t); t += el.classList.contains('bot') || el.classList.contains('human') ? .3 : .18; }
-      if (el.id === 'rPRs' || (el.classList.contains('s-lbl'))) continue;
-      if (el.querySelector && el.querySelector('#rPulse')) { // once main exists, the PRs travel
-        tl.to(prs, { opacity: 1, duration: .3, stagger: .3 }, t)
-          .to(prs, { x: 170, duration: .7, ease: 'power2.inOut', stagger: .3 }, t + .15)
-          .fromTo('#rPulse', { attr: { r: 0 }, opacity: 1 }, { attr: { r: 26 }, opacity: 0, duration: .9, ease: 'power2.out', repeat: 3, repeatDelay: .02 }, t + .55)
-          .to(prs, { opacity: 0, duration: .3, stagger: .3 }, t + .7);
-        t += 1.6;
-      }
-    }
+    if (!G || reduce) { edges.forEach(e => e.style.strokeDashoffset = 0); return; }
+    G.set(boxes, { opacity: 0, y: 8 }); G.set(lanes, { opacity: 0 }); G.set(svg.querySelectorAll('path.back'), { opacity: 0 });
+    const tl = G.timeline({ delay: .2 });
+    tl.to(lanes, { opacity: 1, duration: .5, stagger: .05 })
+      .to(boxes, { opacity: 1, y: 0, duration: .6, ease: 'power3.out', stagger: { each: .02, from: 'start' } }, .3)
+      .to(edges.filter(e => !e.classList.contains('back')), { strokeDashoffset: 0, duration: .7, ease: 'power2.out', stagger: .08 }, .9)
+      .to(svg.querySelectorAll('path.back'), { opacity: 1, duration: .6 }, 1.6);
     const seek = new URLSearchParams(location.search).get('t'); if (seek) tl.pause(+seek);
     running.reality = [tl];
   }

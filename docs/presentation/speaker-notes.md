@@ -46,9 +46,13 @@ Fällt der Service aus: die Produktfolie zeigt den Hinweis, alles andere läuft 
 
 *(Die Boxen sind ineinander geschachtelt: Phase außen, Arc innen, die drei Kästen darunter. Rechts unten die echten Wellen: #2, dann #3, dann #4 und #5 parallel.)*
 
-## Folie 5 — Das Schema (75s)
+## Folie 5 — Die Docs (60s)
 
-**Die Szene baut sich von links oben nach rechts unten auf, ca. 14 s. Mitsprechen:**
+> Das Gedächtnis sind vier Arten von Zeilen, jede mit einer Nummer, die ein Check finden kann. D, Decisions: was gewählt wurde, warum, und was verworfen wurde; append-only, ein PR ergänzt ein Addendum, editiert nie. G, Gaps: eine offene Frage mit dem Auslöser, der sie wieder öffnet. M, Measurements: eine Zahl, die „pending“ heißt, bis sie gemessen ist, nie ein Ziel als Ergebnis verkleidet. Und das Research-Log: jede Suche, die eine Entscheidung geändert hat, mit Quellen. Die Beispiele sind echt: D-003 Geld in Minor Units, G-004 Postgres, M-006 Genehmigungswartezeit. Eine Referenz ohne Zeile ist ein rotes Finding, und check-anchors läuft im Board.
+
+## Folie 6 — Das Schema (75s)
+
+**Alles erscheint zusammen, die Pfeile zeichnen sich in 2 s. Mitsprechen:**
 
 > Zwei Sessions, und das Einzige, was sie teilen, ist GitHub, die Spalte rechts. Oben die Rumble-Session: Sie und der Rumble-Agent reden, daraus werden Zeilen in den Docs, nicht Chat. Task-out, Sie bestätigen die Entwürfe, und in GitHub liegen ein Umbrella und vier Issues in drei Wellen. Dann die rote Linie: neue Session, nur was auf GitHub steht, kommt mit. Warum? Der Rumble-Kontext steckt voller Abwägungen, die den Builder beeinflussen würden, und die Pipeline muss aus GitHub allein reproduzierbar sein, damit jemand anderes die nächste Welle übernehmen kann. Unten: Sie tippen pipeline, der Orchestrator holt sich das Umbrella und spawnt pro Welle Triage, Architekt, Builder, Quality, Security, jeder in seinem eigenen Worktree. Die PRs gehen nach main, jeder Trail als Kommentar zurück ins Issue, und bei risk-high prüfen Sie nach. Ganz unten: die Docs als Gedächtnis, und der gestrichelte Pfeil zurück: der nächste Rumble startet bei den Docs, nicht beim Chat.
 
