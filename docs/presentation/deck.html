@@ -63,29 +63,34 @@
   kbd { font-family:var(--mono); border:1px solid var(--hair); border-bottom-width:2px; border-radius:5px; padding:0 5px; background:#fff }
 
   /* title: headline over the day graph */
-  .slide.hero { display:block; padding-top:max(80px, calc(var(--pad) * .9)) }
-  .hero-top { max-width:min(880px, 62vw) }
-  .hero-top h1 { font-size:clamp(2.6rem,5.8vw,5.4rem); line-height:.96; font-variation-settings:"opsz" 144,"SOFT" 60 }
+  .slide.hero { display:block; padding-top:max(72px, calc(var(--pad) * .8)) }
+  .hero-top { max-width:min(820px, 60vw) }
+  .hero-top h1 { font-size:clamp(2.4rem,5vw,4.6rem); line-height:.96; font-variation-settings:"opsz" 144,"SOFT" 60 }
   .hero-top h1 em { font-style:italic; color:var(--wine); font-variation-settings:"opsz" 144,"SOFT" 100 }
   .hero-top h1 .line { display:block; overflow:hidden } .hero-top h1 .line > span { display:block }
-  .hero-top .lede { margin-top:18px; max-width:60ch }
-  .meta { display:flex; gap:28px; flex-wrap:wrap; margin-top:clamp(14px,2.4vh,26px); font-family:var(--mono); font-size:.74rem; color:var(--muted) }
-  .meta b { display:block; color:var(--ink); font-family:var(--display); font-size:clamp(1.4rem,2.2vw,2rem); font-weight:500; line-height:1.1; font-variant-numeric:tabular-nums }
-  .daygraph { position:absolute; left:0; right:0; bottom:0; height:44vh; padding:0 var(--pad) 34px }
-  .daygraph svg { width:100%; height:100%; display:block; overflow:visible }
-  .daygraph .g-main { fill:none; stroke:var(--ink); stroke-width:2.5; stroke-linecap:round; opacity:.55 }
-  .daygraph .g-branch { fill:none; stroke:var(--wine); stroke-width:2; stroke-linecap:round; opacity:.85 }
-  .daygraph .g-commit { fill:var(--ground); stroke:var(--wine); stroke-width:2 }
-  .daygraph .g-review { fill:none; stroke:var(--teal); stroke-width:2.2 } .daygraph .g-review.red { stroke:var(--red) }
-  .daygraph .g-fix { fill:var(--gold); stroke:none }
-  .daygraph .g-design { fill:#fff; stroke:var(--teal); stroke-width:1.8 }
-  .daygraph .g-triage { stroke:var(--ink); stroke-width:2; opacity:.5 }
-  .daygraph .g-merge { fill:var(--teal); opacity:0 }
-  .daygraph .g-lbl { font-family:var(--mono); font-size:11px; fill:var(--muted) }
-  .daygraph .g-lbl.strong { fill:var(--ink); font-size:12px }
-  .daygraph .g-head { stroke:var(--wine); stroke-width:1; opacity:.5; stroke-dasharray:3 4 }
-  .dayhud { position:absolute; right:var(--pad); top:-6px; display:flex; gap:22px; font-family:var(--mono); font-size:.74rem; color:var(--muted); font-variant-numeric:tabular-nums }
-  .dayhud #dayClock { color:var(--wine); font-weight:600; font-size:.9rem } .dayhud #dayTests { color:var(--teal-deep) }
+  .hero-top .lede { margin-top:14px; max-width:58ch; font-size:clamp(.9rem,1.1vw,1.1rem) }
+  .meta { display:flex; gap:24px; flex-wrap:wrap; margin-top:clamp(10px,1.8vh,20px); font-family:var(--mono); font-size:.7rem; color:var(--muted) }
+  .meta b { display:block; color:var(--ink); font-family:var(--display); font-size:clamp(1.3rem,2vw,1.8rem); font-weight:500; line-height:1.1; font-variant-numeric:tabular-nums }
+  .scene { position:absolute; left:0; right:0; bottom:0; height:40vh; padding:0 var(--pad) 30px }
+  .scene svg { width:100%; height:100%; display:block; overflow:visible }
+  .scene .a-ring { fill:#fff; stroke:var(--teal); stroke-width:2 } .scene .a-star { fill:var(--teal) }
+  .scene #sRumble .a-ring, .scene #sOrch .a-ring { stroke:var(--wine) } .scene #sRumble .a-star, .scene #sOrch .a-star { fill:var(--wine) }
+  .scene .p-skin { fill:#fff; stroke:var(--ink); stroke-width:2 } .scene .p-eye { fill:var(--ink) } .scene .p-mouth { fill:none; stroke:var(--ink); stroke-width:1.8; stroke-linecap:round }
+  .scene .s-lbl { font-family:var(--mono); font-size:11px; fill:var(--muted) } .scene .s-lbl.strong { fill:var(--ink); font-size:12px }
+  .scene .s-cmd { font-family:var(--mono); font-size:12px; fill:var(--wine); font-weight:600 }
+  .scene .s-bubble rect { fill:#fff; stroke:var(--hair); stroke-width:1.2 } .scene .s-bubble.ai rect { fill:var(--teal-soft); stroke:none }
+  .scene .s-bubble text { font-family:var(--body); font-size:12.5px; fill:var(--text) } .scene .s-bubble.ai text { fill:var(--teal-deep) }
+  .scene .s-board { fill:var(--ground-2); stroke:var(--hair); stroke-width:1.2 }
+  .scene .s-issue rect:first-child { fill:#fff; stroke:var(--hair); stroke-width:1 } .scene .s-issue text { font-family:var(--mono); font-size:11px; fill:var(--ink) }
+  .scene .s-issue .tag { fill:var(--teal-soft) } .scene .s-issue .tag.hi { fill:var(--wine-soft) }
+  .scene .s-wire { fill:none; stroke:var(--hair); stroke-width:1.5 }
+  .scene .s-pr { fill:#fff; stroke:var(--wine); stroke-width:1.5 } .scene .s-pr-t { font-family:var(--mono); font-size:10px; fill:var(--wine) }
+  .scene .s-main { stroke:var(--ink); stroke-width:3; stroke-linecap:round; opacity:.6 } .scene .s-pulse { fill:var(--teal); opacity:0 }
+  .scene .s-app { fill:#fff; stroke:var(--hair); stroke-width:1.2; filter:drop-shadow(0 14px 24px rgba(74,18,32,.14)) } .scene .s-appbar { fill:var(--wine) }
+  .scene .s-app-t { font-family:var(--display); font-size:15px; fill:var(--ink) } .scene .s-app-s { font-family:var(--mono); font-size:10.5px; fill:var(--teal-deep) }
+  .scene .s-gift { fill:var(--teal) } .scene .s-check { fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round }
+  .scene .s-return { fill:none; stroke:var(--teal); stroke-width:1.5; stroke-dasharray:4 6; opacity:.5 }
+  .scene #sBubbles, .scene #sTaskout, .scene #sBoard, .scene #sPipeline, .scene #sOrch, .scene #sSwarm, .scene #sFeature, .scene #sGift, .scene #sReturn { opacity:0 }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -185,12 +190,52 @@
 <section class="slide hero is-current" data-title="Start">
   <div class="hero-top">
     <h1>From a<br><em>conversation</em><br>to main.</h1>
-    <p class="lede">A design talk becomes decisions. Decisions become issues. Agents build, review and merge — and the docs remember. Below: one real project, one afternoon, every commit, review and merge as it happened.</p>
+    <p class="lede">A design talk becomes decisions. Decisions become issues. Agents build, review and merge — and the docs remember. Every example in this talk is one real project, built this way from an empty repository in one afternoon.</p>
     <div class="meta"><div><b id="mD">—</b>decisions</div><div><b id="mPR">—</b>pull requests</div><div><b id="mFind">—</b>review findings</div><div><b id="mTok">—</b>tokens</div></div>
   </div>
-  <div class="daygraph"><svg id="dayGraph" viewBox="0 0 1400 400" preserveAspectRatio="xMidYMax meet" aria-hidden="true"></svg>
-    <div class="dayhud"><span id="dayClock">—</span><span id="dayTests"></span><span id="dayNote"></span></div>
-  </div>
+  <div class="scene"><svg id="story" viewBox="0 0 1400 420" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <defs>
+      <clipPath id="boardClip"><rect x="520" y="70" width="180" height="290"/></clipPath>
+    </defs>
+    <!-- 1 · the person and the rumble agent -->
+    <g id="sUser" transform="translate(110 250)"><g class="av"><circle class="p-skin" r="12" cy="-10"/><path class="p-skin" d="M-22 26 C -22 6, 22 6, 22 26 Z"/><circle class="p-eye" cx="-4.5" cy="-11" r="1.4"/><circle class="p-eye" cx="4.5" cy="-11" r="1.4"/></g><path id="sMouth" class="p-mouth" d="M-5 -5 Q 0 -5 5 -5"/><text class="s-lbl" y="46" text-anchor="middle">you</text></g>
+    <g id="sRumble" transform="translate(330 250)"><g class="av"><circle r="18" class="a-ring"/><path class="a-star" transform="scale(1.15)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="46" text-anchor="middle">rumble</text></g>
+    <g id="sBubbles">
+      <g class="s-bubble" transform="translate(150 118)"><rect width="150" height="34" rx="12"/><text x="14" y="22">honest approvals, no floats</text></g>
+      <g class="s-bubble ai" transform="translate(212 160)"><rect width="140" height="34" rx="12"/><text x="14" y="22">minor units, rule visible?</text></g>
+      <g class="s-bubble" transform="translate(150 202)"><rect width="88" height="34" rx="12"/><text x="14" y="22">yes. go.</text></g>
+    </g>
+    <text id="sTaskout" class="s-cmd" x="330" y="330" text-anchor="middle">/task-out</text>
+    <!-- 2 · the board -->
+    <g id="sBoard"><rect class="s-board" x="520" y="70" width="180" height="290" rx="14"/><text class="s-lbl" x="610" y="94" text-anchor="middle">issues</text>
+      <g clip-path="url(#boardClip)">
+        <g class="s-issue" transform="translate(536 110)"><rect width="148" height="44" rx="8"/><text x="10" y="18">#2 scaffold · audit</text><rect class="tag hi" x="10" y="26" width="36" height="10" rx="5"/><rect class="tag" x="50" y="26" width="26" height="10" rx="5"/></g>
+        <g class="s-issue" transform="translate(536 166)"><rect width="148" height="44" rx="8"/><text x="10" y="18">#3 rules · lifecycle</text><rect class="tag hi" x="10" y="26" width="36" height="10" rx="5"/><rect class="tag" x="50" y="26" width="26" height="10" rx="5"/></g>
+        <g class="s-issue" transform="translate(536 222)"><rect width="148" height="44" rx="8"/><text x="10" y="18">#4 web pages</text><rect class="tag" x="10" y="26" width="36" height="10" rx="5"/></g>
+        <g class="s-issue" transform="translate(536 278)"><rect width="148" height="44" rx="8"/><text x="10" y="18">#5 outbox · merchant</text><rect class="tag hi" x="10" y="26" width="36" height="10" rx="5"/></g>
+      </g>
+    </g>
+    <text id="sPipeline" class="s-cmd" x="790" y="330" text-anchor="middle">/pipeline</text>
+    <!-- 3 · orchestrator and the swarm -->
+    <g id="sOrch" transform="translate(790 250)"><g class="av"><circle r="18" class="a-ring"/><path class="a-star" transform="scale(1.15)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="46" text-anchor="middle">orchestrator</text></g>
+    <g id="sSwarm">
+      <g class="s-agent" data-x="950" data-y="90"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="32" text-anchor="middle">triage</text></g>
+      <g class="s-agent" data-x="950" data-y="160"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="32" text-anchor="middle">architect</text></g>
+      <g class="s-agent" data-x="950" data-y="230"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="32" text-anchor="middle">implement</text></g>
+      <g class="s-agent" data-x="1010" data-y="265"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g></g>
+      <g class="s-agent" data-x="1010" data-y="195"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g></g>
+      <g class="s-agent" data-x="950" data-y="320"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g><text class="s-lbl" y="32" text-anchor="middle">review</text></g>
+      <g class="s-agent" data-x="1010" data-y="345"><g class="av"><circle r="14" class="a-ring"/><path class="a-star" transform="scale(0.9)" d="M0 -11 L2.6 -2.6 L11 0 L2.6 2.6 L0 11 L-2.6 2.6 L-11 0 L-2.6 -2.6 Z"/></g></g>
+    </g>
+    <g id="sWires"></g>
+    <!-- 4 · PRs into main -->
+    <g id="sPRs"></g>
+    <g id="sMain"><line class="s-main" x1="1130" y1="70" x2="1130" y2="360"/><text class="s-lbl strong" x="1130" y="386" text-anchor="middle">main</text><circle id="sMergePulse" class="s-pulse" cx="1130" cy="250" r="0"/></g>
+    <!-- 5 · the feature -->
+    <g id="sFeature" transform="translate(1260 250)"><rect class="s-app" x="-56" y="-40" width="112" height="80" rx="12"/><rect class="s-appbar" x="-56" y="-40" width="112" height="16" rx="12"/><text class="s-app-t" x="0" y="2" text-anchor="middle">Requisit</text><text class="s-app-s" x="0" y="22" text-anchor="middle">approved ✓</text></g>
+    <g id="sGift" transform="translate(1260 250)"><circle class="s-gift" r="14"/><path class="s-check" d="M-6 0 L-2 4 L7 -5"/></g>
+    <path id="sReturn" class="s-return" d="M1260 200 C 1100 20, 300 20, 130 195"/>
+  </svg></div>
 </section>
 
 <!-- 2 · why -->
@@ -595,50 +640,54 @@
     document.querySelectorAll('section.chapter').forEach(s => { const k = s.dataset.node; s.querySelector('.minimap').innerHTML = NODES.map((n, i) => `<span class="${n.key === k ? 'now' : chapterKeys.indexOf(k) > i ? 'done' : ''}">${n.label}</span>${i < NODES.length - 1 ? '<i></i>' : ''}`).join(''); });
   }
 
-  // ---------- the day as a git graph (title) ----------
-  function dayGraph(s) {
-    const svg = s.querySelector('#dayGraph'), clock = s.querySelector('#dayClock'), testsEl = s.querySelector('#dayTests'), note = s.querySelector('#dayNote');
-    const TL = window.TIMELINE; if (!TL || !TL.lanes.length || svg.dataset.built) return; svg.dataset.built = '1';
-    const lanes = TL.lanes.map(l => ({ ...l, ev: l.events.map(e => ({ ...e, ms: Date.parse(e.at) })).sort((a, b) => a.ms - b.ms) })).sort((a, b) => (a.ev.find(e => e.kind === 'merged') || a.ev.at(-1)).ms - (b.ev.find(e => e.kind === 'merged') || b.ev.at(-1)).ms);
-    const t0 = Math.min(...lanes.map(l => l.ev[0].ms)), t1 = Math.max(...lanes.map(l => l.ev.at(-1).ms));
-    const W = 1400, H = 400, X0 = 90, X1 = 1330, YM = 352, GAP = 66;
-    const x = ms => X0 + (ms - t0) / (t1 - t0) * (X1 - X0);
-    const hhmm = ms => new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    let out = `<defs><clipPath id="sweep"><rect id="sweepRect" x="0" y="0" width="0" height="${H}"/></clipPath></defs>`;
-    out += `<g clip-path="url(#sweep)">`;
-    out += `<path class="g-main" d="M${X0 - 30} ${YM} H ${X1 + 30}"/>`;
-    const merges = [];
-    lanes.forEach((l, i) => {
-      const y = YM - GAP * (i + 1);
-      const first = l.ev.find(e => e.kind !== 'labeled') || l.ev[0], merged = l.ev.find(e => e.kind === 'merged');
-      const R = 52;   // horizontal room for the fork and the merge curves
-      const xf = x(first.ms) - 14, xm = merged ? x(merged.ms) : X1;
-      out += `<path class="g-branch" d="M${xf - R} ${YM} C ${xf - R * .35} ${YM}, ${xf - R * .65} ${y}, ${xf} ${y} L ${xm - R} ${y} C ${xm - R * .35} ${y}, ${xm - R * .65} ${YM}, ${xm} ${YM}"/>`;
-      out += `<text class="g-lbl strong" x="${xf + 6}" y="${y - 12}">#${l.issue}</text><text class="g-lbl" x="${xf + 34}" y="${y - 12}">${esc(l.title.slice(0, 44))}${l.title.length > 44 ? '…' : ''}</text>`;
-      const tri = l.ev.find(e => e.kind === 'labeled'); if (tri) out += `<line class="g-triage" x1="${x(tri.ms)}" y1="${YM - 7}" x2="${x(tri.ms)}" y2="${YM + 7}"/>`;
-      for (const e of l.ev) {
-        const ex = x(e.ms);
-        if (e.kind === 'commit') out += `<circle class="g-commit" cx="${ex}" cy="${y}" r="5"><title>${esc(e.sha || '')} ${esc(e.text)}</title></circle>`;
-        else if (e.kind === 'review') out += `<circle class="g-review ${e.red ? 'red' : ''}" cx="${ex}" cy="${y}" r="7"><title>${esc(e.text)}</title></circle>`;
-        else if (e.kind === 'fix-round') out += `<rect class="g-fix" x="${ex - 4}" y="${y - 4}" width="8" height="8" transform="rotate(45 ${ex} ${y})"/>`;
-        else if (e.kind === 'design') out += `<rect class="g-design" x="${ex - 5}" y="${y - 5}" width="10" height="10" rx="2"/>`;
-      }
-      if (merged) merges.push({ ms: merged.ms, x: xm, tests: l.tests, issue: l.issue });
-    });
-    out += `<text class="g-lbl" x="${X0 - 30}" y="${YM + 24}">${hhmm(t0)} · the first triage</text><text class="g-lbl" x="${X1 + 30}" y="${YM + 24}" text-anchor="end">${hhmm(t1)} · Arc 1 on main</text><text class="g-lbl strong" x="${X1 + 30}" y="${YM - 12}" text-anchor="end">main</text>`;
-    out += `</g>`;
-    out += `<line class="g-head" id="playhead" x1="0" y1="20" x2="0" y2="${YM + 8}"/>`;
-    merges.forEach((m, i) => { out += `<circle class="g-merge" id="merge${i}" cx="${m.x}" cy="${YM}" r="0"/>`; });
-    svg.innerHTML = out;
-    const rect = svg.querySelector('#sweepRect'), head = svg.querySelector('#playhead');
-    const D = 16;
-    const setAt = p => { rect.setAttribute('width', p * W); head.setAttribute('x1', p * W); head.setAttribute('x2', p * W); clock.textContent = hhmm(t0 + p * (t1 - t0)); const done = merges.filter(m => m.ms <= t0 + p * (t1 - t0)); testsEl.textContent = done.length ? `${done.at(-1).tests} tests on main` : 'the day begins'; note.textContent = done.length ? `${done.length} of ${merges.length} merged` : ''; };
-    if (!G || reduce) { setAt(1); return; }
-    const o = { p: 0 };
-    const tl = G.timeline({ repeat: -1, repeatDelay: 3, delay: 1.2 });
-    tl.to(o, { p: 1, duration: D, ease: 'none', onUpdate() { setAt(o.p); } }, 0);
-    merges.forEach((m, i) => { const at = D * (m.ms - t0) / (t1 - t0); tl.fromTo(svg.querySelector('#merge' + i), { attr: { r: 0 }, opacity: 1 }, { attr: { r: 26 }, opacity: 0, duration: 1.1, ease: 'power2.out' }, at); });
-    tl.to({}, { duration: .1 });
+  // ---------- the title scene: you ↔ rumble → issues → orchestrator → swarm → PRs → main → the feature → you ----------
+  function storyScene(s) {
+    const svg = s.querySelector('#story'); if (!svg || svg.dataset.built) return; svg.dataset.built = '1';
+    const $ = id => svg.querySelector('#' + id), $$ = sel => [...svg.querySelectorAll(sel)];
+    const agents = $$('#sSwarm .s-agent'); agents.forEach(a => a.setAttribute('transform', 'translate(790 250) scale(.2)'));
+    // wires orchestrator → agents, PR cards agents → main
+    const wires = $('sWires'), prs = $('sPRs');
+    wires.innerHTML = agents.map(a => `<path class="s-wire" d="M812 250 C 860 250, 880 ${a.dataset.y}, ${+a.dataset.x - 18} ${a.dataset.y}"/>`).join('');
+    const prSrc = [agents[2], agents[3], agents[4], agents[5]];
+    prs.innerHTML = prSrc.map((a, i) => `<g class="s-prcard" transform="translate(${+a.dataset.x + 24} ${a.dataset.y})" opacity="0"><rect class="s-pr" x="0" y="-11" width="54" height="22" rx="6"/><text class="s-pr-t" x="27" y="4" text-anchor="middle">PR #${7 + i}</text></g>`).join('');
+    const wirePaths = $$('#sWires path'); wirePaths.forEach(w => { const l = w.getTotalLength(); w.style.strokeDasharray = l; w.style.strokeDashoffset = l; });
+    const ret = $('sReturn'); const rl = ret.getTotalLength(); ret.style.strokeDasharray = '4 6';
+    const mouth = $('sMouth');
+    if (!G || reduce) { ['sBubbles', 'sTaskout', 'sBoard', 'sPipeline', 'sOrch', 'sSwarm', 'sFeature', 'sGift'].forEach(id => $(id).style.opacity = 1); agents.forEach(a => a.setAttribute('transform', `translate(${a.dataset.x} ${a.dataset.y})`)); wirePaths.forEach(w => w.style.strokeDashoffset = 0); $$('.s-prcard').forEach(p => p.setAttribute('opacity', 1)); $('sGift').setAttribute('transform', 'translate(150 200)'); mouth.setAttribute('d', 'M-6 -6 Q 0 0 6 -6'); return; }
+    const tl = G.timeline({ repeat: -1, repeatDelay: 2.5, delay: .8 });
+    const bubbles = $$('#sBubbles .s-bubble');
+    tl.set(['#sBubbles', '#sTaskout', '#sBoard', '#sPipeline', '#sOrch', '#sSwarm', '#sFeature', '#sGift', '#sReturn'].map(id => svg.querySelector(id)), { opacity: 0 })
+      .set(bubbles, { opacity: 0, y: 8 }).set($$('.s-issue'), { opacity: 0, x: 40 }).set($$('.s-prcard'), { opacity: 0, x: 0 }).set(mouth, { attr: { d: 'M-5 -5 Q 0 -5 5 -5' } })
+      .set(wirePaths, { strokeDashoffset: (i, w) => w.getTotalLength() })
+      // 1 · the conversation
+      .set('#sBubbles', { opacity: 1 }).to(bubbles, { opacity: 1, y: 0, duration: .45, ease: 'power3.out', stagger: .7 })
+      .to('#sTaskout', { opacity: 1, duration: .4 }, '+=.4')
+      // 2 · issues land on the board
+      .to('#sBoard', { opacity: 1, duration: .4 }, '-=.1').to($$('.s-issue'), { opacity: 1, x: 0, duration: .45, ease: 'power3.out', stagger: .28 })
+      .to(bubbles, { opacity: 0, duration: .4 }, '<')
+      // 3 · the pipeline: orchestrator, then the swarm fans out
+      .to('#sPipeline', { opacity: 1, duration: .4 }, '+=.3').to('#sOrch', { opacity: 1, duration: .4 }, '<')
+      .set('#sSwarm', { opacity: 1 })
+      .to(agents, { attr: { transform: (i, a) => `translate(${a.dataset.x} ${a.dataset.y}) scale(1)` }, duration: .7, ease: 'back.out(1.6)', stagger: .12 })
+      .to(wirePaths, { strokeDashoffset: 0, duration: .6, stagger: .08, ease: 'power2.out' }, '<.1')
+      // agents work: a small breathing pulse
+      .to($$('#sSwarm .a-ring'), { attr: { r: 20 }, duration: .35, yoyo: true, repeat: 3, stagger: { each: .06, yoyo: true }, ease: 'sine.inOut' })
+      // 4 · PRs travel into main, each with a merge pulse
+      .to($$('.s-prcard'), { opacity: 1, duration: .3, stagger: .35 })
+      .to($$('.s-prcard'), { x: (i, p) => 1130 - 54 - (+p.getAttribute('transform').match(/translate\(([\d.]+)/)[1]), duration: .8, ease: 'power2.inOut', stagger: .35 }, '<.2')
+      .fromTo('#sMergePulse', { attr: { r: 0 }, opacity: 1 }, { attr: { r: 30 }, opacity: 0, duration: 1, ease: 'power2.out', repeat: 3, repeatDelay: .05 }, '<.6')
+      .to($$('.s-prcard'), { opacity: 0, duration: .3, stagger: .35 }, '<.3')
+      // 5 · the feature exists, and comes back to you
+      .to('#sFeature', { opacity: 1, duration: .5, ease: 'power3.out' }, '+=.2')
+      .to('#sReturn', { opacity: 1, duration: .3 })
+      .set('#sGift', { opacity: 1 })
+      .to({ t: 0 }, { t: 1, duration: 1.6, ease: 'power2.inOut', onUpdate() { const p = ret.getPointAtLength(this.targets()[0].t * rl); $('sGift').setAttribute('transform', `translate(${p.x} ${p.y})`); } })
+      .to(mouth, { attr: { d: 'M-6 -6 Q 0 1 6 -6' }, duration: .4, ease: 'power2.out' }, '-=.2')
+      .to('#sGift', { opacity: 0, duration: .3 }, '<.4')
+      .to({}, { duration: 1.2 })
+      .to(['#sBoard', '#sPipeline', '#sOrch', '#sSwarm', '#sFeature', '#sReturn', '#sTaskout'].map(id => svg.querySelector(id)), { opacity: 0, duration: .6 })
+      .to(mouth, { attr: { d: 'M-5 -5 Q 0 -5 5 -5' }, duration: .4 }, '<')
+      .set(agents, { attr: { transform: 'translate(790 250) scale(.2)' } }).set($('sGift'), { attr: { transform: 'translate(1260 250)' } });
     (running.hero = running.hero || []).push(tl);
   }
 
@@ -654,7 +703,7 @@
           .from(s.querySelectorAll('.lede, .meta > div'), { y: 18, opacity: 0, duration: .7, ease: 'power3.out', stagger: .08 }, .6);
         running.hero = [tl];
       }
-      dayGraph(s);
+      storyScene(s);
     },
     hub(s) {
       const svg = s.querySelector('svg'); light(svg, null);
