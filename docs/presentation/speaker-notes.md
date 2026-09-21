@@ -48,9 +48,9 @@ Fällt der Service aus: die Produktfolie zeigt den Hinweis, alles andere läuft 
 
 ## Folie 5 — Das Schema (75s)
 
-**Die Szene baut sich von links oben nach rechts unten auf, ca. 12 s. Mitsprechen:**
+**Die Szene baut sich von links oben nach rechts unten auf, ca. 14 s. Mitsprechen:**
 
-> So läuft es wirklich. Oben: Sie und der Rumble-Agent reden, daraus werden Zeilen in den Docs, nicht Chat. Task-out, Sie bestätigen die Entwürfe, und auf GitHub liegen ein Umbrella und vier Issues. GitHub ist der einzige geteilte Zustand. Dann die rote Linie: neue Session, nichts kommt mit außer dem, was auf GitHub steht. Warum? Der Rumble-Kontext steckt voller Abwägungen, die den Builder beeinflussen würden, und die Pipeline muss aus GitHub allein reproduzierbar sein, damit jemand anderes die nächste Welle übernehmen kann. Unten: Sie tippen pipeline, der Orchestrator liest das Umbrella und spawnt pro Welle Triage, Architekt, Builder, Quality, Security, jeder in seinem eigenen Worktree. PRs gehen nach main, der Trail geht als Kommentar zurück ins Issue, und bei risk-high prüfen Sie nach. Ganz unten: die Docs als Gedächtnis, und der Pfeil zurück: der nächste Rumble liest die Docs, nicht den Chat.
+> Zwei Sessions, und das Einzige, was sie teilen, ist GitHub, die Spalte rechts. Oben die Rumble-Session: Sie und der Rumble-Agent reden, daraus werden Zeilen in den Docs, nicht Chat. Task-out, Sie bestätigen die Entwürfe, und in GitHub liegen ein Umbrella und vier Issues in drei Wellen. Dann die rote Linie: neue Session, nur was auf GitHub steht, kommt mit. Warum? Der Rumble-Kontext steckt voller Abwägungen, die den Builder beeinflussen würden, und die Pipeline muss aus GitHub allein reproduzierbar sein, damit jemand anderes die nächste Welle übernehmen kann. Unten: Sie tippen pipeline, der Orchestrator holt sich das Umbrella und spawnt pro Welle Triage, Architekt, Builder, Quality, Security, jeder in seinem eigenen Worktree. Die PRs gehen nach main, jeder Trail als Kommentar zurück ins Issue, und bei risk-high prüfen Sie nach. Ganz unten: die Docs als Gedächtnis, und der gestrichelte Pfeil zurück: der nächste Rumble startet bei den Docs, nicht beim Chat.
 
 *(Die zwei gepunkteten Pillen mit dem Punkt sind die menschlichen Gates.)*
 

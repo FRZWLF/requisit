@@ -130,6 +130,9 @@
   .vocab .waves { display:grid; gap:6px; margin-top:10px } .vocab .wave { display:flex; gap:6px; align-items:center; font-family:var(--mono); font-size:.72rem } .vocab .wave i { font-style:normal; color:var(--muted); width:52px } .vocab .wave em { font-style:normal; background:var(--wine-soft); color:var(--wine-deep); border-radius:6px; padding:2px 8px }
   .vocab .note { margin-top:10px; font-family:var(--mono); font-size:.7rem; color:var(--muted) }
   .meta.lead { grid-template-columns:repeat(5, minmax(0,1fr)); margin-top:0 } .meta.lead b { font-size:clamp(1.5rem,2.4vw,2.2rem) }
+  .reality .col-bg { fill:rgba(255,255,255,.55); stroke:var(--ink); stroke-width:1.2 } .reality .col-title { font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; fill:var(--ink) }
+  .reality .umb { fill:#fff; stroke:var(--wine); stroke-width:1.2 } .reality .umb.docs { stroke:var(--teal) } .reality .c-t { font-family:var(--mono); font-size:11px; font-weight:600; fill:var(--ink) } .reality .c-l { font-family:var(--mono); font-size:10.5px; fill:var(--text) }
+  .reality .ah { fill:var(--muted) } .reality .edge.arrow { stroke:var(--muted); stroke-width:1.6 } .reality .edge.back { stroke:var(--teal); stroke-width:1.5 }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -274,7 +277,7 @@
 
 <!-- 4 · the schema (hub) -->
 <section class="slide" data-title="The schema" data-kind="reality">
-  <div class="head"><div class="eyebrow"><span class="n">04</span>the whole framework on one page</div><h2>Two sessions, one GitHub, the repository underneath.</h2></div>
+  <div class="head"><div class="eyebrow"><span class="n">04</span>the whole framework on one page</div><h2>Two sessions. GitHub is the only thing they share.</h2></div>
   <div class="reality figs"><svg id="reality" class="schema" viewBox="0 0 1300 600" aria-hidden="true"></svg></div>
 </section>
 
@@ -673,48 +676,51 @@
     const bot = (x, y, cls, label, p = {}, sc = .8) => `<g class="st bot ${cls}"><g transform="translate(${x} ${y}) scale(${sc})">${FIG.bot(p)}<text class="s-lbl" y="46" text-anchor="middle">${label}</text></g></g>`;
     const you = (x, y, label = 'you', p = {}, sc = .8) => `<g class="st human"><g transform="translate(${x} ${y}) scale(${sc})">${FIG.human(p)}<text class="s-lbl" y="46" text-anchor="middle">${label}</text></g></g>`;
     const card = (x, y, w, h, title, lines, cls = '') => `<g class="st card ${cls}"><g transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="8"/><text class="c-t" x="12" y="19">${title}</text>${lines.map((l, i) => `<text class="c-l" x="12" y="${38 + i * 15}">${l}</text>`).join('')}</g></g>`;
-    const issue = (x, y, n, txt, hi) => `<g class="st issue"><g transform="translate(${x} ${y})"><rect width="92" height="40" rx="7"/><text class="c-t" x="9" y="16">#${n}</text><text class="c-l" x="9" y="30">${txt}</text><rect class="tag ${hi ? 'hi' : ''}" x="60" y="7" width="24" height="8" rx="4"/></g></g>`;
+    const issue = (x, y, n, txt, hi) => `<g class="st issue"><g transform="translate(${x} ${y})"><rect width="118" height="40" rx="7"/><text class="c-t" x="9" y="16">#${n}</text><text class="c-l" x="9" y="30">${txt}</text><rect class="tag ${hi ? 'hi' : ''}" x="86" y="7" width="24" height="8" rx="4"/></g></g>`;
     const bubble = (x, y, w, txt, cls = '', tail = 'r') => `<g class="st s-bubble ${cls}"><g transform="translate(${x} ${y})"><path class="tail" d="${tail === 'r' ? `M${w - 34} 30 L${w - 24} 44 L${w - 16} 30 Z` : 'M16 30 L24 44 L34 30 Z'}"/><rect width="${w}" height="32" rx="10"/><text x="12" y="21">${txt}</text></g></g>`;
     const gate = (x, y, txt) => `<g class="st gate"><g transform="translate(${x} ${y})"><rect width="${txt.length * 6.6 + 26}" height="22" rx="11"/><circle cx="13" cy="11" r="4"/><text x="23" y="15">${txt}</text></g></g>`;
-    const edge = (d, cls = '') => `<path class="st edge ${cls}" d="${d}"/>`;
+    const edge = (d, cls = '') => `<path class="st edge ${cls}" d="${d}"${/arrow|back/.test(cls) ? ' marker-end="url(#ah)"' : ''}/>`;
     const lbl = (x, y, txt, cls = '') => `<text class="st s-cmd ${cls}" x="${x}" y="${y}">${txt}</text>`;
-    const lane = (y, h, title) => `<rect class="lane-bg" x="20" y="${y}" width="1260" height="${h}" rx="18"/><text class="lane-title" x="1264" y="${y + h - 12}" text-anchor="end">${title}</text>`;
+    const lane = (y, h, title) => `<rect class="lane-bg" x="20" y="${y}" width="900" height="${h}" rx="18"/><text class="lane-title" x="904" y="${y + h - 12}" text-anchor="end">${title}</text>`;
+    const col = (y, h, title) => `<rect class="col-bg" x="940" y="${y}" width="340" height="${h}" rx="18"/>`;
     svg.innerHTML = `
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" class="ah"/></marker></defs>
       ${lane(14, 186, 'rumble session · a person and the model')}
       ${lane(232, 200, 'pipeline session · the orchestrator and its agents')}
-      ${lane(460, 122, 'the repository · docs as memory')}
-      <!-- lane 1: the conversation, the rows, the task-out into GitHub -->
-      ${you(90, 132, 'you', { flip: false }, .8)}${bot(232, 132, 'wine', 'rumble', { flip: true }, .8)}
+      ${lane(460, 122, 'the next arc')}
+      <rect class="col-bg" x="940" y="14" width="340" height="568" rx="18"/>
+      <g class="st">${FIG.github(978, 42, 1.3)}<text class="col-title" x="1000" y="46">GitHub · the only shared state</text></g>
+      <!-- lane 1: the conversation, the rows, the task-out -->
+      ${you(90, 132, 'you', {}, .8)}${bot(232, 132, 'wine', 'rumble', { flip: true }, .8)}
       ${bubble(36, 18, 118, 'honest approvals', '', 'r')}${bubble(236, 18, 104, 'minor units?', 'ai', 'l')}
-      ${card(370, 44, 176, 118, 'docs/ · rows, not chat', ['D-003 money in minor units', 'D-004 tenancy by organisation', 'G-004 SSO · reopens on demand', 'M-006 approval wait · pending'])}
-      ${edge('M552 100 L592 100')}${lbl(600, 96, '/task-out')}${gate(590, 112, 'you confirm the drafts')}
-      ${edge('M700 100 L740 100')}
-      <g class="st"><text class="s-lbl" x="800" y="178" text-anchor="middle">GitHub · the only shared state</text></g>
-      <g class="st">${FIG.github(800, 100)}</g>
-      ${card(880, 34, 150, 44, '#6 umbrella', ['4 issues · 3 waves'], 'wine')}
-      ${issue(880, 96, 2, 'scaffold · audit', true)}${issue(980, 96, 3, 'rules · lifecycle', true)}${issue(1080, 96, 4, 'web pages')}${issue(1180, 96, 5, 'outbox', true)}
+      ${card(350, 44, 214, 118, 'docs/ · rows, not chat', ['D-003 money in minor units', 'D-004 tenancy by organisation', 'G-004 SSO · reopens on demand', 'M-006 approval wait · pending'])}
+      ${edge('M564 100 L596 100')}${lbl(606, 96, '/task-out')}${gate(600, 112, 'you confirm the drafts')}
+      ${edge('M760 100 L932 100', 'arrow')}
+      <g class="st"><rect class="umb" x="960" y="66" width="300" height="34" rx="8"/><text class="c-t" x="972" y="88">#6 umbrella</text><text class="c-l" x="1070" y="88">3 waves: #2 → #3 → #4 + #5</text></g>
+      ${issue(960, 110, 2, 'scaffold · audit', true)}${issue(1088, 110, 3, 'rules · lifecycle', true)}${issue(960, 156, 4, 'web pages')}${issue(1088, 156, 5, 'outbox · merchant', true)}
       <!-- the boundary -->
-      <path class="st boundary" d="M20 216 L1280 216"/><g class="st"><rect class="bnd-bg" x="420" y="205" width="460" height="22" rx="11"/><text class="bnd" x="650" y="220" text-anchor="middle">new session — nothing carries over except what is on GitHub</text></g>
-      <!-- lane 2: the command, the orchestrator, the swarm per wave, PRs into main, the trail back -->
+      <path class="st boundary" d="M20 216 L920 216"/><g class="st"><rect class="bnd-bg" x="250" y="205" width="440" height="22" rx="11"/><text class="bnd" x="470" y="220" text-anchor="middle">new session — only what is on GitHub carries over</text></g>
+      <!-- lane 2: the command, the orchestrator, one wave, PRs into main -->
       ${you(90, 350, 'you', {}, .8)}${bot(232, 350, '', 'orchestrator', { flip: true }, .8)}
-      ${bubble(34, 246, 118, '/pipeline #6', 'cmd', 'r')}
-      ${edge('M770 150 C 770 230, 330 240, 262 290', 'reads')}${lbl(560, 250, 'reads the umbrella', 'muted')}
-      ${bot(420, 372, '', 'triage', {}, .55)}${bot(510, 372, '', 'architect', {}, .55)}${bot(600, 372, '', 'builder', {}, .55)}${bot(690, 372, '', 'quality', {}, .55)}${bot(780, 372, '', 'security', {}, .55)}
-      ${[420, 510, 600, 690, 780].map(x => edge(`M262 340 C 330 340, ${x - 40} 300, ${x} 318`, 'wire')).join('')}
-      <g class="st"><text class="s-lbl" x="600" y="418" text-anchor="middle">one wave · at most 3 builders · one job each in its own worktree</text></g>
-      <g class="st"><line class="s-main" x1="960" y1="256" x2="960" y2="376"/><text class="s-lbl strong" x="960" y="396" text-anchor="middle">main</text><circle id="rPulse" class="s-pulse" cx="960" cy="316" r="0"/></g>
-      <g id="rPRs">${[7, 8, 9, 10].map((n, i) => `<g class="s-prcard" transform="translate(830 ${282 + i * 22})" opacity="0"><rect class="s-pr" x="0" y="-9" width="50" height="18" rx="5"/><text class="s-pr-t" x="25" y="4" text-anchor="middle">PR #${n}</text></g>`).join('')}</g>
-      ${edge('M968 256 C 990 200, 900 160, 836 130', 'trail')}${lbl(1000, 258, '📋 trail per issue', 'muted')}
-      ${you(1130, 350, 'you', { smile: true }, .8)}${gate(1052, 380, 'risk:high → you review after')}
-      <!-- lane 3: the docs, and the way back -->
-      ${edge('M960 376 C 960 460, 800 480, 760 500')}
-      ${card(560, 478, 200, 70, 'docs memory', ['D · G · M · research log', 'append-only, addenda from PRs'])}
-      ${edge('M560 512 L48 512 L48 146', 'back')}${lbl(64, 500, '↤ the next rumble reads the docs, not the chat', 'back')}`;
+      ${bubble(36, 244, 118, '/pipeline #6', 'cmd', 'r')}
+      ${edge('M290 340 L392 340', 'arrow')}
+      ${bot(440, 372, '', 'triage', {}, .55)}${bot(526, 372, '', 'architect', {}, .55)}${bot(612, 372, '', 'builder', {}, .55)}${bot(698, 372, '', 'quality', {}, .55)}${bot(784, 372, '', 'security', {}, .55)}
+      <g class="st"><text class="s-lbl" x="612" y="300" text-anchor="middle">one wave · at most 3 builders · one job each, own worktree</text></g>
+      ${edge('M836 340 L932 340', 'arrow')}
+      <g class="st"><text class="s-lbl strong" x="1200" y="252" text-anchor="middle">main</text><line class="s-main" x1="1200" y1="262" x2="1200" y2="392"/><circle id="rPulse" class="s-pulse" cx="1200" cy="327" r="0"/></g>
+      <g id="rPRs">${[7, 8, 9, 10].map((n, i) => `<g class="s-prcard" transform="translate(980 ${272 + i * 26})" opacity="0"><rect class="s-pr" x="0" y="-9" width="50" height="18" rx="5"/><text class="s-pr-t" x="25" y="4" text-anchor="middle">PR #${n}</text></g>`).join('')}</g>
+      <g class="st"><text class="s-lbl" x="960" y="392">📋 a trail comment on each issue</text></g>
+      ${gate(960, 404, 'risk:high → you review after the fact')}
+      <!-- lane 3 / column bottom: the docs, and the way back -->
+      ${edge('M1200 392 L1200 470', 'arrow')}
+      <g class="st"><rect class="umb docs" x="960" y="476" width="300" height="70" rx="8"/><text class="c-t" x="972" y="498">docs memory</text><text class="c-l" x="972" y="516">D · G · M · research log</text><text class="c-l" x="972" y="531">append-only; PRs add addenda</text></g>
+      ${edge('M952 522 L60 522', 'back')}
+      <g class="st"><text class="s-cmd back" x="80" y="500">the next rumble starts here — from the docs, not the chat</text></g>`;
     // entry: every .st group in order, edges drawn, PRs travel into main
     const st = [...svg.querySelectorAll('.st')], edges = st.filter(e => e.classList.contains('edge')), prs = [...svg.querySelectorAll('.s-prcard')], lanes = svg.querySelectorAll('.lane-bg, .lane-title');
     edges.forEach(e => { const l = e.getTotalLength(); e.style.strokeDasharray = e.classList.contains('back') ? '6 6' : l; e.style.strokeDashoffset = e.classList.contains('back') ? 0 : l; });
     if (!G || reduce) { prs.forEach(p => p.setAttribute('opacity', 1)); edges.forEach(e => e.style.strokeDashoffset = 0); return; }
-    G.set(st.filter(e => !e.classList.contains('edge')), { opacity: 0, y: 10 }); G.set(lanes, { opacity: 0 }); G.set(svg.querySelectorAll('.back'), { opacity: 0 });
+    G.set(st.filter(e => !e.classList.contains('edge')), { opacity: 0, y: 10 }); G.set(lanes, { opacity: 0 }); G.set(svg.querySelectorAll('path.back'), { opacity: 0 });
     const tl = G.timeline({ delay: .3 });
     tl.to(lanes, { opacity: 1, duration: .5, stagger: .12 });
     let t = .2;
@@ -724,7 +730,7 @@
       if (el.id === 'rPRs' || (el.classList.contains('s-lbl'))) continue;
       if (el.querySelector && el.querySelector('#rPulse')) { // once main exists, the PRs travel
         tl.to(prs, { opacity: 1, duration: .3, stagger: .3 }, t)
-          .to(prs, { x: 80, duration: .7, ease: 'power2.inOut', stagger: .3 }, t + .15)
+          .to(prs, { x: 170, duration: .7, ease: 'power2.inOut', stagger: .3 }, t + .15)
           .fromTo('#rPulse', { attr: { r: 0 }, opacity: 1 }, { attr: { r: 26 }, opacity: 0, duration: .9, ease: 'power2.out', repeat: 3, repeatDelay: .02 }, t + .55)
           .to(prs, { opacity: 0, duration: .3, stagger: .3 }, t + .7);
         t += 1.6;
