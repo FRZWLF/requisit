@@ -1,0 +1,24 @@
+{
+  "name": "requisit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A B2B purchase-requisition and approval service",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --disable-warning=ExperimentalWarning --test 'test/**/*.test.ts'",
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "npm run build && tsc -p tsconfig.lint.json && eslint .",
+    "start": "node --disable-warning=ExperimentalWarning dist/main.js",
+    "mint-token": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env scripts/mint-token.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "eslint": "^9.35.0",
+    "typescript": "^5.9.2"
+  }
+}
