@@ -433,6 +433,35 @@ test('the list filters by state, mine and awaiting_me, and refuses a bad filter'
   }
 });
 
+test('awaiting_me never lists a requisition the caller is the buyer of', () => {
+  const fixture = setUp();
+  // The finance person is also a buyer: their own 900 000 requisition matches R3, whose
+  // approver is the `finance` role. The queue must not offer them their own spend.
+  const own = newDraft(fixture, 900_000, fixture.tokens.finance);
+  const moved = post(fixture, String(own.json['id']), 'submit', fixture.tokens.finance);
+  assert.equal(moved.json['ruleCode'], 'R3');
+
+  const queue = call(fixture.app, {
+    method: 'GET',
+    path: '/api/v1/requisitions?awaiting_me=1',
+    token: fixture.tokens.finance,
+  });
+  assert.deepEqual(queue.json['items'], [], 'a buyer was queued their own requisition');
+
+  // presence: somebody else's R3 requisition does reach the same queue.
+  const theirs = newDraft(fixture, 900_000, fixture.tokens.buyer);
+  post(fixture, String(theirs.json['id']), 'submit', fixture.tokens.buyer);
+  const again = call(fixture.app, {
+    method: 'GET',
+    path: '/api/v1/requisitions?awaiting_me=1',
+    token: fixture.tokens.finance,
+  });
+  assert.deepEqual(
+    (again.json['items'] as { id: string }[]).map((item) => item.id),
+    [String(theirs.json['id'])],
+  );
+});
+
 test('GET /rules returns the organisation table by seq', () => {
   const fixture = setUp();
   const answer = call(fixture.app, { method: 'GET', path: '/api/v1/rules', token: fixture.tokens.stranger });
