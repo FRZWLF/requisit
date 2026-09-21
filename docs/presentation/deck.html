@@ -72,26 +72,39 @@
   .meta b { display:block; color:var(--ink); font-family:var(--display); font-size:clamp(1.8rem,2.9vw,2.7rem); font-weight:500; line-height:1.05; font-variant-numeric:tabular-nums }
   .scene { height:min(78vh, 720px) }
   .scene svg { width:100%; height:100%; display:block; overflow:hidden }
-  .scene .b-skin { fill:#fff; stroke:var(--teal); stroke-width:2 } .scene .b-line { stroke:var(--teal); stroke-width:2 } .scene .b-light { fill:var(--teal) }
-  .scene .b-eye { fill:#fff; stroke:var(--teal); stroke-width:1.5 } .scene .b-pupil { fill:var(--teal-deep) } .scene .b-mouth { fill:none; stroke:var(--teal); stroke-width:2; stroke-linecap:round }
-  .scene .hand { fill:none; stroke:var(--teal); stroke-width:2 }
-  .scene .wine .b-skin, .scene .wine .b-eye { stroke:var(--wine) } .scene .wine .b-line { stroke:var(--wine) } .scene .wine .b-light { fill:var(--wine) } .scene .wine .b-mouth { stroke:var(--wine) } .scene .wine .b-pupil { fill:var(--wine-deep) } .scene .wine .hand, .scene #pencil .hand, .scene #paper .hand { stroke:var(--wine) }
-  .scene .h-skin { fill:#fff; stroke:var(--ink); stroke-width:2 } .scene .h-hair { fill:var(--ink) } .scene .h-eye { fill:var(--ink) } .scene .h-mouth { fill:none; stroke:var(--ink); stroke-width:1.8; stroke-linecap:round } .scene .h-mouth-o { fill:var(--ink) }
-  .scene .human .hand { stroke:var(--ink) } .scene .thumb path { fill:var(--teal) }
-  .scene .s-lbl { font-family:var(--mono); font-size:11px; fill:var(--muted) }
-  .scene .pp { fill:#fff; stroke:var(--hair); stroke-width:1.2; filter:drop-shadow(0 4px 8px rgba(31,26,28,.14)) } .scene .p-lines path { fill:none; stroke:var(--ink); stroke-width:1.6; stroke-linecap:round } .scene .p-front text { font-family:var(--mono); font-size:9px; font-weight:600; fill:var(--wine) }
-  .scene .pen-body { fill:var(--gold) } .scene .pen-tip { fill:var(--ink) } .scene .pen-end { fill:var(--wine) }
-  .scene .s-bubble rect, .scene .s-bubble .tail { fill:#fff; stroke:var(--hair); stroke-width:1.2 } .scene .s-bubble text { font-family:var(--body); font-size:12.5px; fill:var(--text) }
-  .scene .s-bubble.ai rect, .scene .s-bubble.ai .tail { fill:var(--wine-soft); stroke:none } .scene .s-bubble.ai text { fill:var(--wine-deep) }
-  .scene .sk rect { fill:var(--teal-soft); stroke:none } .scene .sk text { font-family:var(--mono); font-size:9.5px; fill:var(--teal-deep) } .scene .sk path { fill:none; stroke:var(--muted); stroke-width:1.2; stroke-linecap:round } .scene .sk .strike { text-decoration:line-through; fill:var(--red); font-size:10.5px }
-  .scene .gear .ring { fill:#fff; stroke:var(--teal); stroke-width:2 } .scene .gear .tooth { fill:var(--teal) } .scene .gear .core { fill:var(--teal) }
-  .scene .kb { fill:var(--ground-2); stroke:var(--ink); stroke-width:1.5 } .scene .key { fill:var(--ink); opacity:.7 }
-  .scene .lp-ring { fill:rgba(225,237,236,.35); stroke:var(--ink); stroke-width:2 } .scene .lp-handle { stroke:var(--ink); stroke-width:3.5; stroke-linecap:round }
-  .scene .rain-col { font-family:var(--mono); font-size:8px; fill:var(--teal); letter-spacing:1px }
-  .scene .done circle { fill:var(--green) } .scene .done path { fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round }
-  .scene .mon-bezel, .scene .mon-stand { fill:var(--ink) } .scene .mon-screen { fill:#fff } .scene .lg-mark { fill:var(--wine) } .scene .lg-text { font-family:var(--display); font-size:9.5px; font-weight:600; fill:var(--ink); letter-spacing:.01em }
-  .scene .bd-ring { fill:var(--gold) } .scene .bd-star { fill:#fff } .scene .bd-ribbon { fill:var(--wine) }
+  .figs .b-skin { fill:#fff; stroke:var(--teal); stroke-width:2 } .figs .b-line { stroke:var(--teal); stroke-width:2 } .figs .b-light { fill:var(--teal) }
+  .figs .b-eye { fill:#fff; stroke:var(--teal); stroke-width:1.5 } .figs .b-pupil { fill:var(--teal-deep) } .figs .b-mouth { fill:none; stroke:var(--teal); stroke-width:2; stroke-linecap:round }
+  .figs .hand { fill:none; stroke:var(--teal); stroke-width:2 }
+  .figs .wine .b-skin, .figs .wine .b-eye { stroke:var(--wine) } .figs .wine .b-line { stroke:var(--wine) } .figs .wine .b-light { fill:var(--wine) } .figs .wine .b-mouth { stroke:var(--wine) } .figs .wine .b-pupil { fill:var(--wine-deep) } .figs .wine .hand, .figs #pencil .hand, .figs #paper .hand { stroke:var(--wine) }
+  .figs .h-skin { fill:#fff; stroke:var(--ink); stroke-width:2 } .figs .h-hair { fill:var(--ink) } .figs .h-eye { fill:var(--ink) } .figs .h-mouth { fill:none; stroke:var(--ink); stroke-width:1.8; stroke-linecap:round } .figs .h-mouth-o { fill:var(--ink) }
+  .figs .human .hand { stroke:var(--ink) } .figs .thumb path { fill:var(--teal) }
+  .figs .s-lbl { font-family:var(--mono); font-size:11px; fill:var(--muted) }
+  .figs .pp { fill:#fff; stroke:var(--hair); stroke-width:1.2; filter:drop-shadow(0 4px 8px rgba(31,26,28,.14)) } .figs .p-lines path { fill:none; stroke:var(--ink); stroke-width:1.6; stroke-linecap:round } .figs .p-front text { font-family:var(--mono); font-size:9px; font-weight:600; fill:var(--wine) }
+  .figs .pen-body { fill:var(--gold) } .figs .pen-tip { fill:var(--ink) } .figs .pen-end { fill:var(--wine) }
+  .figs .s-bubble rect, .figs .s-bubble .tail { fill:#fff; stroke:var(--hair); stroke-width:1.2 } .figs .s-bubble text { font-family:var(--body); font-size:12.5px; fill:var(--text) }
+  .figs .s-bubble.ai rect, .figs .s-bubble.ai .tail { fill:var(--wine-soft); stroke:none } .figs .s-bubble.ai text { fill:var(--wine-deep) }
+  .figs .sk rect { fill:var(--teal-soft); stroke:none } .figs .sk text { font-family:var(--mono); font-size:9.5px; fill:var(--teal-deep) } .figs .sk path { fill:none; stroke:var(--muted); stroke-width:1.2; stroke-linecap:round } .figs .sk .strike { text-decoration:line-through; fill:var(--red); font-size:10.5px }
+  .figs .gear .ring { fill:#fff; stroke:var(--teal); stroke-width:2 } .figs .gear .tooth { fill:var(--teal) } .figs .gear .core { fill:var(--teal) }
+  .figs .kb { fill:var(--ground-2); stroke:var(--ink); stroke-width:1.5 } .figs .key { fill:var(--ink); opacity:.7 }
+  .figs .lp-ring { fill:rgba(225,237,236,.35); stroke:var(--ink); stroke-width:2 } .figs .lp-handle { stroke:var(--ink); stroke-width:3.5; stroke-linecap:round }
+  .figs .rain-col { font-family:var(--mono); font-size:8px; fill:var(--teal); letter-spacing:1px }
+  .figs .done circle { fill:var(--green) } .figs .done path { fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round }
+  .figs .mon-bezel, .figs .mon-stand { fill:var(--ink) } .figs .mon-screen { fill:#fff } .figs .lg-mark { fill:var(--wine) } .figs .lg-text { font-family:var(--display); font-size:9.5px; font-weight:600; fill:var(--ink); letter-spacing:.01em }
+  .figs .bd-ring { fill:var(--gold) } .figs .bd-star { fill:#fff } .figs .bd-ribbon { fill:var(--wine) }
   @media (max-aspect-ratio: 5/4) { .slide.hero { grid-template-columns:1fr } .scene { height:44vh } }
+  /* slide 4: the reality scene */
+  .reality svg { max-height:70vh }
+  .reality .card rect { fill:#fff; stroke:var(--hair); stroke-width:1.2 } .reality .card.wine rect { stroke:var(--wine) } .reality .card .c-t { font-family:var(--mono); font-size:11px; font-weight:600; fill:var(--ink) } .reality .card .c-l { font-family:var(--mono); font-size:10.5px; fill:var(--text) }
+  .reality .issue rect:first-child { fill:#fff; stroke:var(--hair); stroke-width:1.2 } .reality .issue .c-l { font-size:10px } .reality .issue .tag { fill:var(--teal-soft) } .reality .issue .tag.hi { fill:var(--wine-soft) }
+  .reality .gate rect { fill:#fff; stroke:var(--wine); stroke-width:1.2; stroke-dasharray:3 3 } .reality .gate circle { fill:var(--wine) } .reality .gate text { font-family:var(--mono); font-size:10.5px; fill:var(--wine) }
+  .reality .gh path { fill:var(--ink) }
+  .reality .boundary { stroke:var(--wine); stroke-width:1.5; stroke-dasharray:6 6; fill:none; opacity:.8 } .reality .bnd-bg { fill:var(--ground) } .reality .bnd { font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; fill:var(--wine) }
+  .reality .s-bubble text { font-size:13px } .reality .s-bubble.cmd rect, .reality .s-bubble.cmd .tail { fill:var(--ground-2); stroke:none } .reality .s-bubble.cmd text { font-family:var(--mono); font-weight:600; fill:var(--wine) }
+  .reality .s-cmd { font-family:var(--mono); font-size:12px; font-weight:600; fill:var(--wine) } .reality .s-cmd.muted { font-weight:400; fill:var(--muted) } .reality .s-cmd.back { fill:var(--teal); font-weight:400 }
+  .reality .edge.wire { stroke:var(--hair); stroke-width:1.5 } .reality .edge.reads, .reality .edge.trail { stroke:var(--muted); stroke-width:1.6 }
+  .reality .s-main { stroke:var(--ink); stroke-width:3; stroke-linecap:round; opacity:.6 } .reality .s-pulse { fill:var(--teal); opacity:0 }
+  .reality .s-pr { fill:#fff; stroke:var(--wine); stroke-width:1.5 } .reality .s-pr-t { font-family:var(--mono); font-size:10px; fill:var(--wine) }
+  .reality .s-lbl { font-family:var(--mono); font-size:11px; fill:var(--muted) } .reality .s-lbl.strong { fill:var(--ink); font-size:12px }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -116,9 +129,6 @@
   .schema .node.lit rect { fill:var(--wine); stroke:var(--wine) } .schema .node.lit text { fill:#fff } .schema .node.lit .sub { fill:#F3E4E7 }
   .schema .node.done rect { fill:var(--teal-soft); stroke:var(--teal) }
   .schema .marker { font-family:var(--mono); font-size:10.5px; fill:var(--wine) }
-  #mapOverlay { position:fixed; inset:0; background:var(--ground); z-index:15; display:none; padding:var(--pad); align-content:center }
-  #mapOverlay.on { display:grid }
-  #mapOverlay .schema { max-height:80vh }
   #mapLabel { position:absolute; left:var(--pad); top:calc(var(--pad) - 6px); font-family:var(--mono); font-size:.76rem; letter-spacing:.1em; text-transform:uppercase; color:var(--wine) }
 
   /* chapter */
@@ -194,7 +204,7 @@
     <p class="lede">A design talk becomes decisions. Decisions become issues. Agents build, review and merge — and the docs remember. The framework is that process as one source, rendered into any project, with a trail behind every merge.</p>
     <div class="meta"><div><b id="mHours">—</b><span>from an empty repository to <i id="mPR">—</i> features on main</span></div><div><b id="mLines">—</b><span>lines merged, <i id="mTests">—</i> tests green, none typed by hand</span></div><div><b id="mFind">—</b><span>review findings caught before merge, not after</span></div><div><b id="mHuman">—</b><span>of human conversation; the rest was agents</span></div></div>
   </div>
-  <div class="scene"><svg id="story" viewBox="16 24 528 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg></div>
+  <div class="scene figs"><svg id="story" viewBox="16 24 528 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg></div>
 </section>
 
 <!-- 2 · why -->
@@ -221,10 +231,9 @@
 </section>
 
 <!-- 4 · the schema (hub) -->
-<section class="slide" data-title="The schema" data-kind="hub">
-  <div class="head"><div class="eyebrow"><span class="n">03</span>the whole framework on one page</div><h2>Three sessions, nine stages, one repository.</h2></div>
-  <div id="hubHost"></div>
-  <p class="mono">Each stage is a role with an input and an output. GitHub is the only shared state; no stage reads the chat of another. We zoom into each one.</p>
+<section class="slide" data-title="The schema" data-kind="reality">
+  <div class="head"><div class="eyebrow"><span class="n">03</span>the whole framework on one page</div><h2>Two sessions, one GitHub, the repository underneath.</h2></div>
+  <div class="reality figs"><svg id="reality" class="schema" viewBox="0 0 1300 600" aria-hidden="true"></svg></div>
 </section>
 
 <!-- chapters: data-node names the schema node; role left, artefact right -->
@@ -434,7 +443,6 @@
 </section>
 
 </div>
-<div id="mapOverlay"><div id="mapLabel"></div><div id="overlayHost"></div></div>
 <div class="ornament" aria-hidden="true"><div class="mesh"></div><div class="grain"></div><div class="rule" style="top:11%"></div><div class="rule" style="bottom:9%"></div><div class="glyph" id="glyph" style="right:-4vw;bottom:-8vw">R</div></div>
 <div class="hud"><i id="hud"></i></div>
 <div class="brandbar"><span class="mark">rumble</span><span class="sep"></span><span>framework · requisit</span><span class="counter" id="counter"></span></div>
@@ -474,30 +482,7 @@
     { key: 'gate', label: 'Gate & trail', sub: 'merge · board · 📋', lane: 1, x: 1170 },
     { key: 'docs', label: 'Docs memory', sub: 'D · G · M · research', lane: 2, x: 645 },
   ];
-  const LANES = ['rumble session', 'pipeline session · orchestrator + agents', 'the repository'];
-  const LY = [80, 250, 420], NW = 170, NH = 58;
-  const pos = k => { const n = NODES.find(n => n.key === k); return { x: n.x, y: LY[n.lane] }; };
-  function schemaSVG() {
-    const edge = (a, b, cls = '') => { const p = pos(a), q = pos(b); let d;
-      if (p.y === q.y) d = `M${p.x + NW / 2} ${p.y} L${q.x - NW / 2} ${q.y}`;
-      else if (a === 'taskout') d = `M${p.x} ${p.y + NH / 2} C ${p.x} ${p.y + 90}, ${q.x} ${q.y - 90}, ${q.x} ${q.y - NH / 2}`;
-      else if (a === 'gate') d = `M${p.x} ${p.y + NH / 2} C ${p.x} ${p.y + 100}, ${q.x + NW / 2 + 60} ${q.y}, ${q.x + NW / 2} ${q.y}`;
-      else d = `M${p.x - NW / 2} ${p.y} L 70 ${p.y} C 44 ${p.y}, 44 ${p.y - 30}, 44 ${p.y - 60} L 44 ${q.y + 60} C 44 ${q.y + NH / 2 + 4}, 60 ${q.y + NH / 2}, ${q.x - 40} ${q.y + NH / 2}`;
-      return `<path class="edge ${cls}" d="${d}"/>`; };
-    const lanes = LANES.map((t, i) => `<rect class="lane-bg" x="20" y="${LY[i] - 62}" width="1260" height="124"/><text class="lane-title" x="1264" y="${LY[i] + 52}" text-anchor="end">${t}</text>`).join('');
-    const edges = edge('rumble', 'taskout') + edge('taskout', 'triage') + edge('triage', 'architect') + edge('architect', 'implement') + edge('implement', 'review') + edge('review', 'fix') + edge('fix', 'gate') + edge('gate', 'docs') + edge('docs', 'rumble', 'back')
-      + `<path class="edge back" d="M${pos('fix').x} ${pos('fix').y - NH / 2} C ${pos('fix').x} ${pos('fix').y - 70}, ${pos('review').x} ${pos('review').y - 70}, ${pos('review').x} ${pos('review').y - NH / 2}"/>`;
-    const nodes = NODES.map(n => { const p = pos(n.key); return `<g class="node ${n.key === 'taskout' || n.key === 'gate' ? 'wine' : ''}" data-key="${n.key}"><rect x="${p.x - NW / 2}" y="${p.y - NH / 2}" width="${NW}" height="${NH}"/><text x="${p.x}" y="${p.y - 2}" text-anchor="middle">${n.label}</text><text class="sub" x="${p.x}" y="${p.y + 17}" text-anchor="middle">${n.sub}</text></g>`; }).join('');
-    const marker = `<text class="marker" x="${pos('docs').x - NW / 2 - 12}" y="${pos('docs').y - 12}" text-anchor="end">↤ the next rumble reads the docs, not the chat</text>`;
-    return `<svg class="schema" viewBox="0 0 1300 500" aria-hidden="true">${lanes}${edges}${nodes}${marker}</svg>`;
-  }
-  document.getElementById('hubHost').innerHTML = schemaSVG();
-  document.getElementById('overlayHost').innerHTML = schemaSVG();
-  const overlay = document.getElementById('mapOverlay'), overlaySVG = overlay.querySelector('svg'), mapLabel = document.getElementById('mapLabel');
   const chapterKeys = NODES.map(n => n.key);
-  const light = (svg, key) => { svg.querySelectorAll('.node').forEach(n => { const i = chapterKeys.indexOf(n.dataset.key), j = chapterKeys.indexOf(key); n.classList.toggle('lit', n.dataset.key === key); n.classList.toggle('done', j >= 0 && i < j); }); };
-  const FULL = '0 0 1300 500';
-  const boxOf = key => { const p = pos(key); return `${p.x - 260} ${p.y - 100} 520 200`; };
 
   // ---------- data → slides ----------
   function fill() {
@@ -606,6 +591,93 @@
     document.querySelectorAll('section.chapter').forEach(s => { const k = s.dataset.node; s.querySelector('.minimap').innerHTML = NODES.map((n, i) => `<span class="${n.key === k ? 'now' : chapterKeys.indexOf(k) > i ? 'done' : ''}">${n.label}</span>${i < NODES.length - 1 ? '<i></i>' : ''}`).join(''); });
   }
 
+  // ---------- the figures: one robot bust, one human bust, shared by the title scene and the schema ----------
+  const FIG = {
+    bot: (p = {}) => `<g class="fig"${p.flip ? ' transform="scale(-1 1)"' : ''}>
+      <line class="b-line" x1="0" y1="-92" x2="0" y2="-80"/><circle class="b-light" cy="-96" r="4"/>
+      <rect class="b-skin" x="-24" y="-80" width="48" height="40" rx="12"/>
+      <circle class="b-eye" cx="-9" cy="-62" r="5.5"/><circle class="b-eye" cx="9" cy="-62" r="5.5"/><circle class="b-pupil" cx="-9" cy="-62" r="2.6"/><circle class="b-pupil" cx="9" cy="-62" r="2.6"/>
+      <path class="b-mouth" d="M-6 -51 Q0 -45 6 -51"/>
+      <rect class="b-skin" x="-6" y="-40" width="12" height="8"/><path class="b-skin" d="M-30 -16 a16 16 0 0 1 16 -16 h28 a16 16 0 0 1 16 16 V24 H-30 Z"/><circle class="b-light chest" cy="-4" r="5"/>
+      <circle class="hand hl" cx="-44" cy="4" r="8"${p.noHl ? ' opacity="0"' : ''}/><circle class="hand hr" cx="44" cy="4" r="8"${p.noHr ? ' opacity="0"' : ''}/>${p.tool || ''}</g>`,
+    human: (p = {}) => `<g class="fig"${p.flip ? ' transform="scale(-1 1)"' : ''}>
+      <rect class="h-skin" x="-6" y="-38" width="12" height="10"/><path class="h-skin" d="M-30 -12 a16 16 0 0 1 16 -16 h28 a16 16 0 0 1 16 16 V24 H-30 Z"/>
+      <circle class="h-skin" cy="-54" r="18"/>
+      <path class="h-hair" d="M-18 -56 Q-13 -78 4 -73 Q16 -70 18 -56 Q9 -63 -3 -61 Q-13 -61 -18 -56 Z"/>
+      <circle class="h-eye" cx="-4" cy="-56" r="1.8"/><circle class="h-eye" cx="8" cy="-56" r="1.8"/>
+      <path${p.mouthId ? ` id="${p.mouthId}"` : ''} class="h-mouth" d="${p.smile ? 'M-6 -47 Q1 -39 8 -47' : 'M-5 -46 Q1 -45 7 -46'}"/>${p.mouthId ? `<ellipse id="${p.mouthId}O" class="h-mouth-o" cx="1" cy="-45" rx="0" ry="0"/>` : ''}
+      <circle class="hand hl" cx="-44" cy="4" r="8"/><circle class="hand hr" cx="44" cy="4" r="8"/>
+      ${p.thumb ? '<g class="thumb" opacity="0" transform="translate(44 -26)"><path d="M-8 1 h-5 v11 h5 z M-7 2 l5 -11 q2 -3 4.5 -1 l-1 7 h7 q3 0 2.5 3 l-2 9 q-1 2 -3.5 2 h-12.5 z"/></g>' : ''}</g>`,
+    // the GitHub mark (Simple Icons, CC0), 24 × 24, drawn centred
+    github: (x, y, s = 2.6) => `<g class="gh" transform="translate(${x - 12 * s} ${y - 12 * s}) scale(${s})"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></g>`,
+  };
+
+  // ---------- slide 4: the framework as it really runs — two sessions, one GitHub, the repository underneath ----------
+  function realityScene(s) {
+    const svg = s.querySelector('#reality'); if (!svg || svg.dataset.built) return; svg.dataset.built = '1';
+    const bot = (x, y, cls, label, p = {}, sc = .8) => `<g class="st bot ${cls}" transform="translate(${x} ${y}) scale(${sc})">${FIG.bot(p)}<text class="s-lbl" y="46" text-anchor="middle">${label}</text></g>`;
+    const you = (x, y, label = 'you', p = {}, sc = .8) => `<g class="st human" transform="translate(${x} ${y}) scale(${sc})">${FIG.human(p)}<text class="s-lbl" y="46" text-anchor="middle">${label}</text></g>`;
+    const card = (x, y, w, h, title, lines, cls = '') => `<g class="st card ${cls}" transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="8"/><text class="c-t" x="12" y="19">${title}</text>${lines.map((l, i) => `<text class="c-l" x="12" y="${38 + i * 15}">${l}</text>`).join('')}</g>`;
+    const issue = (x, y, n, txt, hi) => `<g class="st issue" transform="translate(${x} ${y})"><rect width="92" height="40" rx="7"/><text class="c-t" x="9" y="16">#${n}</text><text class="c-l" x="9" y="30">${txt}</text><rect class="tag ${hi ? 'hi' : ''}" x="60" y="7" width="24" height="8" rx="4"/></g>`;
+    const bubble = (x, y, w, txt, cls = '', tail = 'r') => `<g class="st s-bubble ${cls}" transform="translate(${x} ${y})"><path class="tail" d="${tail === 'r' ? `M${w - 34} 30 L${w - 24} 44 L${w - 16} 30 Z` : 'M16 30 L24 44 L34 30 Z'}"/><rect width="${w}" height="32" rx="10"/><text x="12" y="21">${txt}</text></g>`;
+    const gate = (x, y, txt) => `<g class="st gate" transform="translate(${x} ${y})"><rect width="${txt.length * 6.6 + 26}" height="22" rx="11"/><circle cx="13" cy="11" r="4"/><text x="23" y="15">${txt}</text></g>`;
+    const edge = (d, cls = '') => `<path class="st edge ${cls}" d="${d}"/>`;
+    const lbl = (x, y, txt, cls = '') => `<text class="st s-cmd ${cls}" x="${x}" y="${y}">${txt}</text>`;
+    const lane = (y, h, title) => `<rect class="lane-bg" x="20" y="${y}" width="1260" height="${h}" rx="18"/><text class="lane-title" x="1264" y="${y + h - 12}" text-anchor="end">${title}</text>`;
+    svg.innerHTML = `
+      ${lane(14, 186, 'rumble session · a person and the model')}
+      ${lane(232, 200, 'pipeline session · the orchestrator and its agents')}
+      ${lane(460, 122, 'the repository · docs as memory')}
+      <!-- lane 1: the conversation, the rows, the task-out into GitHub -->
+      ${you(90, 132, 'you', { flip: false }, .8)}${bot(232, 132, 'wine', 'rumble', { flip: true }, .8)}
+      ${bubble(36, 18, 118, 'honest approvals', '', 'r')}${bubble(236, 18, 104, 'minor units?', 'ai', 'l')}
+      ${card(370, 44, 176, 118, 'docs/ · rows, not chat', ['D-003 money in minor units', 'D-004 tenancy by organisation', 'G-004 SSO · reopens on demand', 'M-006 approval wait · pending'])}
+      ${edge('M552 100 L592 100')}${lbl(600, 96, '/task-out')}${gate(590, 112, 'you confirm the drafts')}
+      ${edge('M700 100 L740 100')}
+      <g class="st"><text class="s-lbl" x="800" y="178" text-anchor="middle">GitHub · the only shared state</text></g>
+      ${FIG.github(800, 100)}
+      ${card(880, 34, 150, 44, '#6 umbrella', ['4 issues · 3 waves'], 'wine')}
+      ${issue(880, 96, 2, 'scaffold · audit', true)}${issue(980, 96, 3, 'rules · lifecycle', true)}${issue(1080, 96, 4, 'web pages')}${issue(1180, 96, 5, 'outbox', true)}
+      <!-- the boundary -->
+      <path class="st boundary" d="M20 216 L1280 216"/><g class="st"><rect class="bnd-bg" x="420" y="205" width="460" height="22" rx="11"/><text class="bnd" x="650" y="220" text-anchor="middle">new session — nothing carries over except what is on GitHub</text></g>
+      <!-- lane 2: the command, the orchestrator, the swarm per wave, PRs into main, the trail back -->
+      ${you(90, 350, 'you', {}, .8)}${bot(232, 350, '', 'orchestrator', { flip: true }, .8)}
+      ${bubble(34, 246, 118, '/pipeline #6', 'cmd', 'r')}
+      ${edge('M770 150 C 770 230, 330 240, 262 290', 'reads')}${lbl(560, 250, 'reads the umbrella', 'muted')}
+      ${bot(420, 372, '', 'triage', {}, .55)}${bot(510, 372, '', 'architect', {}, .55)}${bot(600, 372, '', 'builder', {}, .55)}${bot(690, 372, '', 'quality', {}, .55)}${bot(780, 372, '', 'security', {}, .55)}
+      ${[420, 510, 600, 690, 780].map(x => edge(`M262 340 C 330 340, ${x - 40} 300, ${x} 318`, 'wire')).join('')}
+      <g class="st"><text class="s-lbl" x="600" y="418" text-anchor="middle">one wave · at most 3 builders · one job each in its own worktree</text></g>
+      <g class="st"><line class="s-main" x1="960" y1="256" x2="960" y2="376"/><text class="s-lbl strong" x="960" y="396" text-anchor="middle">main</text><circle id="rPulse" class="s-pulse" cx="960" cy="316" r="0"/></g>
+      <g id="rPRs">${[7, 8, 9, 10].map((n, i) => `<g class="s-prcard" transform="translate(830 ${282 + i * 22})" opacity="0"><rect class="s-pr" x="0" y="-9" width="50" height="18" rx="5"/><text class="s-pr-t" x="25" y="4" text-anchor="middle">PR #${n}</text></g>`).join('')}</g>
+      ${edge('M968 256 C 990 200, 900 160, 836 130', 'trail')}${lbl(1000, 258, '📋 trail per issue', 'muted')}
+      ${you(1130, 350, 'you', { smile: true }, .8)}${gate(1052, 380, 'risk:high → you review after')}
+      <!-- lane 3: the docs, and the way back -->
+      ${edge('M960 376 C 960 460, 800 480, 760 500')}
+      ${card(560, 478, 200, 70, 'docs memory', ['D · G · M · research log', 'append-only, addenda from PRs'])}
+      ${edge('M560 512 L48 512 L48 146', 'back')}${lbl(64, 500, '↤ the next rumble reads the docs, not the chat', 'back')}`;
+    // entry: every .st group in order, edges drawn, PRs travel into main
+    const st = [...svg.querySelectorAll('.st')], edges = st.filter(e => e.classList.contains('edge')), prs = [...svg.querySelectorAll('.s-prcard')], lanes = svg.querySelectorAll('.lane-bg, .lane-title');
+    edges.forEach(e => { const l = e.getTotalLength(); e.style.strokeDasharray = e.classList.contains('back') ? '6 6' : l; e.style.strokeDashoffset = e.classList.contains('back') ? 0 : l; });
+    if (!G || reduce) { prs.forEach(p => p.setAttribute('opacity', 1)); edges.forEach(e => e.style.strokeDashoffset = 0); return; }
+    G.set(st.filter(e => !e.classList.contains('edge')), { opacity: 0, y: 10 }); G.set(lanes, { opacity: 0 }); G.set(svg.querySelectorAll('.back'), { opacity: 0 });
+    const tl = G.timeline({ delay: .3 });
+    tl.to(lanes, { opacity: 1, duration: .5, stagger: .12 });
+    let t = .2;
+    for (const el of st) {
+      if (el.classList.contains('edge')) { if (el.classList.contains('back')) tl.to(el, { opacity: 1, duration: .6 }, t); else tl.to(el, { strokeDashoffset: 0, duration: .5, ease: 'power2.out' }, t); t += .22; }
+      else { tl.to(el, { opacity: 1, y: 0, duration: .45, ease: 'power3.out' }, t); t += el.classList.contains('bot') || el.classList.contains('human') ? .3 : .18; }
+      if (el.id === 'rPRs' || (el.classList.contains('s-lbl'))) continue;
+      if (el.querySelector && el.querySelector('#rPulse')) { // once main exists, the PRs travel
+        tl.to(prs, { opacity: 1, duration: .3, stagger: .3 }, t)
+          .to(prs, { x: 80, duration: .7, ease: 'power2.inOut', stagger: .3 }, t + .15)
+          .fromTo('#rPulse', { attr: { r: 0 }, opacity: 1 }, { attr: { r: 26 }, opacity: 0, duration: .9, ease: 'power2.out', repeat: 3, repeatDelay: .02 }, t + .55)
+          .to(prs, { opacity: 0, duration: .3, stagger: .3 }, t + .7);
+        t += 1.6;
+      }
+    }
+    running.reality = [tl];
+  }
+
   // ---------- the title scene: three acts on the right ----------
   // 1 · you explain, the rumble robot writes; it asks back; the paper is shown, you give a thumbs up
   // 2 · the robot hands the paper to the orchestrator, which spawns triage · implementer · quality · security; they work; done
@@ -613,13 +685,7 @@
   function storyScene(s) {
     const svg = s.querySelector('#story'); if (!svg || svg.dataset.built) return; svg.dataset.built = '1';
     // a bust: head, neck, chest cut flat; hands are open circles, no arms
-    const botInner = (p = {}) => `<g class="fig">
-      <line class="b-line" x1="0" y1="-92" x2="0" y2="-80"/><circle class="b-light" cy="-96" r="4"/>
-      <rect class="b-skin" x="-24" y="-80" width="48" height="40" rx="12"/>
-      <circle class="b-eye" cx="-9" cy="-62" r="5.5"/><circle class="b-eye" cx="9" cy="-62" r="5.5"/><circle class="b-pupil" cx="-9" cy="-62" r="2.6"/><circle class="b-pupil" cx="9" cy="-62" r="2.6"/>
-      <path class="b-mouth" d="M-6 -51 Q0 -45 6 -51"/>
-      <rect class="b-skin" x="-6" y="-40" width="12" height="8"/><path class="b-skin" d="M-30 -16 a16 16 0 0 1 16 -16 h28 a16 16 0 0 1 16 16 V24 H-30 Z"/><circle class="b-light chest" cy="-4" r="5"/>
-      <circle class="hand hl" cx="-44" cy="4" r="8"${p.noHl ? ' opacity="0"' : ''}/><circle class="hand hr" cx="44" cy="4" r="8"${p.noHr ? ' opacity="0"' : ''}/>${p.tool || ''}</g>`;
+    const botInner = FIG.bot;
     const gear = (x, y, r, n) => `<g class="gear" data-base="translate(${x} ${y})" transform="translate(${x} ${y}) rotate(0)">${Array.from({ length: n }, (_, k) => `<rect class="tooth" x="-1.6" y="${-r - 3}" width="3.2" height="4.5" rx=".8" transform="rotate(${k * 360 / n})"/>`).join('')}<circle class="ring" r="${r}"/><circle class="core" r="${r * .32}"/></g>`;
     const GEARS = `<g class="prop gears" opacity="0">${gear(35, -88, 6, 8)}${gear(49, -73, 7.5, 9)}${gear(34, -60, 5.5, 7)}</g>`;
     const KEYS = `<g class="prop keys" opacity="0"><rect class="kb" x="-26" y="8" width="52" height="16" rx="3"/>${[0, 1].map(r => Array.from({ length: r ? 7 : 8 }, (_, k) => `<rect class="key" x="${-22 + r * 3 + k * 6}" y="${11 + r * 6}" width="4.5" height="4" rx="1"/>`).join('')).join('')}</g>`;
@@ -638,15 +704,7 @@
       <g id="paper" transform="translate(182 260)" opacity="0"><g class="pg"><path class="pp" d="M-22 -28 H22 Q27 0 22 28 H-22 Q-27 0 -22 -28 Z"/>
         <g class="p-lines"></g>
         <g class="p-front" opacity="0"><text x="0" y="-9" text-anchor="middle">issues</text><text x="0" y="6" text-anchor="middle">#2 · #3</text><text x="0" y="20" text-anchor="middle">#4 · #5</text></g></g><circle class="hand ph" cx="22" cy="6" r="8"/></g>
-      <g id="sHuman" class="human" transform="translate(470 262)"><g class="fig" transform="scale(-1 1)">
-        <rect class="h-skin" x="-6" y="-38" width="12" height="10"/><path class="h-skin" d="M-30 -12 a16 16 0 0 1 16 -16 h28 a16 16 0 0 1 16 16 V24 H-30 Z"/>
-        <circle class="h-skin" cy="-54" r="18"/>
-        <path class="h-hair" d="M-18 -56 Q-13 -78 4 -73 Q16 -70 18 -56 Q9 -63 -3 -61 Q-13 -61 -18 -56 Z"/>
-        <circle class="h-eye" cx="-4" cy="-56" r="1.8"/><circle class="h-eye" cx="8" cy="-56" r="1.8"/>
-        <path id="hMouth" class="h-mouth" d="M-5 -46 Q1 -45 7 -46"/><ellipse id="hMouthO" class="h-mouth-o" cx="1" cy="-45" rx="0" ry="0"/>
-        <circle class="hand hl" cx="-44" cy="4" r="8"/><circle class="hand hr" cx="44" cy="4" r="8"/>
-        <g class="thumb" opacity="0" transform="translate(44 -26)"><path d="M-8 1 h-5 v11 h5 z M-7 2 l5 -11 q2 -3 4.5 -1 l-1 7 h7 q3 0 2.5 3 l-2 9 q-1 2 -3.5 2 h-12.5 z"/></g>
-      </g><text class="s-lbl" y="46" text-anchor="middle">you</text></g>
+      <g id="sHuman" class="human" transform="translate(470 262)">${FIG.human({ flip: true, mouthId: 'hMouth', thumb: true })}<text class="s-lbl" y="46" text-anchor="middle">you</text></g>
       <g id="hb1" class="s-bubble"><path class="tail" d="M430 150 L444 178 L456 150 Z"/><rect x="270" y="38" width="220" height="116" rx="14"/>
         <g class="bl"><text x="288" y="64">purchase requests,</text></g>
         <g class="bl"><text x="288" y="84">approval by a visible rule</text></g>
@@ -811,13 +869,7 @@
       }
       storyScene(s);
     },
-    hub(s) {
-      const svg = s.querySelector('svg'); light(svg, null);
-      if (!G || reduce) return;
-      G.fromTo(svg.querySelectorAll('.lane-bg, .lane-title'), { opacity: 0 }, { opacity: 1, duration: .5, stagger: .15 });
-      G.fromTo(svg.querySelectorAll('.node'), { opacity: 0, scale: .8, transformOrigin: 'center' }, { opacity: 1, scale: 1, duration: .5, stagger: .07, ease: 'back.out(1.6)', delay: .3 });
-      svg.querySelectorAll('.edge').forEach(e => { if (e.classList.contains('back')) return; const l = e.getTotalLength(); e.style.strokeDasharray = l; e.style.strokeDashoffset = l; G.to(e, { strokeDashoffset: 0, duration: .8, delay: .9, ease: 'power2.out' }); });
-    },
+    reality(s) { realityScene(s); },
     cost(s) { setTimeout(() => s.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.w), 200); },
   };
   const leave = kind => { (running[kind] || []).forEach(t => t.kill()); delete running[kind]; };
@@ -827,7 +879,6 @@
     els.forEach(el => el.classList.remove('on'));
     if (!animate || !G || reduce) { els.forEach(el => el.classList.add('on')); return; }
     els.forEach((el, i) => setTimeout(() => el.classList.add('on'), 350 + i * 260));
-    if (s.dataset.kind === 'hub') { const svg = s.querySelector('svg'); svg.querySelectorAll('.lane-bg').forEach(l => l.style.opacity = 1); }
   }
   let cur = 0, busy = false;
   const pad = n => String(n).padStart(2, '0');
@@ -836,19 +887,6 @@
   const dots = [...dotsBox.children];
   function updateHud() { hud.style.width = ((cur + 1) / slides.length * 100) + '%'; counter.textContent = pad(cur + 1) + ' / ' + pad(slides.length); dots.forEach((d, i) => d.classList.toggle('active', i === cur)); location.replace('#' + (cur + 1)); }
   // the zoom: from a chapter (or the hub) through the schema into the next chapter's node
-  function zoomTo(from, to, done) {
-    const fromKey = from.dataset.node || null, toKey = to.dataset.node;
-    overlay.classList.add('on'); light(overlaySVG, toKey);
-    mapLabel.textContent = `stage ${chapterKeys.indexOf(toKey) + 1} of ${chapterKeys.length} · ${NODES.find(n => n.key === toKey).label}`;
-    const tl = G.timeline({ onComplete() { overlay.classList.remove('on'); done(); } });
-    tl.to(from, { opacity: 0, duration: .3, ease: 'power2.in' }, 0);
-    if (fromKey) { overlaySVG.setAttribute('viewBox', boxOf(fromKey)); tl.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: .25 }, .1).to(overlaySVG, { attr: { viewBox: FULL }, duration: .8, ease: 'power3.inOut' }, .15); }
-    else { overlaySVG.setAttribute('viewBox', FULL); tl.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: .3 }, .1); }
-    tl.to({}, { duration: .55 });
-    tl.to(overlaySVG, { attr: { viewBox: boxOf(toKey) }, duration: .8, ease: 'power3.inOut' });
-    tl.to(overlay, { opacity: 0, duration: .35 }, '-=.25');
-    tl.fromTo(to, { opacity: 0, scale: 1.03 }, { opacity: 1, scale: 1, duration: .5, ease: 'power3.out' }, '-=.3');
-  }
   function show(i, dir) {
     if (busy || i === cur || i < 0 || i >= slides.length) return;
     const from = slides[cur], to = slides[i];
@@ -858,7 +896,6 @@
     if (!G || reduce) { from.classList.remove('is-current'); start(); return; }
     busy = true;
     const finish = () => { from.classList.remove('is-current'); G.set(from, { clearProps: 'transform,opacity,filter' }); busy = false; };
-    if (to.dataset.node && dir > 0 && (from.dataset.node || from.dataset.kind === 'hub')) { zoomTo(from, to, finish); return; }
     G.timeline({ onComplete: finish })
       .to(from, { opacity: 0, scale: .985, y: -14 * dir, filter: 'blur(4px)', duration: .45, ease: 'power2.in' }, 0)
       .fromTo(to, { opacity: 0, scale: 1.02, y: 22 * dir }, { opacity: 1, scale: 1, y: 0, duration: .65, ease: 'power3.out', onStart: start }, .25)
@@ -871,7 +908,7 @@
     else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
     else if (e.key === 'Home') show(0, -1); else if (e.key === 'End') show(slides.length - 1, 1);
     else if (e.key === 'f' || e.key === 'F') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
-    else if (e.key === 'm' || e.key === 'M') { const h = slides.findIndex(s => s.dataset.kind === 'hub'); show(h, h > cur ? 1 : -1); }
+    else if (e.key === 'm' || e.key === 'M') { const h = slides.findIndex(s => s.dataset.kind === 'reality'); show(h, h > cur ? 1 : -1); }
     else if (e.key === 'l' || e.key === 'L') { const f = document.getElementById('live'); f.src = (window.COST && COST.liveUrl) || 'http://localhost:3000/'; document.getElementById('liveNote').textContent = 'live: ' + f.src; }
   });
   document.getElementById('edgeR').addEventListener('click', next);
