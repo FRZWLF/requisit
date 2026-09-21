@@ -1,4 +1,4 @@
-import { Buffer } from 'node:buffer';
+import type { Buffer } from 'node:buffer';
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import type { Clock } from '../clock.ts';

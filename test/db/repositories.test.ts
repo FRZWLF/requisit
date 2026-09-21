@@ -200,3 +200,142 @@ test('a repository refuses a transaction from another connection', () => {
     /different database connection/,
   );
 });
+
+/* The lifecycle writes split 02 adds (D-008…D-010). */
+
+function draftFor(context: ReturnType<typeof fixture>, unitPriceMinor: number) {
+  return withTransaction(context.db, (tx) =>
+    must(
+      requisitionsRepo(context.db, context.scope, TEST_CLOCK).insertDraft(tx, {
+        buyerPersonId: context.buyer.id,
+        costCentreId: context.costCentreId,
+        lines: [{ description: 'Laptop', quantity: 1, unitPriceMinor }],
+      }),
+    ),
+  );
+}
+
+test('replaceDraft swaps the whole line set, bumps the version and keeps the id', () => {
+  const context = fixture();
+  const repo = requisitionsRepo(context.db, context.scope, TEST_CLOCK);
+  const made = draftFor(context, 1_000);
+  const changed = withTransaction(context.db, (tx) =>
+    must(
+      repo.replaceDraft(tx, made.id, {
+        lines: [
+          { description: 'Monitor', quantity: 2, unitPriceMinor: 30_000 },
+          { description: 'Cable', quantity: 1, unitPriceMinor: 500 },
+        ],
+      }),
+    ),
+  );
+  assert.equal(changed.id, made.id);
+  assert.equal(changed.version, made.version + 1);
+  assert.deepEqual(
+    changed.lines.map((line) => [line.seq, line.description]),
+    [
+      [1, 'Monitor'],
+      [2, 'Cable'],
+    ],
+  );
+  assert.equal(must(repo.byId(made.id)).lines.length, 2, 'the old lines survived');
+});
+
+test('replaceDraft refuses a bad line before it writes anything', () => {
+  const context = fixture();
+  const repo = requisitionsRepo(context.db, context.scope, TEST_CLOCK);
+  const made = draftFor(context, 1_000);
+  const refused = withTransaction(context.db, (tx) =>
+    repo.replaceDraft(tx, made.id, {
+      lines: [
+        { description: 'Fine', quantity: 1, unitPriceMinor: 1 },
+        { description: '  ', quantity: 1, unitPriceMinor: 1 },
+      ],
+    }),
+  );
+  assert.ok(isRefusal(refused));
+  assert.equal(isRefusal(refused) ? refused.code : '', 'validation_failed');
+  const after = must(repo.byId(made.id));
+  assert.equal(after.version, made.version, 'the version moved on a refusal');
+  assert.deepEqual(after.lines.map((line) => line.description), ['Laptop']);
+});
+
+test('transition moves the row under its version guard and throws when the guard misses', () => {
+  const context = fixture();
+  const repo = requisitionsRepo(context.db, context.scope, TEST_CLOCK);
+  const made = draftFor(context, 1_000);
+  const moved = withTransaction(context.db, (tx) =>
+    repo.transition(tx, {
+      id: made.id,
+      expectedVersion: made.version,
+      toState: 'submitted',
+      ruleId: null,
+      ruleCode: 'R9',
+      submittedAt: '2026-09-21T10:00:00.000Z',
+      decidedAt: null,
+    }),
+  );
+  assert.equal(moved.state, 'submitted');
+  assert.equal(moved.version, made.version + 1);
+  assert.equal(moved.ruleCode, 'R9');
+
+  assert.throws(
+    () =>
+      withTransaction(context.db, (tx) =>
+        repo.transition(tx, {
+          id: made.id,
+          expectedVersion: made.version,
+          toState: 'approved',
+          ruleId: null,
+          ruleCode: 'R9',
+          submittedAt: null,
+          decidedAt: null,
+        }),
+      ),
+    /expected exactly one row/,
+  );
+  assert.equal(must(repo.byId(made.id)).state, 'submitted');
+  assert.equal(context.db.isTransaction, false);
+});
+
+test('copyForward makes a new row with the same lines and leaves the source alone', () => {
+  const context = fixture();
+  const repo = requisitionsRepo(context.db, context.scope, TEST_CLOCK);
+  const made = draftFor(context, 1_000);
+  const before = JSON.stringify(must(repo.byId(made.id)));
+  const copy = withTransaction(context.db, (tx) => must(repo.copyForward(tx, made.id)));
+  assert.notEqual(copy.id, made.id);
+  assert.equal(copy.copiedFromId, made.id);
+  assert.equal(copy.version, 1);
+  assert.notEqual(copy.number, made.number, 'the copy takes the next number');
+  assert.deepEqual(
+    copy.lines.map((line) => [line.seq, line.description, line.unitPriceMinor]),
+    made.lines.map((line) => [line.seq, line.description, line.unitPriceMinor]),
+  );
+  assert.equal(JSON.stringify(must(repo.byId(made.id))), before);
+});
+
+test('listWithLines returns every line of every row, in seq order, in one pass', () => {
+  const context = fixture();
+  const repo = requisitionsRepo(context.db, context.scope, TEST_CLOCK);
+  draftFor(context, 1_000);
+  const second = withTransaction(context.db, (tx) =>
+    must(
+      repo.insertDraft(tx, {
+        buyerPersonId: context.buyer.id,
+        costCentreId: context.costCentreId,
+        lines: [
+          { description: 'A', quantity: 1, unitPriceMinor: 1 },
+          { description: 'B', quantity: 1, unitPriceMinor: 2 },
+        ],
+      }),
+    ),
+  );
+  const listed = repo.listWithLines();
+  assert.equal(listed.length, 2);
+  const found = listed.find((row) => row.id === second.id);
+  assert.deepEqual(found?.lines.map((line) => line.description), ['A', 'B']);
+  assert.equal(repo.listWithLines({ state: 'submitted' }).length, 0);
+  // presence: the same filter finds the rows in the state they are actually in.
+  assert.equal(repo.listWithLines({ state: 'draft' }).length, 2);
+});
