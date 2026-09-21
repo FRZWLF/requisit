@@ -34,6 +34,7 @@
   .slide.is-current { opacity:1; visibility:visible }
   .slide .head { display:grid; gap:clamp(6px,1vh,12px); max-width:1000px }
   .slide.chapter { align-content:start; padding-top:118px; padding-bottom:80px; grid-template-rows:auto minmax(0,1fr) }
+  .slide[data-kind="product"] { align-content:start; padding-top:88px; padding-bottom:80px; grid-template-rows:auto minmax(0,1fr) auto; gap:14px }
   .slide.chapter .two { min-height:0; height:100% } .slide.chapter .artefact { max-height:100% }
   [data-step] { opacity:0; transform:translateY(18px); transition:opacity .55s var(--ease),transform .55s var(--ease) }
   [data-step].on { opacity:1; transform:none }
@@ -151,6 +152,13 @@
   .outline .lead { margin:0 0 10px; font-size:clamp(.86rem,1vw,1rem); color:var(--text) } .outline .sec { display:grid; grid-template-columns:200px 1fr; gap:12px; padding:8px 0; border-top:1px solid var(--mist); font-size:clamp(.84rem,.98vw,.98rem) } .outline .sec b { font-family:var(--mono); font-size:.74rem; color:var(--wine); font-weight:600 } .outline .sec span { color:var(--text) }
   .causes { margin-top:16px; border-top:1px dashed var(--hair); padding-top:12px; display:grid; gap:6px } .causes .tag { font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--teal); margin-bottom:4px } .causes div:not(.tag) { display:grid; grid-template-columns:110px 1fr; gap:10px; font-size:clamp(.86rem,1vw,1rem); color:var(--text) }
   .lens { font-family:var(--mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); width:70px; display:inline-block }
+  /* the product gallery */
+  .gallery { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:clamp(10px,1.2vw,16px); min-height:0; height:100% }
+  .gallery figure { margin:0; background:#fff; border:1px solid var(--hair); border-radius:12px; overflow:hidden; box-shadow:0 24px 40px -34px rgba(74,18,32,.4); display:grid; grid-template-rows:minmax(0,1fr) auto; min-height:0 }
+  .gallery img { display:block; width:100%; height:100%; min-height:0; object-fit:cover; object-position:top; border-bottom:1px solid var(--hair) } .gallery figure.bottom img { object-position:bottom }
+  .gallery figcaption { padding:8px 12px; font-size:clamp(.78rem,.9vw,.9rem); color:var(--text); line-height:1.4; display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:baseline } .gallery figcaption b { color:var(--ink); font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap }
+  .map .l,.map .r { font-size:clamp(.88rem,1.02vw,1.05rem) }
+  .card .ans { font-size:clamp(.8rem,.92vw,.92rem); color:var(--teal-deep) }
   /* cards */
   .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px) }
   .cards.four { grid-template-columns:repeat(4,1fr) }
@@ -454,10 +462,16 @@
 </section>
 
 <!-- product -->
-<section class="slide" data-title="The product" data-kind="product">
-  <div class="head"><div class="eyebrow"><span class="n">06</span>what came out</div><h2>Requisit, running.</h2></div>
-  <iframe class="live" id="live" src="about:blank" title="Requisit live"></iframe>
-  <p class="mono" id="liveNote">start the service (README quickstart) and press <kbd>L</kbd> to load it here · buyer drafts → rule matches → approver rejects with a reason → the audit shows it → the merchant polls the order</p>
+<section class="slide" data-title="The product" data-kind="product" data-steps="4">
+  <div class="head"><div class="eyebrow"><span class="n">06</span>what came out</div><h2>Requisit, running. Four real pages, one afternoon.</h2></div>
+  <div class="gallery" id="gallery">
+    <figure data-step="1"><img src="shots/buyer-list.png" alt=""><figcaption><b>the buyer's list</b> three requisitions, three states, the rule that matched on every row</figcaption></figure>
+    <figure data-step="2"><img src="shots/approver-decides.png" alt=""><figcaption><b>the approver decides</b> waiting on the cost-centre owner; a rejection needs a reason</figcaption></figure>
+    <figure data-step="3" class="bottom"><img src="shots/rejected-with-reason.png" alt=""><figcaption><b>rejected, with the reason the buyer sees</b> and the history: who did what, under which rule, at which amount</figcaption></figure>
+    <figure data-step="4"><img src="shots/approved-copy.png" alt=""><figcaption><b>copied forward and approved</b> a new draft keeps the link to the rejected one; the order is now in the merchant's outbox</figcaption></figure>
+  </div>
+  <iframe class="live" id="live" src="about:blank" title="Requisit live" hidden></iframe>
+  <p class="mono" id="liveNote"><kbd>L</kbd> swaps in the live service (README quickstart, port 3123) · 474 tests · zero runtime dependencies · the quickstart is itself a test that runs seed and start as real processes</p>
 </section>
 
 <!-- cost -->
@@ -469,14 +483,16 @@
 </section>
 
 <!-- existing project -->
-<section class="slide" data-title="Existing project" data-steps="4">
+<section class="slide" data-title="Existing project" data-steps="5">
   <div class="head"><div class="eyebrow"><span class="n">08</span>bring it to a project that already exists</div><h2>You already have most of it under other names.</h2></div>
   <div class="map">
-    <div class="l" data-step="1">docs/adr/0001-….md — one file per ADR</div><div class="a" data-step="1">→</div><div class="r" data-step="1"><code>docs.decisions</code> → the ADR index; a D-row per ADR, numbers kept</div>
-    <div class="l" data-step="2">CONTRIBUTING.md, the security policy</div><div class="a" data-step="2">→</div><div class="r" data-step="2">project sections appended to the core standards — yours win on safety</div>
+    <div class="l" data-step="1">docs/adr/0001-….md — one file per ADR</div><div class="a" data-step="1">→</div><div class="r" data-step="1"><code>docs.decisions</code> points at the ADR index; one D-row per ADR, numbers kept</div>
+    <div class="l" data-step="2">CONTRIBUTING.md, the security policy</div><div class="a" data-step="2">→</div><div class="r" data-step="2">appended to the core standards as project sections — yours win on safety</div>
     <div class="l" data-step="3">your CI</div><div class="a" data-step="3">→</div><div class="r" data-step="3">stays. Add <code>render --check</code> and <code>check-anchors</code>; the pipeline's own automation stays off</div>
     <div class="l" data-step="4">a backlog, wiki pages of numbers, open questions</div><div class="a" data-step="4">→</div><div class="r" data-step="4">the first rumble is a <em>reading</em> rumble: gaps first, then the smallest real change</div>
+    <div class="l" data-step="5">not on GitHub</div><div class="a" data-step="5">→</div><div class="r" data-step="5">the process needs four objects: issues, labels, branches, PR comments. GitHub today; another host is a binding to write, not a process change</div>
   </div>
+  <p class="mono">the rendered files are the proof: <code>node render.mjs . --check</code> fails on a hand edit, the way a generated token file fails <code>tokens:check</code></p>
 </section>
 
 <!-- teams -->
@@ -494,10 +510,11 @@
 <section class="slide" data-title="Here" data-steps="3">
   <div class="head"><div class="eyebrow"><span class="n">10</span>where this fits</div><h2>Agent features are decisions plus contracts plus reviewed PRs.</h2></div>
   <div class="cards">
-    <div class="card" data-step="1"><div class="tag">buyer · merchant agents</div><p>What an agent may do is a D-row and a risk label before it is code. Requisit's drafting agent never approves — decided in the rumble, enforced in review.</p></div>
-    <div class="card" data-step="2"><div class="tag">pwa · commerce core</div><p>One framework repo, one <code>framework.json</code> per codebase: its own areas, implementers, verify board and risk:high list.</p></div>
-    <div class="card" data-step="3"><div class="tag">both runtimes</div><p>Claude Code and Codex from the same source; the model per stage is a binding, not a habit.</p></div>
+    <div class="card" data-step="1"><div class="tag">buyer · merchant agents</div><h3>What an agent may do is a row before it is code.</h3><p>Requisit's drafting agent never approves — decided in the rumble, a <code>risk:high</code> label on every PR that touches it, enforced in review.</p><div class="ans">first step: a rumble on the agent's authority — the D-rows, the risk:high list, the refusals</div></div>
+    <div class="card" data-step="2"><div class="tag">pwa</div><h3>One <code>framework.json</code>, the CI you have.</h3><p>Areas, implementers, the verify board and the risk:high list are the project's; the process and the agents are rendered in.</p><div class="ans">first step: render, run <code>--check</code> in CI, one size:S issue through the pipeline</div></div>
+    <div class="card" data-step="3"><div class="tag">new commerce core</div><h3>The ADRs are the memory already.</h3><p>Decisions keep their numbers; gaps get triggers; the numbers nobody wrote down get an M-row that reads "pending".</p><div class="ans">first step: a reading rumble over the ADRs, then the smallest real change as arc 1</div></div>
   </div>
+  <p class="mono">both runtimes from the same source — Claude Code and Codex; the model per stage is a binding, not a habit</p>
 </section>
 
 <!-- close -->
@@ -1023,7 +1040,7 @@
     else if (e.key === 'Home') show(0, -1); else if (e.key === 'End') show(slides.length - 1, 1);
     else if (e.key === 'f' || e.key === 'F') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
     else if (e.key === 'm' || e.key === 'M') { const h = slides.findIndex(s => s.dataset.kind === 'reality'); show(h, h > cur ? 1 : -1); }
-    else if (e.key === 'l' || e.key === 'L') { const f = document.getElementById('live'); f.src = (window.COST && COST.liveUrl) || 'http://localhost:3000/'; document.getElementById('liveNote').textContent = 'live: ' + f.src; }
+    else if (e.key === 'l' || e.key === 'L') { const f = document.getElementById('live'); f.hidden = !f.hidden; document.getElementById('gallery').hidden = !f.hidden; if (!f.hidden) f.src = (window.COST && COST.liveUrl) || 'http://localhost:3123/'; document.getElementById('liveNote').textContent = f.hidden ? 'screenshots · L for the live service' : 'live: ' + f.src + ' · L for the screenshots'; }
   });
   document.getElementById('edgeR').addEventListener('click', next);
   document.getElementById('edgeL').addEventListener('click', prev);

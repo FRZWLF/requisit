@@ -142,9 +142,9 @@ Jede Chapter-Folie ist gleich gebaut: links die Rolle (wer, Input, was, Output, 
 
 ## Produkt (60s)
 
-**L drücken, dann durchklicken:**
+**Vier echte Seiten (Screenshots aus dem laufenden Dienst); L schaltet auf den Live-Dienst um, wenn er läuft:**
 
-> Requisit läuft. Ein Einkäufer entwirft, die Regel greift, der Genehmiger lehnt mit Begründung ab, das Audit zeigt es, der Händler pollt die Bestellung. Vier Issues, vier PRs, 474 Tests, null Laufzeit-Abhängigkeiten. Und der Quickstart aus der README läuft wörtlich, das prüft ein Test, der seed und start als echte Prozesse startet.
+> Requisit läuft. Links oben die Liste der Einkäuferin: drei Anforderungen, drei Zustände, in jeder Zeile die Regel, die gegriffen hat. Rechts der Genehmiger: „wartet auf Otto Owner“, Ablehnen braucht eine Begründung. Unten links die abgelehnte Anforderung mit genau dieser Begründung und der Historie: wer, was, unter welcher Regel, zu welchem Betrag. Unten rechts die Kopie: neuer Entwurf, Link auf die abgelehnte, genehmigt, die Bestellung liegt im Outbox des Händlers. Vier Issues, vier PRs, 474 Tests, null Laufzeit-Abhängigkeiten. Und der Quickstart aus der README ist selbst ein Test, der seed und start als echte Prozesse startet.
 
 ## Kosten (75s)
 
@@ -152,15 +152,15 @@ Jede Chapter-Folie ist gleich gebaut: links die Rolle (wer, Input, was, Output, 
 
 ## Bestehendes Projekt (60s)
 
-> Sie haben das meiste schon unter anderen Namen. ADRs: die Decisions-Doc zeigt auf den ADR-Index, eine D-Zeile pro ADR, Nummern bleiben. CONTRIBUTING und Security-Policy: werden an die Standards angehängt, Ihre gewinnen bei Sicherheit. Ihre CI bleibt, zwei Checks kommen dazu. Und der erste Rumble ist ein Lese-Rumble: erst die Gaps, dann die kleinste echte Änderung.
+> Die meisten haben das schon, unter anderen Namen. ADRs: die Config zeigt auf den ADR-Index, eine D-Zeile pro ADR, Nummern bleiben. CONTRIBUTING und Security-Policy: werden als Projekt-Abschnitte an den Standards-Kern gehängt, bei Sicherheit gewinnen sie. Die CI bleibt; dazu kommen render check und check-anchors. Backlog, Wiki-Zahlen, offene Fragen: der erste Rumble ist ein lesender Rumble, erst Gaps, dann die kleinste echte Änderung. Und wer nicht auf GitHub ist: der Prozess braucht vier Objekte, Issues, Labels, Branches, PR-Kommentare. Heute GitHub; ein anderer Host ist ein Binding, das man schreibt, keine Prozessänderung.
 
 ## Teams (60s)
 
 > Das Issue ist der Vertrag, also ist der Autor egal. Alle rumbeln, die Zeilen kommen als PR und werden geprüft wie Code. Ein Mensch pro Arc orchestriert, der Zustand liegt auf GitHub, die nächste Welle kann jemand anderes übernehmen. Verdicts und Trails sind für jemanden geschrieben, der nicht dabei war. Und wer mergt, ist Konfiguration: gate.merge human, und das Gate stoppt bei „ready for review".
 
-## Hier (45s)
+## Hier (60s)
 
-> Wo das bei uns hinpasst: Agent-Features auf Buyer- und Merchant-Seite sind genau das, eine Entscheidung plus ein Vertrag plus ein geprüfter PR. Was ein Agent darf, ist eine D-Zeile und ein Risk-Label, bevor es Code ist. PWA und Commerce Core bekommen je ein framework.json, ein Framework-Repo. Und es läuft mit Claude Code und Codex aus derselben Quelle.
+> Wo das bei uns hingehört. Agenten auf Einkäufer- und Händlerseite: was ein Agent darf, ist eine Zeile, bevor es Code ist; in Requisit genehmigt der Entwurfsagent nie, im Rumble entschieden, risk-high auf jedem PR, der ihn berührt, im Review durchgesetzt. Erster Schritt wäre ein Rumble über die Befugnisse. PWA: eine framework.json, die CI, die wir haben; erster Schritt: rendern, check in die CI, ein kleines Issue durch die Pipeline. Neuer Commerce-Core: die ADRs sind das Gedächtnis schon; erster Schritt ein lesender Rumble darüber, dann die kleinste echte Änderung als Arc 1. Und beides läuft aus einer Quelle: Claude Code und Codex.
 
 ## Schluss (20s)
 

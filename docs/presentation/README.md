@@ -6,6 +6,7 @@ written by hand for the slides.
 | what | where | how it is made |
 |---|---|---|
 | the deck | `deck.html` — a zoom deck: the schema of the whole framework is the hub, → zooms into the next stage (role on the left, the real Requisit artefact on the right), `M` jumps back to the schema, `L` loads the live service on the product slide; `?nomotion` for a static/printable run | hand-written slides, data from `data/*.js` |
+| the product pages | `shots/*.png` | screenshots of the served pages: seed a scratch DB (`REQUISIT_DB_PATH`, `PORT=3123`), run the README walkthrough, sign in as buyer and approver, save the HTML, shoot with headless Chrome |
 | the data | `data/decisions.js`, `data/trail.js`, `data/cost.js` | `REQUISIT_LIVE_URL=http://localhost:3123/ node docs/presentation/build-data.mjs 2 6` (showcased issue, umbrella) |
 | the storyline + demo script | `storyline.md` | — |
 | the rumble's input | `../00-brief.md` | — |
