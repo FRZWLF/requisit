@@ -63,7 +63,8 @@ function oneOf<T extends string>(
  */
 function freezeMap<K, V>(source: ReadonlyMap<K, V>): ReadonlyMap<K, V> {
   const inner = new Map(source);
-  return Object.freeze({
+  // the view hands itself, never `inner`, to callbacks — otherwise forEach's third argument leaks the live Map
+  const view: ReadonlyMap<K, V> = Object.freeze({
     get size(): number {
       return inner.size;
     },
@@ -74,11 +75,12 @@ function freezeMap<K, V>(source: ReadonlyMap<K, V>): ReadonlyMap<K, V> {
     entries: () => inner.entries(),
     forEach: (callback: (value: V, key: K, map: ReadonlyMap<K, V>) => void, thisArg?: unknown) => {
       for (const [key, value] of inner) {
-        callback.call(thisArg, value, key, inner);
+        callback.call(thisArg, value, key, view);
       }
     },
     [Symbol.iterator]: () => inner[Symbol.iterator](),
   });
+  return view;
 }
 
 function port(env: NodeJS.ProcessEnv): number {
