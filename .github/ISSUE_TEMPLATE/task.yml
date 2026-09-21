@@ -1,0 +1,27 @@
+name: Task
+description: A buildable spec — the pipeline contract (created by /task-out)
+labels: [type:task]
+body:
+  - type: textarea
+    id: goal
+    attributes: { label: Goal, description: "One sentence: what exists after this that does not now" }
+    validations: { required: true }
+  - type: textarea
+    id: context
+    attributes: { label: Context, description: "Decisions the implementer must honor, incl. what we decided NOT to do; D-/G-/M- ids; reserved numbers" }
+    validations: { required: true }
+  - type: textarea
+    id: acceptance
+    attributes: { label: Acceptance criteria, description: "Testable statements, one per line" }
+    validations: { required: true }
+  - type: textarea
+    id: tests
+    attributes: { label: Test expectations }
+    validations: { required: true }
+  - type: textarea
+    id: scope
+    attributes: { label: Out of scope }
+    validations: { required: true }
+  - type: input
+    id: routing
+    attributes: { label: Suggested routing, placeholder: "area:api · size:M · risk:medium — triage makes the final call" }

@@ -1,0 +1,14 @@
+name: Epic (arc umbrella)
+description: A roadmap-level outcome that groups the splits of one arc
+labels: [type:epic]
+body:
+  - type: textarea
+    id: goal
+    attributes: { label: Goal }
+    validations: { required: true }
+  - type: textarea
+    id: context
+    attributes: { label: Context, description: "Which rumble, which D-rows; the planned splits as a task list; the run order in waves" }
+  - type: textarea
+    id: exit
+    attributes: { label: Acceptance criteria, description: "The arc's exit — what a human verifies at the end" }

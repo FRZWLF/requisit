@@ -1,0 +1,20 @@
+# name|color|description
+area:api|FBCA04|The requisition service: domain, approval rules, storage, HTTP API
+area:web|FBCA04|The buyer and approver UI
+area:agent|FBCA04|The drafting agent and its tools
+area:infra|FBCA04|Build, CI, packaging, GitHub setup
+area:docs|FBCA04|Documentation only
+size:S|006B75|Single file / well-trodden pattern
+size:M|FBCA04|Multi-file feature
+size:L|D93F0B|Cross-cutting, architectural, or delegating a D-row
+risk:low|0E8A16|Isolated, reversible
+risk:medium|FBCA04|Shared code paths
+risk:high|006B75|Auth, authority, cross-organisation, amounts, agent writes, secrets, CI/CD
+pipeline:build|7057FF|Triage-approved: the build starts
+pipeline:triage|BFDADC|Re-run triage
+needs-human|E11D21|Pipeline escalation — the human's inbox
+blocked|D4C5F9|Waiting on dependencies
+type:epic|3E4B9E|Roadmap-level outcome (an arc umbrella)
+type:user-story|1D76DB|User-facing capability, broken into tasks
+type:task|0075CA|Buildable spec — the pipeline contract
+type:bug|D73A4A|Behaves differently from docs/acceptance criteria

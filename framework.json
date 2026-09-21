@@ -1,0 +1,38 @@
+{
+  "project": "Requisit",
+  "repo": "FRZWLF/requisit",
+  "owner": "FRZWLF",
+  "human": "FRZWLF",
+  "runtimes": ["claude", "codex"],
+  "labels": { "build": "pipeline:build", "triage": "pipeline:triage" },
+  "agent_names": { "security": "security-reviewer" },
+  "areas": [
+    { "label": "area:api", "desc": "the requisition service: domain, approval rules, storage, HTTP API" },
+    { "label": "area:web", "desc": "the buyer and approver UI" },
+    { "label": "area:agent", "desc": "the drafting agent and its tools (buyer side)" },
+    { "label": "area:infra", "desc": "build, CI, packaging, GitHub setup" },
+    { "label": "area:docs", "desc": "documentation only" }
+  ],
+  "risk_high": "authentication, roles and approval authority, anything that crosses an organisation, anything that approves, cancels or changes an amount, agent tools that write, secrets, CI/CD",
+  "verify": {
+    "board": "npm ci && npm run typecheck && npm test && npm run lint && node ../rumble-framework/scripts/check-anchors.mjs . && node ../rumble-framework/render.mjs . --check",
+    "extra": "the stack is decided in the rumble (the first D-row); until then the board is the two docs checks alone"
+  },
+  "docs": {
+    "decisions": "docs/02-decisions.md",
+    "gaps": "docs/14-gap-analysis.md",
+    "measurements": "docs/16-measurements.md",
+    "research": "docs/15-research-log.md",
+    "standards": "docs/engineering-standards.md",
+    "threat_model": "docs/08-security.md"
+  },
+  "standards_project_sections": "docs/engineering-standards.project.md",
+  "implementers": [
+    { "name": "requisit-dev", "description": "Implements Requisit work — the requisition service, the UI, the drafting agent, infra and docs. Follows the issue spec and engineering standards; verifies before opening a PR.",
+      "areas": ["area:api", "area:web", "area:agent", "area:infra", "area:docs"],
+      "rules": "- Money is never a float: amounts are integer minor units with an explicit currency; a total is computed, never stored as truth.\n- An approval is a person's authority at a moment: who, when, which rule matched, what the amount was — the audit line is part of the write, not a log.\n- The organisation is the tenancy boundary: no query or action crosses one without saying so in its name.\n- An agent tool that writes (draft, submit) goes through the same rules as a human; the agent never approves." }
+  ],
+  "mandatory_suites": [],
+  "limits": { "parallel_builders": 3, "fix_rounds": 2, "split_lines": 3000, "disk_floor_gb": 40 },
+  "project_notes": { "fixtures": "none — the service runs in-process for tests", "offline_tests": "no external service in tests; the agent's model calls are recorded fixtures" }
+}
