@@ -7,9 +7,11 @@ import type { Migration } from '../migrate.ts';
  * authority for — and, worse, could *pre-claim* a key with their own refusal so that the
  * person who did have the authority was handed a replayed `403` for the row's whole TTL.
  *
- * SQLite cannot alter a primary key, so the table is rebuilt. Existing rows keep their
- * answers under the empty actor (`''`, which is also what a person-less system actor uses);
- * they expire with the 24 h sweep. Forward-only: this file never changes again (D-020).
+ * SQLite cannot alter a primary key, so the table is rebuilt. Existing rows are carried over
+ * under the empty actor (`''`) so nothing is lost, but no HTTP caller has that actor, so they
+ * never replay again: a retry that spans this deploy re-executes once, which is the safe
+ * direction. They expire with the 24 h sweep. Forward-only: this file never changes again
+ * (D-020).
  */
 export const m0002: Migration = {
   id: 2,
