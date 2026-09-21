@@ -670,12 +670,12 @@
   // ---------- slide 4: the framework as it really runs — two sessions, one GitHub, the repository underneath ----------
   function realityScene(s) {
     const svg = s.querySelector('#reality'); if (!svg || svg.dataset.built) return; svg.dataset.built = '1';
-    const bot = (x, y, cls, label, p = {}, sc = .8) => `<g class="st bot ${cls}" transform="translate(${x} ${y}) scale(${sc})">${FIG.bot(p)}<text class="s-lbl" y="46" text-anchor="middle">${label}</text></g>`;
-    const you = (x, y, label = 'you', p = {}, sc = .8) => `<g class="st human" transform="translate(${x} ${y}) scale(${sc})">${FIG.human(p)}<text class="s-lbl" y="46" text-anchor="middle">${label}</text></g>`;
-    const card = (x, y, w, h, title, lines, cls = '') => `<g class="st card ${cls}" transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="8"/><text class="c-t" x="12" y="19">${title}</text>${lines.map((l, i) => `<text class="c-l" x="12" y="${38 + i * 15}">${l}</text>`).join('')}</g>`;
-    const issue = (x, y, n, txt, hi) => `<g class="st issue" transform="translate(${x} ${y})"><rect width="92" height="40" rx="7"/><text class="c-t" x="9" y="16">#${n}</text><text class="c-l" x="9" y="30">${txt}</text><rect class="tag ${hi ? 'hi' : ''}" x="60" y="7" width="24" height="8" rx="4"/></g>`;
-    const bubble = (x, y, w, txt, cls = '', tail = 'r') => `<g class="st s-bubble ${cls}" transform="translate(${x} ${y})"><path class="tail" d="${tail === 'r' ? `M${w - 34} 30 L${w - 24} 44 L${w - 16} 30 Z` : 'M16 30 L24 44 L34 30 Z'}"/><rect width="${w}" height="32" rx="10"/><text x="12" y="21">${txt}</text></g>`;
-    const gate = (x, y, txt) => `<g class="st gate" transform="translate(${x} ${y})"><rect width="${txt.length * 6.6 + 26}" height="22" rx="11"/><circle cx="13" cy="11" r="4"/><text x="23" y="15">${txt}</text></g>`;
+    const bot = (x, y, cls, label, p = {}, sc = .8) => `<g class="st bot ${cls}"><g transform="translate(${x} ${y}) scale(${sc})">${FIG.bot(p)}<text class="s-lbl" y="46" text-anchor="middle">${label}</text></g></g>`;
+    const you = (x, y, label = 'you', p = {}, sc = .8) => `<g class="st human"><g transform="translate(${x} ${y}) scale(${sc})">${FIG.human(p)}<text class="s-lbl" y="46" text-anchor="middle">${label}</text></g></g>`;
+    const card = (x, y, w, h, title, lines, cls = '') => `<g class="st card ${cls}"><g transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="8"/><text class="c-t" x="12" y="19">${title}</text>${lines.map((l, i) => `<text class="c-l" x="12" y="${38 + i * 15}">${l}</text>`).join('')}</g></g>`;
+    const issue = (x, y, n, txt, hi) => `<g class="st issue"><g transform="translate(${x} ${y})"><rect width="92" height="40" rx="7"/><text class="c-t" x="9" y="16">#${n}</text><text class="c-l" x="9" y="30">${txt}</text><rect class="tag ${hi ? 'hi' : ''}" x="60" y="7" width="24" height="8" rx="4"/></g></g>`;
+    const bubble = (x, y, w, txt, cls = '', tail = 'r') => `<g class="st s-bubble ${cls}"><g transform="translate(${x} ${y})"><path class="tail" d="${tail === 'r' ? `M${w - 34} 30 L${w - 24} 44 L${w - 16} 30 Z` : 'M16 30 L24 44 L34 30 Z'}"/><rect width="${w}" height="32" rx="10"/><text x="12" y="21">${txt}</text></g></g>`;
+    const gate = (x, y, txt) => `<g class="st gate"><g transform="translate(${x} ${y})"><rect width="${txt.length * 6.6 + 26}" height="22" rx="11"/><circle cx="13" cy="11" r="4"/><text x="23" y="15">${txt}</text></g></g>`;
     const edge = (d, cls = '') => `<path class="st edge ${cls}" d="${d}"/>`;
     const lbl = (x, y, txt, cls = '') => `<text class="st s-cmd ${cls}" x="${x}" y="${y}">${txt}</text>`;
     const lane = (y, h, title) => `<rect class="lane-bg" x="20" y="${y}" width="1260" height="${h}" rx="18"/><text class="lane-title" x="1264" y="${y + h - 12}" text-anchor="end">${title}</text>`;
@@ -690,7 +690,7 @@
       ${edge('M552 100 L592 100')}${lbl(600, 96, '/task-out')}${gate(590, 112, 'you confirm the drafts')}
       ${edge('M700 100 L740 100')}
       <g class="st"><text class="s-lbl" x="800" y="178" text-anchor="middle">GitHub · the only shared state</text></g>
-      ${FIG.github(800, 100)}
+      <g class="st">${FIG.github(800, 100)}</g>
       ${card(880, 34, 150, 44, '#6 umbrella', ['4 issues · 3 waves'], 'wine')}
       ${issue(880, 96, 2, 'scaffold · audit', true)}${issue(980, 96, 3, 'rules · lifecycle', true)}${issue(1080, 96, 4, 'web pages')}${issue(1180, 96, 5, 'outbox', true)}
       <!-- the boundary -->
@@ -730,6 +730,7 @@
         t += 1.6;
       }
     }
+    const seek = new URLSearchParams(location.search).get('t'); if (seek) tl.pause(+seek);
     running.reality = [tl];
   }
 
