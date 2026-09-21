@@ -79,6 +79,12 @@ export function outboxRepo(db: DatabaseSync, scope: OrgScope, clock: Clock = sys
   // ever written: every row at or below the cursor is delivered by construction (ids are
   // `AUTOINCREMENT`, so a later row can never land below one), and scanning the whole history
   // on every acknowledgement would make each one cost what the organisation has ever ordered.
+  //
+  // `delivered_at IS NULL` is therefore redundant *today* and is kept deliberately (#5
+  // review): it is the predicate the work list actually means, and the invariant it leans on
+  // is the one G-023 proposes to replace — a per-organisation sequence would make "below the
+  // cursor" a different arithmetic, and a wrong one here would re-deliver and re-order rows
+  // rather than fail loudly. `stampDelivered` carries the same clause, so the two agree.
   const selectPending = db.prepare(
     `SELECT id, requisition_id FROM order_outbox
       WHERE org_id = ? AND id > ? AND id <= ? AND delivered_at IS NULL

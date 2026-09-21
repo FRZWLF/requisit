@@ -127,6 +127,35 @@ test('the feed comes back in id order and a cursor returns the remainder', () =>
   assert.deepEqual(past, []);
 });
 
+test('a merchant paging on nothing but `nextAfter` drains the feed and stops', () => {
+  // The paging contract, driven the way a client drives it (#5 fix round): every poll's
+  // `after` is the previous answer's `nextAfter` and nothing else. A `nextAfter` that does
+  // not advance — the mutation that left the tree green — loops here forever, and a
+  // `nextAfter` past the last id loses the row.
+  const fixture = setUp();
+  const expected = [approvedRequisition(fixture), approvedRequisition(fixture), approvedRequisition(fixture)];
+
+  const seen: string[] = [];
+  let after = 0;
+  for (let poll = 0; poll < 10; poll += 1) {
+    const answer = pollFeed(fixture, `?after=${String(after)}&limit=1`);
+    assert.equal(answer.status, 200, answer.body);
+    const items = itemsOf(answer);
+    const next = answer.json['nextAfter'];
+    assert.equal(typeof next, 'number');
+    if (items.length === 0) {
+      // The empty answer hands back the cursor it was given, so the loop terminates.
+      assert.equal(next, after);
+      break;
+    }
+    assert.ok((next as number) > after, '`nextAfter` moved forward');
+    assert.equal(next, items.at(-1)?.id);
+    seen.push(...items.map((item) => item.requisitionId));
+    after = next as number;
+  }
+  assert.deepEqual(seen, expected);
+});
+
 test('a requisition never appears twice in one drain', () => {
   const fixture = setUp();
   const ids = [approvedRequisition(fixture), approvedRequisition(fixture)];

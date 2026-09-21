@@ -31,8 +31,9 @@ node ../rumble-framework/scripts/check-anchors.mjs .
 node ../rumble-framework/render.mjs . --check
 ```
 
-`npm start` runs the compiled service from `dist/`. It refuses to start without a
-`REQUISIT_TOKEN_SECRET` of at least 32 bytes (D-018); configuration is environment-only:
+`npm start` compiles `src/` to `dist/` and runs it; `npm run serve` runs an already built
+`dist/` without compiling. Both refuse to start without a `REQUISIT_TOKEN_SECRET` of at
+least 32 bytes (D-018); configuration is environment-only:
 
 | Variable | Default | Rule |
 |---|---|---|
@@ -42,9 +43,12 @@ node ../rumble-framework/render.mjs . --check
 | `NODE_ENV` | `development` | `development`, `test` or `production` |
 | `REQUISIT_LOG_LEVEL` | `info` | `debug`, `info`, `warn` or `error` |
 
-In development put them in `.env`, which is gitignored and never read by the service
-itself. The CLI is the only issuer of personal tokens (D-005) and reads `.env` through
-Node's own `--env-file-if-exists`:
+In development put them in `.env`, which is gitignored. The service code never reads a
+file for configuration — it reads `process.env` and nothing else; it is the npm scripts
+that hand `.env` to Node through its own `--env-file-if-exists`, so `npm start`,
+`npm run serve`, `npm run seed` and `npm run mint-token` all see the same variables while
+the process still knows only environment. Export them yourself and no `.env` is needed.
+The CLI is the only issuer of personal tokens (D-005):
 
 ```
 npm run mint-token -- --org <org-uuid> --person <person-uuid> [--ttl 86400]
@@ -129,8 +133,16 @@ curl -s $API/requisitions/$COPY -H "Authorization: Bearer $BUYER"
 ```
 
 `$REQ` and `$COPY` are the `id` fields the answers to steps 1 and 4 carry.
-`test/flow/end-to-end.test.ts` executes this same walkthrough against a seeded database, so
-if the walkthrough is wrong, the board is red.
+
+Two suites stand behind this section, and they cover different halves of it.
+`test/flow/end-to-end.test.ts` drives the same nine calls **in process**, against a seeded
+temporary database, so the request and response shapes above are checked but the commands
+around them are not. `test/flow/quickstart.test.ts` covers the commands: it runs
+`npm run seed` and `npm start` as real child processes with a temporary
+`REQUISIT_DB_PATH`, a freshly generated secret and a free `PORT`, parses the tokens the
+seed printed, walks draft → submit → approve → poll → ack over a socket and then stops the
+service with `SIGTERM`. Between them, a wrong command block and a wrong payload shape are
+both a red board.
 
 ## The HTTP API
 
