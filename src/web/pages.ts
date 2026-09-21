@@ -1,7 +1,7 @@
 import { isRefusal, refuse, type Refusal, type Result } from '../refusal.ts';
 import { newId } from '../ids.ts';
 import { withTransaction, type Tx } from '../db/tx.ts';
-import { hasRole } from '../db/scope.ts';
+import { hasRole, isMember } from '../db/scope.ts';
 import { idempotencyKeysRepo } from '../db/repos/idempotency.ts';
 import { endpointOf, fingerprintOf, isIdempotencyKey } from '../http/idempotency.ts';
 import type { HttpResponse } from '../http/types.ts';
@@ -59,6 +59,17 @@ function errorPage(chrome: Chrome | null, refusal: Refusal): HttpResponse {
       chrome,
       body: refusalBlock(refusal),
     }),
+  );
+}
+
+/**
+ * The pages are the members' half of the product; a `merchant`-only token has no page at
+ * all (#5 security review). `handleWeb` renders this instead of any authenticated page.
+ */
+export function noPagesPage(): HttpResponse {
+  return errorPage(
+    null,
+    refuse('not_authorised', 'this token reaches the order outbox and nothing else'),
   );
 }
 
@@ -139,6 +150,15 @@ export function signInSubmit(ctx: WebContext): HttpResponse {
     return errorPage(null, form);
   }
   const scope = scopeFor(ctx.app, form.get('token').trim());
+  if (!isRefusal(scope) && !isMember(scope)) {
+    // A valid merchant token signs in to nothing, and is told so here rather than after a
+    // redirect into a wall of refusals (#5 security review).
+    const denied = refuse('not_authorised', 'this token reaches the order outbox and nothing else');
+    return html(
+      statusOf(denied),
+      page({ title: 'Sign in', heading: 'Sign in', chrome: null, body: signInPage(denied) }),
+    );
+  }
   if (isRefusal(scope)) {
     return html(
       statusOf(scope),

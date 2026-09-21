@@ -5,6 +5,7 @@ import type { HttpRequest, HttpResponse } from '../http/types.ts';
 import type { AuthedContext, WebContext } from './context.ts';
 import * as pages from './pages.ts';
 import { html, redirect, statusOf } from './respond.ts';
+import { isMember } from '../db/scope.ts';
 import { sameSiteOk, sessionScope } from './session.ts';
 import { page, refusalBlock } from './views/layout.ts';
 
@@ -118,6 +119,11 @@ export function handleWeb(
               }),
             );
       return { response, pattern: route.pattern, orgId: null };
+    }
+    if (!isMember(scope)) {
+      // Every authenticated page is a member's page (#5 security review). A merchant token
+      // is refused here, once, rather than in each handler.
+      return { response: pages.noPagesPage(), pattern: route.pattern, orgId: scope.orgId };
     }
     const authed: AuthedContext = { ...base, scope };
     return {

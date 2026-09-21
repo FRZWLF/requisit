@@ -29,13 +29,12 @@ export * from './domain/types.ts';
 
 export { openDatabase, closeDatabase } from './db/open.ts';
 export { type Tx, withTransaction } from './db/tx.ts';
-export { type Actor, type OrgScope, orgScope, hasRole } from './db/scope.ts';
+export { type Actor, type OrgScope, orgScope, hasRole, isMember, HUMAN_ROLES } from './db/scope.ts';
 export { type Migration, MigrationError, migrate, checksumOf } from './db/migrate.ts';
 export { MIGRATIONS } from './db/migrations/index.ts';
 export {
   instanceCreateOrg,
   instanceFindOrg,
-  instanceFindOrgByName,
   instanceSweepIdempotencyKeys,
 } from './db/instance.ts';
 

@@ -2,7 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { toIso, type Clock } from '../clock.ts';
 import { log } from '../log.ts';
 import { isRefusal, refuse, type Refusal, type Result } from '../refusal.ts';
-import { hasRole, type OrgScope } from '../db/scope.ts';
+import { hasRole, isMember, type OrgScope } from '../db/scope.ts';
 import type { Tx } from '../db/tx.ts';
 import { auditRepo } from '../db/repos/audit.ts';
 import { costCentresRepo } from '../db/repos/cost-centres.ts';
@@ -345,6 +345,21 @@ function reload(ctx: ServiceContext, id: string): Result<RequisitionDetail> {
     return loaded;
   }
   return detailOf(ctx, loaded);
+}
+
+/**
+ * The organisation's own data is for the organisation's own people (#5 security review). A
+ * `merchant`-only scope is an outside party's service credential: it reaches D-011's outbox
+ * and nothing else, so the queue, a requisition's detail and the rule table with its
+ * thresholds are refused here as well as at the route table (`src/http/app.ts`'s
+ * `audienceGuard`). Two seams on purpose — this one holds for any caller of the service,
+ * the route one holds for any route that forgets to ask.
+ */
+function memberGuard(ctx: ServiceContext, what: string): Refusal | null {
+  if (isMember(ctx.scope)) {
+    return null;
+  }
+  return refuse('not_authorised', `this token reaches the order outbox, not ${what}`);
 }
 
 function buyerRoleGuard(ctx: ServiceContext, action: Action): Refusal | null {
@@ -827,6 +842,10 @@ export function copyForward(
 }
 
 export function detail(ctx: ServiceContext, id: string): Result<RequisitionDetail> {
+  const denied = memberGuard(ctx, 'a requisition');
+  if (denied !== null) {
+    return denied;
+  }
   return reload(ctx, id);
 }
 
@@ -835,6 +854,10 @@ export function detail(ctx: ServiceContext, id: string): Result<RequisitionDetai
  * a `finance` rule resolves to a role, not a person (D-024). M-002 measures what that costs.
  */
 export function list(ctx: ServiceContext, input: ListInput): Result<{ items: RequisitionSummary[] }> {
+  const denied = memberGuard(ctx, "the organisation's requisitions");
+  if (denied !== null) {
+    return denied;
+  }
   if (input.awaitingMe === true && input.state !== undefined && input.state !== 'submitted') {
     return { items: [] };
   }
@@ -902,7 +925,11 @@ export function list(ctx: ServiceContext, input: ListInput): Result<{ items: Req
   return { items };
 }
 
-export function ruleTable(ctx: ServiceContext): { items: RuleRowView[] } {
+export function ruleTable(ctx: ServiceContext): Result<{ items: RuleRowView[] }> {
+  const denied = memberGuard(ctx, 'the approval rules');
+  if (denied !== null) {
+    return denied;
+  }
   return {
     items: repos(ctx).rules.listBySeq().map((rule) => ({
       id: rule.id,

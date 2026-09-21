@@ -4,7 +4,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import type { Clock } from '../clock.ts';
 import { log } from '../log.ts';
 import { isRefusal, refuse, type Refusal, type Result } from '../refusal.ts';
-import type { OrgScope } from '../db/scope.ts';
+import { isMember, type OrgScope } from '../db/scope.ts';
 import { withTransaction, type Tx } from '../db/tx.ts';
 import { idempotencyKeysRepo } from '../db/repos/idempotency.ts';
 import { verifyToken } from '../auth/token.ts';
@@ -142,6 +142,22 @@ function authenticate(app: App, request: HttpRequest): Result<OrgScope> {
   return scope;
 }
 
+/**
+ * The route table's `audience` as a refusal. A merchant reaching a member route, or a person
+ * without the merchant role reaching the outbox, gets the same `not_authorised` the handlers
+ * would have given — the difference is that this one cannot be forgotten by a new route.
+ */
+function audienceGuard(route: Route, scope: OrgScope): Refusal | null {
+  if (route.audience === 'merchant') {
+    return scope.actor.roles.has('merchant')
+      ? null
+      : refuse('not_authorised', 'the merchant role is required to reach the order outbox');
+  }
+  return isMember(scope)
+    ? null
+    : refuse('not_authorised', 'this token reaches the order outbox and nothing else');
+}
+
 function runMutating(
   app: App,
   route: Route,
@@ -220,6 +236,21 @@ function handle(app: App, request: HttpRequest, requestId: string): Handled {
   const scope = authenticate(app, request);
   if (isRefusal(scope)) {
     return { response: renderRefusal(scope, requestId), pattern: route.pattern, orgId: null };
+  }
+
+  // Authority, once, for the whole table (#5 security review). Organisation membership is
+  // not enough on a `member` route: a `merchant`-only token is an outside party's service
+  // credential, and the queue, a requisition's detail and the rule table's thresholds are
+  // internal control data (D-006 addendum, `docs/08-security.md` Actors). Refused **before**
+  // the body is parsed and before any idempotency key is spent, so a merchant token cannot
+  // even consume a key on a route it may not call.
+  const audienceDenied = audienceGuard(route, scope);
+  if (audienceDenied !== null) {
+    return {
+      response: renderRefusal(audienceDenied, requestId),
+      pattern: route.pattern,
+      orgId: scope.orgId,
+    };
   }
 
   const body = parseBody(request.body, request.headers['content-type']);

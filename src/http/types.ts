@@ -45,9 +45,18 @@ export type Handler = (ctx: RequestContext, tx: Tx | null) => Result<HandlerOutc
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH';
 
+/**
+ * Who a route is for. `member` is every route a person of the organisation uses; `merchant`
+ * is D-011's order feed, which an outside party's service token reaches. The field is
+ * **required**, so a new route cannot be added without saying which side of that line it is
+ * on — the hole #5's security review found was a read route that named no audience at all.
+ */
+export type Audience = 'member' | 'merchant';
+
 export interface Route {
   readonly method: HttpMethod;
   readonly pattern: string;
   readonly mutating: boolean;
+  readonly audience: Audience;
   readonly handler: Handler;
 }

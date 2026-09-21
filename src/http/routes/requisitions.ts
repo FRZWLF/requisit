@@ -141,6 +141,7 @@ export const REQUISITION_ROUTES: readonly Route[] = [
     method: 'POST',
     pattern: '/api/v1/requisitions',
     mutating: true,
+    audience: 'member',
     handler: (ctx, tx): Result<HandlerOutcome> => {
       const costCentreId = costCentreField(ctx.body, true);
       if (isRefusal(costCentreId)) {
@@ -161,6 +162,7 @@ export const REQUISITION_ROUTES: readonly Route[] = [
     method: 'PATCH',
     pattern: '/api/v1/requisitions/:id',
     mutating: true,
+    audience: 'member',
     handler: (ctx, tx): Result<HandlerOutcome> => {
       const costCentreId = costCentreField(ctx.body, false);
       if (isRefusal(costCentreId)) {
@@ -187,6 +189,7 @@ export const REQUISITION_ROUTES: readonly Route[] = [
     method: 'GET',
     pattern: '/api/v1/requisitions',
     mutating: false,
+    audience: 'member',
     handler: (ctx): Result<HandlerOutcome> => {
       const state = stateParam(ctx.query);
       if (isRefusal(state)) {
@@ -213,6 +216,7 @@ export const REQUISITION_ROUTES: readonly Route[] = [
     method: 'GET',
     pattern: '/api/v1/requisitions/:id',
     mutating: false,
+    audience: 'member',
     handler: (ctx): Result<HandlerOutcome> => {
       const found = detail(serviceContext(ctx), idParam(ctx));
       return isRefusal(found) ? found : { status: 200, body: found };
@@ -222,6 +226,7 @@ export const REQUISITION_ROUTES: readonly Route[] = [
     method: 'POST',
     pattern: '/api/v1/requisitions/:id/submit',
     mutating: true,
+    audience: 'member',
     handler: (ctx, tx): Result<HandlerOutcome> => {
       const version = optionalVersion(ctx.body);
       if (isRefusal(version)) {
@@ -237,6 +242,7 @@ export const REQUISITION_ROUTES: readonly Route[] = [
     method: 'POST',
     pattern: '/api/v1/requisitions/:id/approve',
     mutating: true,
+    audience: 'member',
     handler: (ctx, tx): Result<HandlerOutcome> => {
       const version = optionalVersion(ctx.body);
       if (isRefusal(version)) {
@@ -252,6 +258,7 @@ export const REQUISITION_ROUTES: readonly Route[] = [
     method: 'POST',
     pattern: '/api/v1/requisitions/:id/reject',
     mutating: true,
+    audience: 'member',
     handler: (ctx, tx): Result<HandlerOutcome> => {
       const version = optionalVersion(ctx.body);
       if (isRefusal(version)) {
@@ -272,6 +279,7 @@ export const REQUISITION_ROUTES: readonly Route[] = [
     method: 'POST',
     pattern: '/api/v1/requisitions/:id/cancel',
     mutating: true,
+    audience: 'member',
     handler: (ctx, tx): Result<HandlerOutcome> => {
       const version = optionalVersion(ctx.body);
       if (isRefusal(version)) {
@@ -292,6 +300,7 @@ export const REQUISITION_ROUTES: readonly Route[] = [
     method: 'POST',
     pattern: '/api/v1/requisitions/:id/copy',
     mutating: true,
+    audience: 'member',
     handler: (ctx, tx): Result<HandlerOutcome> => {
       const made = copyForward(serviceContext(ctx), requireTx(tx), idParam(ctx));
       return isRefusal(made) ? made : { status: 201, body: made };

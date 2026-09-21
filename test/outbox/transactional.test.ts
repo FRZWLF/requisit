@@ -86,7 +86,10 @@ test('approving writes exactly one outbox row, in the approving transaction', ()
   assert.equal(payload.currency, 'EUR');
   assert.equal(payload.totalMinor, 250_000);
   assert.equal(payload.requisitionId, id);
-  assert.equal(payload.ruleCode, 'R2');
+  // The rule that cleared the order is **not** in the payload (#5 security review): the
+  // merchant fulfils lines, it does not read the organisation's approval ladder.
+  assert.ok(!('ruleCode' in payload), 'the payload names no approval rule');
+  assert.ok(!('ruleId' in payload), 'the payload names no approval rule id');
   assert.ok(payload.approvedAt !== null, 'the payload carries the moment of approval');
   // The total is the sum of the line totals recomputed at build time (D-003).
   assert.equal(

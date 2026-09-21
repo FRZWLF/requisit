@@ -7,7 +7,7 @@ import { openDatabase, closeDatabase } from '../src/db/open.ts';
 import { migrate } from '../src/db/migrate.ts';
 import { withTransaction, type Tx } from '../src/db/tx.ts';
 import { orgScope, type OrgScope } from '../src/db/scope.ts';
-import { instanceCreateOrg, instanceFindOrgByName } from '../src/db/instance.ts';
+import { instanceCreateOrg, instanceFindOrgByNameUnscoped } from '../src/db/instance.ts';
 import { peopleRepo } from '../src/db/repos/people.ts';
 import { costCentresRepo } from '../src/db/repos/cost-centres.ts';
 import { catalogueRepo } from '../src/db/repos/catalogue.ts';
@@ -264,7 +264,7 @@ export function seed(
   const organisations: SeededOrganisation[] = [];
   for (const spec of ORGANISATIONS) {
     // The idempotency check: a second run finds what the first one made and writes nothing.
-    const existing = instanceFindOrgByName(db, spec.name);
+    const existing = instanceFindOrgByNameUnscoped(db, spec.name);
     const created = isRefusal(existing);
     const org = created ? buildOrganisation(db, clock, spec) : existing;
     const centre = costCentresRepo(db, bootstrapScope(org.id), clock)

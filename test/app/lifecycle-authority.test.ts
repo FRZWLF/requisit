@@ -12,7 +12,9 @@ import {
   cancel,
   copyForward,
   createDraft,
+  detail,
   list,
+  ruleTable,
   reject,
   submit,
   updateDraft,
@@ -559,4 +561,34 @@ test('mine is refused for a scope that is not a person, never widened to the org
   // the same scope without `mine` still reads the organisation (D-024)
   const all = must(list(systemCtx, {}));
   assert.equal(all.items.length, 1);
+});
+
+/**
+ * The merchant narrowing at the service seam (#5 security review). `src/http/app.ts`'s
+ * route table refuses these calls before a handler runs; this pins the seam underneath it,
+ * so a future caller of the service — the pages, a script, split 04's layer — inherits the
+ * same answer rather than depending on the route table remembering.
+ */
+test('a merchant-only scope reads no requisition, no queue and no rule table', () => {
+  const fixture = setUp();
+  const made = draft(fixture, 250_000);
+  const ctx = contextFor(fixture, fixture.seed.merchant.id);
+
+  const one = detail(ctx, made.id);
+  assert.ok(isRefusal(one));
+  assert.equal(one.code, 'not_authorised');
+
+  const queue = list(ctx, {});
+  assert.ok(isRefusal(queue));
+  assert.equal(queue.code, 'not_authorised');
+
+  const rules = ruleTable(ctx);
+  assert.ok(isRefusal(rules));
+  assert.equal(rules.code, 'not_authorised');
+
+  // The same three calls as a member of the same organisation still answer.
+  const member = contextFor(fixture, fixture.seed.buyer.id);
+  assert.ok(!isRefusal(detail(member, made.id)));
+  assert.ok(!isRefusal(list(member, {})));
+  assert.ok(!isRefusal(ruleTable(member)));
 });

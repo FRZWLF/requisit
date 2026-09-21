@@ -42,6 +42,7 @@ export const OUTBOX_ROUTES: readonly Route[] = [
     method: 'GET',
     pattern: '/api/v1/outbox',
     mutating: false,
+    audience: 'merchant',
     handler: (ctx): Result<HandlerOutcome> => {
       const after = integerParam(ctx.query, 'after');
       if (isRefusal(after)) {
@@ -63,6 +64,7 @@ export const OUTBOX_ROUTES: readonly Route[] = [
     method: 'POST',
     pattern: '/api/v1/outbox/ack',
     mutating: true,
+    audience: 'merchant',
     handler: (ctx, tx): Result<HandlerOutcome> => {
       const raw = ctx.body['through_id'];
       if (!Number.isSafeInteger(raw) || (raw as number) < 0) {

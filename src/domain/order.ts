@@ -14,10 +14,15 @@ import type { RequisitionWithLines } from './types.ts';
  * correct without anyone dividing by 100.
  *
  * `version` is the payload's own shape version: the merchant reads it before the rest, so a
- * later addendum to D-011 that adds or moves a field is detectable rather than silent.
+ * later addendum to D-011 that adds or moves a field is detectable rather than silent. It is
+ * `2` because version 1 carried `ruleId`/`ruleCode` — which internal approval rule cleared an
+ * order is control data the counterparty fulfilling it does not need, and is exactly what an
+ * outside party would read to size orders just under a threshold (#5 security review).
+ * `buyerPersonId`/`costCentreId` stay: opaque ids with no name or address, and the
+ * correlation handles the merchant needs to route a delivery.
  */
 
-export const ORDER_PAYLOAD_VERSION = 1;
+export const ORDER_PAYLOAD_VERSION = 2;
 
 export interface OrderPayloadLine {
   readonly seq: number;
@@ -38,8 +43,6 @@ export interface OrderPayload {
   readonly totalMinor: number;
   readonly buyerPersonId: string;
   readonly costCentreId: string;
-  readonly ruleId: string | null;
-  readonly ruleCode: string | null;
   readonly approvedAt: string | null;
   readonly lines: readonly OrderPayloadLine[];
 }
@@ -77,8 +80,6 @@ export function orderPayload(requisition: RequisitionWithLines): Result<OrderPay
     totalMinor: total.amountMinor,
     buyerPersonId: requisition.buyerPersonId,
     costCentreId: requisition.costCentreId,
-    ruleId: requisition.ruleId,
-    ruleCode: requisition.ruleCode,
     approvedAt: requisition.decidedAt,
     lines,
   };
