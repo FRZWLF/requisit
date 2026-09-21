@@ -1,5 +1,6 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { toIso, type Clock } from '../clock.ts';
+import { log } from '../log.ts';
 import { isRefusal, refuse, type Refusal, type Result } from '../refusal.ts';
 import { hasRole, type OrgScope } from '../db/scope.ts';
 import type { Tx } from '../db/tx.ts';
@@ -130,13 +131,35 @@ export interface ListInput {
 
 export const MAX_REASON_CHARS = 500;
 
-function repos(ctx: ServiceContext) {
-  return {
+interface Repos {
+  readonly requisitions: ReturnType<typeof requisitionsRepo>;
+  readonly rules: ReturnType<typeof rulesRepo>;
+  readonly costCentres: ReturnType<typeof costCentresRepo>;
+  readonly audit: ReturnType<typeof auditRepo>;
+}
+
+/**
+ * One repository set per `ServiceContext` — a context is one request, so the ~20 `db.prepare`
+ * calls a factory makes happen once per request instead of once per `repos()` call (a single
+ * `submit` used to build them five to eight times). The cache is keyed on the context object
+ * itself, so a second request with a different scope can never reach the first one's
+ * statements, and nothing is retained once the request object is gone (#3 review, M-002).
+ */
+const REPO_CACHE = new WeakMap<ServiceContext, Repos>();
+
+function repos(ctx: ServiceContext): Repos {
+  const cached = REPO_CACHE.get(ctx);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const built: Repos = {
     requisitions: requisitionsRepo(ctx.db, ctx.scope, ctx.clock),
     rules: rulesRepo(ctx.db, ctx.scope),
     costCentres: costCentresRepo(ctx.db, ctx.scope, ctx.clock),
     audit: auditRepo(ctx.db, ctx.scope, ctx.clock),
   };
+  REPO_CACHE.set(ctx, built);
+  return built;
 }
 
 /**
@@ -150,6 +173,20 @@ function mustAudit(written: Result<AuditLine>): AuditLine {
     throw new Error(`audit line refused: ${written.code} ${written.detail ?? ''}`.trimEnd());
   }
   return written;
+}
+
+/**
+ * The total of rows this service just wrote. `prepareLines` validates every line *and their
+ * sum* before the first INSERT, so a refusal here means the database holds a line set the
+ * repository would have refused — an invariant, not a client error. Returning it would commit
+ * a state change with no audit line and store a `400` under the caller's idempotency key, so
+ * it throws, the transaction rolls back and the caller gets a 500 (#3 review, D-007, D-010).
+ */
+function mustTotal(total: Result<Money>): Money {
+  if (isRefusal(total)) {
+    throw new Error(`total refused after a write: ${total.code} ${total.detail ?? ''}`.trimEnd());
+  }
+  return total;
 }
 
 function totalOf(requisition: RequisitionWithLines): Result<Money> {
@@ -430,10 +467,7 @@ export function createDraft(
   if (isRefusal(written)) {
     return written;
   }
-  const total = totalOf(written);
-  if (isRefusal(total)) {
-    return total;
-  }
+  const total = mustTotal(totalOf(written));
   writeLine(ctx, tx, written.id, {
     action: 'draft.created',
     fromState: null,
@@ -455,10 +489,6 @@ export function updateDraft(
   if (isRefusal(loaded)) {
     return loaded;
   }
-  const denied = buyerRoleGuard(ctx, 'edit');
-  if (denied !== null) {
-    return denied;
-  }
   const moved = decide(loaded.requisition.state, 'edit', loaded.relation, {
     requisitionId: id,
     rule: null,
@@ -466,6 +496,13 @@ export function updateDraft(
   });
   if (isRefusal(moved)) {
     return moved;
+  }
+  // D-023's order: validation, then the state check, then authority — so a member without
+  // the buyer role learns `wrong_state` on a row nobody may edit, not `not_authorised`
+  // (#3 review). Both refuse; only the wording differs.
+  const denied = buyerRoleGuard(ctx, 'edit');
+  if (denied !== null) {
+    return denied;
   }
   const stale = versionGuard(input.version, loaded.requisition.version, id);
   if (stale !== null) {
@@ -483,10 +520,7 @@ export function updateDraft(
   if (isRefusal(written)) {
     return written;
   }
-  const total = totalOf(written);
-  if (isRefusal(total)) {
-    return total;
-  }
+  const total = mustTotal(totalOf(written));
   writeLine(ctx, tx, id, {
     action: 'draft.updated',
     fromState: loaded.requisition.state,
@@ -508,10 +542,6 @@ export function submit(
   if (isRefusal(loaded)) {
     return loaded;
   }
-  const denied = buyerRoleGuard(ctx, 'submit');
-  if (denied !== null) {
-    return denied;
-  }
   const moved = decide(loaded.requisition.state, 'submit', loaded.relation, {
     requisitionId: id,
     rule: null,
@@ -519,6 +549,13 @@ export function submit(
   });
   if (isRefusal(moved)) {
     return moved;
+  }
+  // D-023's order: validation, then the state check, then authority — so a member without
+  // the buyer role learns `wrong_state` on a row nobody may submit, not `not_authorised`
+  // (#3 review). Both refuse; only the wording differs.
+  const denied = buyerRoleGuard(ctx, 'submit');
+  if (denied !== null) {
+    return denied;
   }
   const stale = versionGuard(input.version, loaded.requisition.version, id);
   if (stale !== null) {
@@ -674,10 +711,6 @@ export function cancel(
       { requisitionId: id },
     );
   }
-  const denied = buyerRoleGuard(ctx, 'cancel');
-  if (denied !== null) {
-    return denied;
-  }
   const moved = decide(loaded.requisition.state, 'cancel', loaded.relation, {
     requisitionId: id,
     rule: null,
@@ -685,6 +718,13 @@ export function cancel(
   });
   if (isRefusal(moved)) {
     return moved;
+  }
+  // D-023's order: validation, then the state check, then authority — so a member without
+  // the buyer role learns `wrong_state` on a row nobody may cancel, not `not_authorised`
+  // (#3 review). Both refuse; only the wording differs.
+  const denied = buyerRoleGuard(ctx, 'cancel');
+  if (denied !== null) {
+    return denied;
   }
   const stale = versionGuard(input.version, loaded.requisition.version, id);
   if (stale !== null) {
@@ -697,7 +737,13 @@ export function cancel(
     ruleId: loaded.requisition.ruleId,
     ruleCode: loaded.requisition.ruleCode,
     submittedAt: loaded.requisition.submittedAt,
-    decidedAt: toIso(ctx.clock.now()),
+    // `decided_at` is when an approver decided. Cancelling a **draft** decides nothing and
+    // nobody ever approved it, so the column stays as it was; cancelling a `submitted` row
+    // ends a decision that was pending, and stamps it (#3 review, D-009).
+    decidedAt:
+      loaded.requisition.state === 'submitted'
+        ? toIso(ctx.clock.now())
+        : loaded.requisition.decidedAt,
   });
   writeLine(ctx, tx, id, {
     action: 'cancel',
@@ -719,10 +765,6 @@ export function copyForward(
   if (isRefusal(loaded)) {
     return loaded;
   }
-  const denied = buyerRoleGuard(ctx, 'copy');
-  if (denied !== null) {
-    return denied;
-  }
   const moved = decide(loaded.requisition.state, 'copy', loaded.relation, {
     requisitionId: id,
     rule: null,
@@ -731,14 +773,18 @@ export function copyForward(
   if (isRefusal(moved)) {
     return moved;
   }
+  // D-023's order: validation, then the state check, then authority — so a member without
+  // the buyer role learns `wrong_state` on a row nobody may copy, not `not_authorised`
+  // (#3 review). Both refuse; only the wording differs.
+  const denied = buyerRoleGuard(ctx, 'copy');
+  if (denied !== null) {
+    return denied;
+  }
   const copy = repos(ctx).requisitions.copyForward(tx, id);
   if (isRefusal(copy)) {
     return copy;
   }
-  const total = totalOf(copy);
-  if (isRefusal(total)) {
-    return total;
-  }
+  const total = mustTotal(totalOf(copy));
   // The line lands on the **new** draft; the rejected source keeps its own history intact.
   writeLine(ctx, tx, copy.id, {
     action: 'draft.copied',
@@ -763,6 +809,11 @@ export function list(ctx: ServiceContext, input: ListInput): Result<{ items: Req
   if (input.awaitingMe === true && input.state !== undefined && input.state !== 'submitted') {
     return { items: [] };
   }
+  // A filter that cannot be honoured is refused, never widened: `mine` for a scope that is
+  // not a person used to silently hand back the whole organisation (#3 review, D-024).
+  if (input.mine === true && ctx.scope.actor.personId === null) {
+    return refuse('not_authorised', 'this token identifies no person, so it owns no requisitions');
+  }
   const filter: ListFilter = {
     ...(input.state !== undefined ? { state: input.state } : {}),
     ...(input.awaitingMe === true && input.state === undefined ? { state: 'submitted' as const } : {}),
@@ -777,7 +828,16 @@ export function list(ctx: ServiceContext, input: ListInput): Result<{ items: Req
   for (const requisition of repo.requisitions.listWithLines(filter)) {
     const total = totalOf(requisition);
     if (isRefusal(total)) {
-      return total;
+      // No write path can produce such a row any more (`prepareLines` sums before it inserts),
+      // but one bad row must never be able to answer `400` for the whole organisation's shared
+      // queue: it is skipped and named in the log instead (#3 review, D-024).
+      log('warn', 'requisition skipped: its lines cannot be totalled', {
+        requisitionId: requisition.id,
+        orgId: requisition.orgId,
+        requestId: ctx.requestId,
+        code: total.code,
+      });
+      continue;
     }
     let rule: ApprovalRule | null = null;
     let ruleSource: RuleSource | null = null;

@@ -2,7 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { systemClock, toIso, type Clock } from '../../clock.ts';
 import { newId } from '../../ids.ts';
 import { isRefusal, refuse, type Result } from '../../refusal.ts';
-import { lineTotal } from '../../domain/money.ts';
+import { lineTotal, sumMoney, type Money } from '../../domain/money.ts';
 import type {
   Requisition,
   RequisitionLine,
@@ -164,6 +164,12 @@ export function requisitionsRepo(db: DatabaseSync, scope: OrgScope, clock: Clock
   /**
    * One validation path for create and edit alike, run to completion *before* any write, so
    * a refusal never leaves half a line set behind.
+   *
+   * It validates each line **and their sum**: `lineTotal` per line is not enough, because two
+   * individually safe line totals can still exceed the safe-integer ceiling together, and a
+   * row the repository accepted but nobody can total is unreadable by its own service. A set
+   * this function accepts is one `sumMoney` can always add up — which is what lets the service
+   * treat a refused total *after* a write as an invariant violation (#3 review).
    */
   function prepareLines(
     currency: string,
@@ -179,6 +185,7 @@ export function requisitionsRepo(db: DatabaseSync, scope: OrgScope, clock: Clock
       );
     }
     const prepared: RequisitionLine[] = [];
+    const amounts: Money[] = [];
     let seq = 0;
     for (const line of lines) {
       seq += 1;
@@ -201,6 +208,7 @@ export function requisitionsRepo(db: DatabaseSync, scope: OrgScope, clock: Clock
       if (catalogueItemId !== null && selectItem.get(scope.orgId, catalogueItemId) === undefined) {
         return refuse('not_found', `line ${String(seq)}: catalogue item`);
       }
+      amounts.push(total);
       prepared.push({
         id: newId(),
         orgId: scope.orgId,
@@ -212,6 +220,12 @@ export function requisitionsRepo(db: DatabaseSync, scope: OrgScope, clock: Clock
         unitPriceMinor: line.unitPriceMinor,
         currency,
       });
+    }
+    // The sum is decided here, before the first INSERT: every refusal this path can produce
+    // happens while nothing has been written yet (D-003, D-023).
+    const total = sumMoney(currency, amounts);
+    if (isRefusal(total)) {
+      return refuse('validation_failed', total.detail ?? 'the line totals cannot be summed');
     }
     return prepared;
   }

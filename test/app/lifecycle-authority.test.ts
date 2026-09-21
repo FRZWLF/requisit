@@ -12,8 +12,10 @@ import {
   cancel,
   copyForward,
   createDraft,
+  list,
   reject,
   submit,
+  updateDraft,
   type RequisitionDetail,
   type ServiceContext,
 } from '../../src/app/requisitions.ts';
@@ -491,4 +493,70 @@ test('every transition line carries actor, states, rule, total, currency and req
   assert.equal(approval?.totalMinor, 250_000);
   assert.equal(approval?.currency, 'EUR');
   assert.equal(approval?.requestId, 'req-approve');
+});
+
+/**
+ * The three ordering and shape corrections of the #3 review's nits: D-023's stated order
+ * (validation → state → authority), a `decided_at` that only marks an actual decision, and
+ * a `mine` filter that refuses rather than widening when the scope is not a person.
+ */
+
+test('the state check runs before the role guard, as D-023 states', () => {
+  const fixture = setUp();
+  const detail = submitted(fixture, 250_000);
+  // The cost-centre owner holds `approver` and not `buyer`, so both guards would refuse.
+  const refused = withTransaction(fixture.db, (tx) =>
+    updateDraft(contextFor(fixture, fixture.seed.owner.id), tx, detail.id, {
+      lines: [{ description: 'Chair', quantity: 1, unitPriceMinor: 1_000 }],
+    }),
+  );
+  assert.ok(isRefusal(refused));
+  assert.equal(isRefusal(refused) ? refused.code : '', 'wrong_state');
+  assert.match(isRefusal(refused) ? (refused.detail ?? '') : '', /edit is not allowed from submitted/);
+
+  // …and on a draft, where the state allows the act, the role guard still refuses.
+  const draftRow = draft(fixture, 1_000);
+  const denied = withTransaction(fixture.db, (tx) =>
+    updateDraft(contextFor(fixture, fixture.seed.owner.id), tx, draftRow.id, {
+      lines: [{ description: 'Chair', quantity: 1, unitPriceMinor: 1_000 }],
+    }),
+  );
+  assert.ok(isRefusal(denied));
+  assert.equal(isRefusal(denied) ? denied.code : '', 'not_authorised');
+});
+
+test('cancelling a draft decides nothing, so it carries no decidedAt', () => {
+  const fixture = setUp();
+  const draftRow = draft(fixture, 250_000);
+  assert.equal(draftRow.decidedAt, null);
+  const cancelled = withTransaction(fixture.db, (tx) =>
+    must(cancel(contextFor(fixture, fixture.seed.buyer.id), tx, draftRow.id, {})),
+  );
+  assert.equal(cancelled.state, 'cancelled');
+  assert.equal(cancelled.decidedAt, null, 'nobody decided a draft');
+
+  // cancelling a submitted row ends a pending decision and does stamp it
+  const pending = submitted(fixture, 250_000);
+  const stopped = withTransaction(fixture.db, (tx) =>
+    must(cancel(contextFor(fixture, fixture.seed.buyer.id), tx, pending.id, {})),
+  );
+  assert.notEqual(stopped.decidedAt, null);
+});
+
+test('mine is refused for a scope that is not a person, never widened to the organisation', () => {
+  const fixture = setUp();
+  draft(fixture, 250_000);
+  const systemCtx: ServiceContext = {
+    db: fixture.db,
+    scope: orgScope(fixture.seed.org.id, { personId: null, kind: 'system', roles: new Set() }),
+    clock: TEST_CLOCK,
+    requestId: 'req-system',
+  };
+  const refused = list(systemCtx, { mine: true });
+  assert.ok(isRefusal(refused));
+  assert.equal(isRefusal(refused) ? refused.code : '', 'not_authorised');
+
+  // the same scope without `mine` still reads the organisation (D-024)
+  const all = must(list(systemCtx, {}));
+  assert.equal(all.items.length, 1);
 });

@@ -59,10 +59,19 @@ function locationOf(status: number, body: unknown): string | null {
   return typeof id === 'string' ? `/api/v1/requisitions/${id}` : null;
 }
 
+/**
+ * Every response, success and refusal alike, carries `nosniff`: the surface is JSON today,
+ * but split 03 (D-013) serves HTML from the same origin and a line `description` is
+ * attacker-controlled text that comes back inside these bodies (#3 review).
+ */
 function respond(status: number, body: string, requestId: string, contentType: string): HttpResponse {
   return {
     status,
-    headers: { 'Content-Type': contentType, [REQUEST_ID_HEADER]: requestId },
+    headers: {
+      'Content-Type': contentType,
+      'X-Content-Type-Options': 'nosniff',
+      [REQUEST_ID_HEADER]: requestId,
+    },
     body,
   };
 }

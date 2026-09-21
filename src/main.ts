@@ -9,6 +9,7 @@ import { withTransaction } from './db/tx.ts';
 import { instanceSweepIdempotencyKeys } from './db/instance.ts';
 import { createApp } from './http/app.ts';
 import { createServer } from './http/server.ts';
+import { shutdownHandler } from './shutdown.ts';
 import { log, setLogLevel } from './log.ts';
 
 /**
@@ -43,6 +44,15 @@ export function main(env: NodeJS.ProcessEnv = process.env): void {
 
   const app = createApp({ db, tokenKeys: config.tokenKeys, clock: systemClock });
   const server = createServer(app);
+  // A port already in use is an operator error, and D-018 says the process refuses to start
+  // with a named reason rather than dying on an uncaught event.
+  server.on('error', (error: NodeJS.ErrnoException) => {
+    log('error', 'listen failed', { port: config.port, code: error.code ?? 'unknown' });
+    clearInterval(timer);
+    closeDatabase(db);
+    process.exitCode = 1;
+    server.close();
+  });
   server.listen(config.port, '127.0.0.1', () => {
     log('info', 'ready', {
       dbPath: config.dbPath,
@@ -53,13 +63,10 @@ export function main(env: NodeJS.ProcessEnv = process.env): void {
     });
   });
 
-  process.on('SIGTERM', () => {
-    clearInterval(timer);
-    server.close(() => {
-      closeDatabase(db);
-      log('info', 'stopped');
-    });
-  });
+  const shutdown = shutdownHandler(server, db, timer);
+  // `Ctrl-C` in dev has to reach `closeDatabase` too, not only a container's SIGTERM.
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
 try {

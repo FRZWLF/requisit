@@ -273,3 +273,31 @@ test('success bodies are camelCase JSON, problem bodies are the snake_case probl
   assert.ok('request_id' in refused.json);
   assert.ok(!('requestId' in refused.json));
 });
+
+test('every response carries X-Content-Type-Options: nosniff', () => {
+  const fixture = setUp();
+  const ok = call(fixture.app, {
+    method: 'GET',
+    path: '/api/v1/rules',
+    token: fixture.token,
+  });
+  assert.equal(ok.status, 200);
+  assert.equal(ok.headers['X-Content-Type-Options'], 'nosniff');
+
+  // and on every refusal shape too: unauthenticated, not_found and validation_failed
+  for (const options of [
+    { method: 'GET', path: '/api/v1/rules' },
+    { method: 'GET', path: '/api/v1/nothing', token: fixture.token },
+    {
+      method: 'POST',
+      path: '/api/v1/requisitions',
+      token: fixture.token,
+      key: 'nosniff-1',
+      raw: Buffer.from('not json', 'utf8'),
+    },
+  ] as const) {
+    const refused = call(fixture.app, options);
+    assert.ok(refused.status >= 400, `${options.path} was expected to refuse`);
+    assert.equal(refused.headers['X-Content-Type-Options'], 'nosniff', options.path);
+  }
+});

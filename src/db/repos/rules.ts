@@ -84,8 +84,13 @@ export function rulesRepo(db: DatabaseSync, scope: OrgScope) {
 
     /**
      * The row a submitted requisition stored. Approve and reject re-read *this*, never
-     * re-match against the total, so an admin's later edit of the rule table cannot change
+     * re-match against the total, so an admin's later **insert** of a rule row cannot change
      * who may decide a requisition that is already in flight (D-008 addendum).
+     *
+     * An `UPDATE` of this very row still can — re-reading by id neutralises an insert, not an
+     * edit. No v1 surface writes `approval_rules` (the rows are seeded; there is no route and
+     * no CLI), so the hazard is latent; G-018 holds the fix and names the first rule-editing
+     * screen as its trigger. Do not lean on this comment when you build that screen.
      */
     byId(id: string): Result<ApprovalRule> {
       const row = selectById.get(scope.orgId, id) as ApprovalRuleRow | undefined;

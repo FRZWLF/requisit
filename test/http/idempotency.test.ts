@@ -282,3 +282,114 @@ test('the sweep removes rows older than the cutoff, in every organisation, and n
     assert.ok(repo.find('POST /api/v1/requisitions', `new-${suffix}`) !== undefined);
   }
 });
+
+/**
+ * The ledger is keyed on the acting person as well as the organisation (D-010 addendum,
+ * #3 review 🟡 1). Before that, every member of an organisation shared one key namespace:
+ * a stranger could replay an approver's stored `200 approved`, and — the sharper half —
+ * could pre-claim a key with their own `403` so the real approver was handed that refusal
+ * back for the row's whole TTL.
+ */
+
+function submittedUnderR2(): {
+  fixture: ReturnType<typeof setUp>;
+  id: string;
+  version: number;
+  owner: string;
+  stranger: string;
+} {
+  const fixture = setUp();
+  const draft = makeDraft(fixture, 'actor-draft', 250_000);
+  assert.equal(draft.status, 201);
+  const id = String(draft.json['id']);
+  const moved = call(fixture.app, {
+    method: 'POST',
+    path: `/api/v1/requisitions/${id}/submit`,
+    token: fixture.token,
+    key: 'actor-submit',
+  });
+  assert.equal(moved.status, 200, moved.body);
+  assert.equal(moved.json['ruleCode'], 'R2');
+  return {
+    fixture,
+    id,
+    version: Number(moved.json['version']),
+    owner: tokenFor(fixture.seed.org.id, fixture.seed.owner.id),
+    stranger: tokenFor(fixture.seed.org.id, fixture.seed.stranger.id),
+  };
+}
+
+test('a stranger cannot replay the approver’s stored response with the same key', () => {
+  const { fixture, id, version, owner, stranger } = submittedUnderR2();
+  const approved = call(fixture.app, {
+    method: 'POST',
+    path: `/api/v1/requisitions/${id}/approve`,
+    token: owner,
+    key: 'SHARED',
+    body: { version },
+  });
+  assert.equal(approved.status, 200, approved.body);
+
+  const replayed = call(fixture.app, {
+    method: 'POST',
+    path: `/api/v1/requisitions/${id}/approve`,
+    token: stranger,
+    key: 'SHARED',
+    body: { version },
+  });
+  assert.notEqual(replayed.status, 200);
+  assert.equal(replayed.headers['Idempotent-Replayed'], undefined);
+  assert.notEqual(replayed.body, approved.body);
+
+  // the approver's own retry still replays, byte-for-byte
+  const retry = call(fixture.app, {
+    method: 'POST',
+    path: `/api/v1/requisitions/${id}/approve`,
+    token: owner,
+    key: 'SHARED',
+    body: { version },
+  });
+  assert.equal(retry.status, 200);
+  assert.equal(retry.body, approved.body);
+  assert.equal(retry.headers['Idempotent-Replayed'], 'true');
+});
+
+test('a stranger cannot pre-claim an approver’s key and block the approval', () => {
+  const { fixture, id, version, owner, stranger } = submittedUnderR2();
+  const refused = call(fixture.app, {
+    method: 'POST',
+    path: `/api/v1/requisitions/${id}/approve`,
+    token: stranger,
+    key: 'K2',
+    body: { version },
+  });
+  assert.equal(refused.status, 403);
+
+  const approved = call(fixture.app, {
+    method: 'POST',
+    path: `/api/v1/requisitions/${id}/approve`,
+    token: owner,
+    key: 'K2',
+    body: { version },
+  });
+  assert.equal(approved.status, 200, approved.body);
+  assert.equal(approved.headers['Idempotent-Replayed'], undefined);
+  assert.equal(approved.json['state'], 'approved');
+});
+
+test('two people may hold the same key on the same route, each with their own answer', () => {
+  const fixture = setUp();
+  const financeToken = tokenFor(fixture.seed.org.id, fixture.seed.finance.id);
+  const mine = makeDraft(fixture, 'both');
+  assert.equal(mine.status, 201);
+  const theirs = call(fixture.app, {
+    method: 'POST',
+    path: '/api/v1/requisitions',
+    token: financeToken,
+    key: 'both',
+    body: draftBodyOf(fixture.seed.costCentre.id, 250_000),
+  });
+  assert.equal(theirs.status, 201);
+  assert.notEqual(theirs.json['id'], mine.json['id']);
+  assert.equal(theirs.headers['Idempotent-Replayed'], undefined);
+});
