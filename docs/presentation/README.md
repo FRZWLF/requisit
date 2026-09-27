@@ -9,6 +9,7 @@ written by hand for the slides.
 | the product pages | `shots/*.png` | screenshots of the served pages: seed a scratch DB (`REQUISIT_DB_PATH`, `PORT=3123`), run the README walkthrough, sign in as buyer and approver, save the HTML, shoot with headless Chrome |
 | the data | `data/decisions.js`, `data/trail.js`, `data/cost.js` | `REQUISIT_LIVE_URL=http://localhost:3123/ node docs/presentation/build-data.mjs 2 6` (showcased issue, umbrella) |
 | the storyline + demo script | `storyline.md` | — |
+| speaker notes | `speaker-notes.md` (~25 min, the full track) · `speaker-notes-10min.md` (7 slides get airtime, the rest is flipped past with one line; Q&A cards and the numbers table stay in the long version) | — |
 | the rumble's input | `../00-brief.md` | — |
 | the rumble's output | PR #1 (docs), `../02-decisions.md` … | one opus session, 111 974 tokens (M-008) |
 | the contract | issues #2–#5, umbrella #6 | `/task-out` from `arc1-drafts/` |

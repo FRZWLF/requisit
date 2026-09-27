@@ -32,7 +32,7 @@ yet", "this key cannot be exported") are where surprises die early.
    docs rows. If the issue was already cut at task-out, say that the cut holds.
 5. **Verification** – the tests to write, the mutations a reviewer should demand (a check
    must be able to produce the case), which `M-xxx` measurement to take and what must stay
-   "steht aus" until a human measures it.
+   "pending" until a human measures it.
 6. **Risks** – for the reviewer: what could go wrong, where the fail-closed direction is,
    what a hostile input does at each new boundary.
 7. **Implementer model** – one line: `needs: strong` for everything with a contract an

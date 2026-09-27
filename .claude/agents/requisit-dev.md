@@ -27,7 +27,7 @@ GitHub issue is the full spec: `gh issue view N --json title,body,labels,comment
    mutate what you built and watch the test go red — a check that cannot produce the case
    is not a check. Fix what you find.
 6. Docs are part of done: `D-`/`G-`/`M-` rows in `docs/02-decisions.md`, `docs/14-gap-analysis.md`,
-   `docs/16-measurements.md` (numbers you did not measure read "steht aus"), component READMEs,
+   `docs/16-measurements.md` (numbers you did not measure read "pending"), component READMEs,
    any doc the change makes wrong. Check the numbers on `main` before you take one; parallel
    PRs collide. Every reference you write must have an anchor.
 7. Commit(s): conventional commits, no AI co-author trailer. Push the branch

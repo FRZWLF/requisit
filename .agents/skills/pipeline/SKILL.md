@@ -63,7 +63,7 @@ each with its own review loop. When two architects run in parallel, assign the r
 Route by area to the project's implementer agents (`requisit-dev` →
 `area:api` · `area:web` · `area:agent` · `area:infra` · `area:docs`). Model by size:
 `S` → gpt-5.6-luna · `M` → gpt-5.6-terra · `L` →
-gpt-5.6-sol; the frontier model never in a delegated stage — Astra is reserved for the rumble session and chosen by Rico there; no delegated stage runs above `high`. Run in an
+gpt-5.6-sol; the frontier model never in a delegated stage — the frontier tier is reserved for the rumble session, where the human chooses it; no delegated stage runs above `high`. Run in an
 isolated worktree, in the background, at most 3 at once. Prompt:
 issue number, branch `feat/issue-N`, the verify command from the guide, "push and open a
 DRAFT PR; do not merge", and: the PR body must list the suites run, the mutations tried, the

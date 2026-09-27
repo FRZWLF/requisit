@@ -69,4 +69,4 @@ area:<x> · size:<S|M|L> · risk:<low|medium|high> — triage makes the final ca
 Reject your own draft if an implementer would need to ask a question this session already
 answered — put that answer in Context. Acceptance criteria must be testable. Out of scope
 is the #1 defense against scope creep — never leave it empty. A number that only a human can
-measure is written as "steht aus" with the steps, never as a target dressed as a result.
+measure is written as "pending" with the steps, never as a target dressed as a result.
