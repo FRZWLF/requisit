@@ -1,6 +1,6 @@
 # The talk: "From a conversation to main" — the rumble framework on Requisit
 
-Audience: Intershop engineering and product (see README.md here for where every artefact lives; Arc 1 ran on 2026-09-21) (B2B commerce; agents on the merchant and buyer
+Audience: an engineering and product team that builds with coding agents (see README.md here for where every artefact lives; Arc 1 ran on 2026-09-21) (B2B commerce; agents on the merchant and buyer
 side, the PWA, the new commerce core). Length: 30–40 min + demo + Q&A. Everything shown is
 real: this repo was built, live or recorded, by the process the talk describes.
 
@@ -49,7 +49,7 @@ real: this repo was built, live or recorded, by the process the talk describes.
 11. **Several people.** Everyone rumbles; one person per arc orchestrates; the issue is the
     contract, so the author of the rumble and the person running the pipeline can differ;
     CODEOWNERS and `human` decide who the inbox is; `risk:high` PRs get a named reviewer.
-12. **Intershop.** Where this fits: agent features on the buyer/merchant side are exactly
+12. **Where this fits.** agent features on the buyer/merchant side are exactly
     "a decision + a contract + a reviewed PR"; ADRs already exist; the PWA and commerce
     core teams each get their own `framework.json` and implementers, one framework repo.
 

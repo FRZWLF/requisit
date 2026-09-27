@@ -201,3 +201,7 @@ state machine, rule matching and the audit line are decided in one place, never 
 carries the `Idempotency-Key` the server rendered into it, so a double-click is one state change
 (D-010). The session is the token in an `HttpOnly`, `SameSite=Strict` cookie (D-025); it reaches
 no URL, no log and no page source.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
